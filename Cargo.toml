@@ -1,0 +1,19 @@
+[package]
+name = "mpl-wgpu"
+version = "0.1.0"
+edition = "2021"
+authors = ["Karl Ruskowski"]
+description = "Matplotlib-style plotting library with hardware-accelerated wgpu rendering backend"
+license = "MIT"
+repository = "https://github.com/karlru/mpl-wgpu"
+keywords = ["plotting", "wgpu", "matplotlib", "visualization", "graphics"]
+categories = ["graphics", "visualization", "rendering"]
+readme = "README.md"
+
+[dependencies]
+wgpu = "0.20"
+glam = { version = "0.25", features = ["bytemuck", "serde"] }
+bytemuck = { version = "1.14", features = ["derive"] }
+wgpu_text = "0.8"
+log = "0.4"
+anyhow = "1.0"
