@@ -1,6 +1,7 @@
 CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o: \
   /home/karl/prsn/mpl-wgpu/src/backend/primitive_renderer.cc \
   /home/karl/prsn/mpl-wgpu/src/backend/primitive_renderer.h \
+  /home/karl/prsn/mpl-wgpu/src/backend/webgpu.hpp \
   /home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi/webgpu-headers/webgpu.h \
   /usr/lib/llvm-19/lib/clang/19/include/stdint.h /usr/include/stdint.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
@@ -27,13 +28,15 @@ CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o: \
   /usr/lib/llvm-19/lib/clang/19/include/__stddef_nullptr_t.h \
   /usr/lib/llvm-19/lib/clang/19/include/__stddef_max_align_t.h \
   /usr/lib/llvm-19/lib/clang/19/include/__stddef_offsetof.h \
-  /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/array \
-  /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/compare \
-  /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/version.h \
+  /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/cstddef \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/x86_64-linux-gnu/c++/14/bits/c++config.h \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/x86_64-linux-gnu/c++/14/bits/os_defines.h \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/x86_64-linux-gnu/c++/14/bits/cpu_defines.h \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/pstl/pstl_config.h \
+  /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/version.h \
+  /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/cstdint \
+  /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/array \
+  /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/compare \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/initializer_list \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/type_traits \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/functexcept.h \
@@ -78,7 +81,6 @@ CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o: \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/backward/binders.h \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/vector.tcc \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/memory_resource.h \
-  /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/cstddef \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/uses_allocator.h \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/uses_allocator_args.h \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/tuple \
