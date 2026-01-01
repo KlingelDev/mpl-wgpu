@@ -5,6 +5,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# FetchContent for dependencies
+include(FetchContent)
+
+# Add cmake modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 # Options
 option(MPL_WGPU_BUILD_TESTS "Build tests" OFF)
 option(MPL_WGPU_BUILD_EXAMPLES "Build examples" ON)
@@ -12,9 +18,8 @@ option(MPL_WGPU_BUILD_EXAMPLES "Build examples" ON)
 # Add matplotplusplus
 add_subdirectory(vendor/matplotplusplus)
 
-# Find wgpu-native (TODO: Add proper find module)
-# For now, assume wgpu.h is available via system or manual install
-# find_package(wgpu REQUIRED)
+# WebGPU integration
+include(cmake/webgpu.cmake)
 
 # wgpu backend library
 add_library(mpl_wgpu_backend
@@ -35,9 +40,8 @@ target_include_directories(mpl_wgpu_backend
 target_link_libraries(mpl_wgpu_backend
     PUBLIC
         matplot
-    # TODO: Link wgpu-native when available
-    # PRIVATE
-    #     wgpu::wgpu
+    PRIVATE
+        webgpu
 )
 
 target_compile_options(mpl_wgpu_backend PRIVATE
