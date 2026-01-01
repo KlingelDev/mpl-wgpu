@@ -1,58 +1,48 @@
-//! # mpl-wgpu
+// Copyright (c) 2026 Karl Ruskowski
+// SPDX-License-Identifier: MIT
+
+//! Rust bindings for mpl-wgpu
 //!
-//! A matplotlib-style plotting library for Rust with hardware-accelerated 
-//! rendering using [wgpu](https://wgpu.rs/).
+//! This crate provides safe Rust bindings to the mpl-wgpu C++ backend,
+//! allowing you to use matplotplusplus from Rust with GPU-accelerated
+//! rendering via wgpu.
 //!
-//! ## Features
+//! # Architecture
 //!
-//! - GPU-accelerated rendering for all plot types
-//! - Line plots, scatter plots, histograms, bar charts, and 3D surfaces
-//! - Customizable colors, line styles, markers, and labels
-//! - Automatic or manual axis scaling
-//! - Real-time plot updates
-//!
-//! ## Quick Start
-//!
-//! ```rust,no_run
-//! use mpl_wgpu::{PlotBackend, PrimitiveRenderer, TextRenderer};
-//! use glam::Vec4;
-//!
-//! // Create plot backend
-//! let mut plot = PlotBackend::new(800, 600);
-//!
-//! // Configure axes
-//! plot.axis_mut().title = "My Plot".into();
-//! plot.axis_mut().x_label = "X Axis".into();
-//! plot.axis_mut().y_label = "Y Axis".into();
-//!
-//! // Add data
-//! let x: Vec<f64> = (0..100).map(|i| i as f64 * 0.1).collect();
-//! let y: Vec<f64> = x.iter().map(|&x| x.sin()).collect();
-//! let color = Vec4::new(0.0, 0.5, 1.0, 1.0);
-//!
-//! plot.plot(x, y, color);
-//! plot.auto_scale();
+//! ```text
+//! matplotplusplus (C++) → WgpuBackend (C++) → C FFI → Rust
 //! ```
 //!
-//! ## Architecture
+//! # Example
 //!
-//! The library is built on three core components:
+//! ```rust,no_run
+//! use mpl_wgpu::Figure;
 //!
-//! - [`PlotBackend`]: High-level matplotlib-style plotting API
-//! - [`PrimitiveRenderer`]: Low-level GPU primitive rendering
-//! - [`TextRenderer`]: GPU-accelerated text rendering
+//! let mut fig = Figure::new();
+//! fig.plot(&[1.0, 2.0, 3.0], &[1.0, 4.0, 9.0]);
+//! fig.show();
+//! ```
 
-/// Plotting backend with matplotlib-style API.
-pub mod plotting;
+#![warn(missing_docs)]
+#![warn(rust_2018_idioms)]
 
-/// Low-level GPU primitive rendering (lines, circles, rectangles).
-pub mod primitives;
+pub mod backend;
+pub mod ffi;
 
-/// GPU-accelerated text rendering.
-pub mod text;
+pub use backend::{Figure, WgpuBackend};
 
-pub use plotting::{PlotBackend, AxisConfig, Series, LineStyle, MarkerStyle, linspace, randn, PI};
-pub use primitives::{PrimitiveRenderer, Instance};
-pub use text::TextRenderer;
+/// Re-export wgpu types for convenience
+pub use wgpu;
 
-pub use glam::{Vec2, Vec3, Vec4}; 
+/// Library version
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_version() {
+        assert!(!VERSION.is_empty());
+    }
+}

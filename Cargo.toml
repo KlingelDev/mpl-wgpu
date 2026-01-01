@@ -1,19 +1,32 @@
 [package]
 name = "mpl-wgpu"
-version = "0.0.1"
+version = "0.1.0"
 edition = "2021"
 authors = ["Karl Ruskowski"]
-description = "Matplotlib-style plotting library with hardware-accelerated wgpu rendering backend"
 license = "MIT"
-repository = "https://github.com/karlru/mpl-wgpu"
-keywords = ["plotting", "wgpu", "matplotlib", "visualization", "graphics"]
-categories = ["graphics", "visualization", "rendering"]
+description = "wgpu rendering backend for matplotplusplus with Rust bindings"
+repository = "https://github.com/yourusername/mpl-wgpu"
 readme = "README.md"
+keywords = ["plotting", "visualization", "wgpu", "gpu", "graphics"]
+categories = ["graphics", "visualization", "science"]
+
+[lib]
+name = "mpl_wgpu"
+path = "src/lib.rs"
 
 [dependencies]
-wgpu = "0.20"
-glam = { version = "0.25", features = ["bytemuck", "serde"] }
+wgpu = "0.18"
+glam = "0.25"
 bytemuck = { version = "1.14", features = ["derive"] }
-wgpu_text = "0.8"
-log = "0.4"
 anyhow = "1.0"
+
+[build-dependencies]
+cc = "1.0"
+bindgen = "0.69"
+
+[dev-dependencies]
+env_logger = "0.11"
+
+[[example]]
+name = "simple_plot"
+path = "examples/rust/simple_plot.rs"
