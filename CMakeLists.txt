@@ -1,5 +1,9 @@
-cmake_minimum_required(VERSION 3.15)
-project(mpl-wgpu VERSION 0.1.0 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.20)
+project(mpl-wgpu 
+  VERSION 0.1.0
+  LANGUAGES CXX
+  DESCRIPTION "wgpu rendering backend for matplotplusplus"
+)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,36 +16,54 @@ option(MPL_WGPU_BUILD_EXAMPLES "Build examples" ON)
 # Add matplotplusplus
 add_subdirectory(vendor/matplotplusplus)
 
-# wgpu backend library
+# Find wgpu (assume wgpu-native or similar is available)
+# TODO: Add proper wgpu dependency handling
+
+# Main backend library
 add_library(mpl_wgpu_backend
-    cpp/backend/wgpu_backend.cpp
-    cpp/backend/wgpu_backend.h
+  src/backend/wgpu_backend.cc
+  include/matplot/backend/wgpu_backend.h
 )
 
 target_include_directories(mpl_wgpu_backend
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/cpp>
-        $<INSTALL_INTERFACE:include>
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/backend
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/backend
 )
 
 target_link_libraries(mpl_wgpu_backend
-    PUBLIC
-        matplot
+  PUBLIC
+    matplot
+  # TODO: Add wgpu library
 )
 
-# TODO: Link wgpu (via wgpu-native or wgpu-rs)
-# For now, this is C++ skeleton only
+target_compile_options(mpl_wgpu_backend PRIVATE
+  -Wall
+  -Wextra
+  -Wpedantic
+)
+
+# Examples
+if(MPL_WGPU_BUILD_EXAMPLES)
+  add_subdirectory(examples/cpp)
+endif()
+
+# Tests
+if(MPL_WGPU_BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
 
 # Install rules
 install(TARGETS mpl_wgpu_backend
-    EXPORT mpl-wgpu-targets
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin
+  EXPORT mpl-wgpu-targets  
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
-install(FILES cpp/backend/wgpu_backend.h
-    DESTINATION include/mpl_wgpu
+install(DIRECTORY include/
+  DESTINATION include
 )
