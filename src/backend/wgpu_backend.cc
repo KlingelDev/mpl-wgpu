@@ -140,8 +140,50 @@ void WgpuBackend::draw_text_3d(const std::string& text, float x, float y, float 
     renderer_->DrawText(text, screen_x, screen_y, font_size, color, 0.0f);
 }
 
-void WgpuBackend::draw_path(const std::vector<double>& x, const std::vector<double>& y, const std::array<float, 4>& color, const std::string& style) {
-  draw_path(x, y, color, style, {});
+void WgpuBackend::draw_path(const std::vector<double>& x, 
+                             const std::vector<double>& y, 
+                             const std::array<float, 4>& color) {
+  size_t n = std::min(x.size(), y.size());
+  if (n < 2) return;
+
+  float rw = static_cast<float>(render_width_);
+  float rh = static_cast<float>(render_height_);
+
+  std::array<float, 4> c = FixColor(color);
+  float lw = line_width_;
+  
+  // Default style parameters
+  float dash_len = 0.0f;  // Solid line
+  float gap_len = 0.0f;
+
+  for (size_t i = 0; i < n - 1; ++i) {
+    float x1 = static_cast<float>(x[i]) * rw;
+    float y1 = static_cast<float>(y[i]) * rh;
+    float x2 = static_cast<float>(x[i + 1]) * rw;
+    float y2 = static_cast<float>(y[i + 1]) * rh;
+
+    lines_.push_back({x1, y1, 0.0f, x2, y2, 0.0f,
+                      c[0], c[1], c[2], c[3],
+                      lw, dash_len, gap_len, 0.0f, 0.0f});
+
+    // Add join circles for smooth connections
+    float r_join = lw * 0.5f;
+    if (dash_len == 0.0f) {
+      circles_.push_back({x1, y1, 0.0f, r_join, 
+                          c[0], c[1], c[2], c[3], 0.0f, 0.0f, 0.0f, 0.0f});
+    }
+  }
+
+  // Final point circle
+  if (n > 0) {
+    float lx = static_cast<float>(x[n - 1]) * rw;
+    float ly = static_cast<float>(y[n - 1]) * rh;
+    float r_join = lw * 0.5f;
+    if (dash_len == 0.0f) {
+      circles_.push_back({lx, ly, 0.0f, r_join, 
+                          c[0], c[1], c[2], c[3], 0.0f, 0.0f, 0.0f, 0.0f});
+    }
+  }
 }
 
 void WgpuBackend::draw_path(const std::vector<double>& x, const std::vector<double>& y, const std::array<float, 4>& color, const std::string& style, const std::vector<double>& z) {

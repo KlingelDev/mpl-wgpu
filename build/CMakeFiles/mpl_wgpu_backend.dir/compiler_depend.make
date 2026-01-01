@@ -273,6 +273,8 @@ CMakeFiles/mpl_wgpu_backend.dir/src/backend/wgpu_backend.cc.o: /home/karl/prsn/m
   /usr/include/stdint.h \
   /usr/include/stdio.h \
   /usr/include/stdlib.h \
+  /usr/include/string.h \
+  /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/wchar.h \
   /usr/include/wctype.h \
@@ -447,6 +449,7 @@ CMakeFiles/mpl_wgpu_backend.dir/src/backend/wgpu_backend.cc.o: /home/karl/prsn/m
   /usr/include/c++/14/cstddef \
   /usr/include/c++/14/cstdio \
   /usr/include/c++/14/cstdlib \
+  /usr/include/c++/14/cstring \
   /usr/include/c++/14/cwchar \
   /usr/include/c++/14/cwctype \
   /usr/include/c++/14/debug/assertions.h \
