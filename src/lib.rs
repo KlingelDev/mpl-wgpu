@@ -28,11 +28,20 @@
 
 pub mod backend;
 pub mod ffi;
+pub mod primitives;
+pub mod text;
 
 pub use backend::{Figure, WgpuBackend};
 
+// Re-export rendering components
+pub use primitives::{Instance, PrimitiveRenderer};
+pub use text::TextRenderer;
+
 /// Re-export wgpu types for convenience
 pub use wgpu;
+
+/// Re-export glam for math types
+pub use glam;
 
 /// Library version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
