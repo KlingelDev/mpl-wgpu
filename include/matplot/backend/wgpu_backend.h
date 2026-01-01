@@ -1,3 +1,4 @@
+```
 // Copyright (c) 2025 Optris GmbH & Co. KG
 // SPDX-License-Identifier: MIT
 //
@@ -8,7 +9,6 @@
 #define MATPLOT_BACKEND_WGPU_BACKEND_H_
 
 #include <matplot/backend/backend_interface.h>
-#include <webgpu/webgpu.hpp>
 
 #include <array>
 #include <memory>

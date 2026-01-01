@@ -4,6 +4,7 @@
 CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o: /home/karl/prsn/mpl-wgpu/src/backend/primitive_renderer.cc \
   _deps/wgpu_native-src/ffi/webgpu-headers/webgpu.h \
   /home/karl/prsn/mpl-wgpu/src/backend/primitive_renderer.h \
+  /home/karl/prsn/mpl-wgpu/src/backend/webgpu.hpp \
   /usr/include/alloca.h \
   /usr/include/asm-generic/bitsperlong.h \
   /usr/include/asm-generic/errno-base.h \
@@ -182,6 +183,7 @@ CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o: /home/karl/
   /usr/include/c++/14/compare \
   /usr/include/c++/14/concepts \
   /usr/include/c++/14/cstddef \
+  /usr/include/c++/14/cstdint \
   /usr/include/c++/14/cstdio \
   /usr/include/c++/14/cstdlib \
   /usr/include/c++/14/cstring \
@@ -310,6 +312,8 @@ CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o: /home/karl/
 
 /usr/include/c++/14/cstdio:
 
+/usr/include/c++/14/cstdint:
+
 /usr/include/c++/14/cstddef:
 
 /usr/include/c++/14/concepts:
@@ -426,12 +430,6 @@ CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o: /home/karl/
 
 /usr/include/time.h:
 
-/usr/lib/llvm-19/lib/clang/19/include/stddef.h:
-
-/usr/include/c++/14/new:
-
-/usr/include/linux/stddef.h:
-
 /usr/include/c++/14/bits/stl_uninitialized.h:
 
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
@@ -456,6 +454,12 @@ CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o: /home/karl/
 
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
+/usr/include/c++/14/bits/hash_bytes.h:
+
+/usr/include/x86_64-linux-gnu/asm/posix_types.h:
+
+/usr/include/c++/14/bits/char_traits.h:
+
 /usr/include/c++/14/bits/predefined_ops.h:
 
 /usr/include/asm-generic/errno.h:
@@ -467,12 +471,6 @@ CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o: /home/karl/
 /usr/include/x86_64-linux-gnu/bits/select.h:
 
 /home/karl/prsn/mpl-wgpu/src/backend/primitive_renderer.h:
-
-/usr/include/c++/14/bits/hash_bytes.h:
-
-/usr/include/x86_64-linux-gnu/asm/posix_types.h:
-
-/usr/include/c++/14/bits/char_traits.h:
 
 /usr/include/x86_64-linux-gnu/asm/types.h:
 
@@ -488,17 +486,31 @@ CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o: /home/karl/
 
 /home/karl/prsn/mpl-wgpu/src/backend/primitive_renderer.cc:
 
+/usr/include/c++/14/bits/functexcept.h:
+
+/usr/include/pthread.h:
+
 /usr/include/alloca.h:
+
+/home/karl/prsn/mpl-wgpu/src/backend/webgpu.hpp:
+
+/usr/include/c++/14/bits/locale_facets.tcc:
+
+/usr/include/stdio.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
+
+/usr/include/x86_64-linux-gnu/asm/bitsperlong.h:
+
+/usr/include/locale.h:
 
 /usr/include/x86_64-linux-gnu/bits/sched.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
 
 /usr/include/sched.h:
-
-/usr/include/stdc-predef.h:
-
-/usr/include/asm-generic/posix_types.h:
 
 /usr/include/x86_64-linux-gnu/bits/typesizes.h:
 
@@ -516,6 +528,8 @@ _deps/wgpu_native-src/ffi/webgpu-headers/webgpu.h:
 
 /usr/include/c++/14/bits/fstream.tcc:
 
+/usr/include/ctype.h:
+
 /usr/include/c++/14/debug/debug.h:
 
 /usr/include/errno.h:
@@ -524,11 +538,11 @@ _deps/wgpu_native-src/ffi/webgpu-headers/webgpu.h:
 
 /usr/include/c++/14/bits/cxxabi_init_exception.h:
 
-/usr/include/ctype.h:
+/usr/lib/llvm-19/lib/clang/19/include/stddef.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+/usr/include/c++/14/new:
 
-/usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
+/usr/include/linux/stddef.h:
 
 /usr/include/c++/14/bits/stl_heap.h:
 
@@ -550,17 +564,13 @@ _deps/wgpu_native-src/ffi/webgpu-headers/webgpu.h:
 
 /usr/include/linux/sched/types.h:
 
-/usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
+/usr/include/asm-generic/posix_types.h:
 
-/usr/include/x86_64-linux-gnu/asm/bitsperlong.h:
+/usr/include/stdc-predef.h:
 
-/usr/include/locale.h:
+/usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
 
-/usr/include/c++/14/bits/locale_facets.tcc:
-
-/usr/include/stdio.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
+/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
 
 /usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
 
@@ -701,10 +711,6 @@ _deps/wgpu_native-src/ffi/webgpu-headers/webgpu.h:
 /usr/include/c++/14/cstring:
 
 /usr/include/c++/14/bits/charconv.h:
-
-/usr/include/pthread.h:
-
-/usr/include/c++/14/bits/functexcept.h:
 
 /usr/include/x86_64-linux-gnu/bits/timesize.h:
 

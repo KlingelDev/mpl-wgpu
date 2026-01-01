@@ -38,10 +38,20 @@ enum class BufferUsage : uint32_t {
   CopyDst = WGPUBufferUsage_CopyDst,
 };
 
+inline BufferUsage operator|(BufferUsage a, BufferUsage b) {
+  return static_cast<BufferUsage>(
+      static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+}
+
 enum class ShaderStage : uint32_t {
   Vertex = WGPUShaderStage_Vertex,
   Fragment = WGPUShaderStage_Fragment,
 };
+
+inline ShaderStage operator|(ShaderStage a, ShaderStage b) {
+  return static_cast<ShaderStage>(
+      static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+}
 
 enum class VertexFormat : uint32_t {
   Float32x4 = WGPUVertexFormat_Float32x4,
@@ -73,13 +83,17 @@ enum class ColorWriteMask : uint32_t {
   All = WGPUColorWriteMask_All,
 };
 
+enum class BufferBindingType : uint32_t {
+  Uniform = WGPUBufferBindingType_Uniform,
+};
+
 // Descriptors (simplified)
 struct ShaderModuleWGSLDescriptor {
   const char* code;
 };
 
 struct ShaderModuleDescriptor {
-  void* nextInChain;
+  ShaderModuleWGSLDescriptor* nextInChain;
 };
 
 struct BufferDescriptor {
@@ -92,7 +106,7 @@ struct BindGroupLayoutEntry {
   uint32_t binding;
   uint32_t visibility;
   struct {
-    uint32_t type;
+    BufferBindingType type;
   } buffer;
 };
 
@@ -113,6 +127,11 @@ struct BindGroupDescriptor {
   const BindGroupEntry* entries;
 };
 
+struct PipelineLayoutDescriptor {
+  uint32_t bindGroupLayoutCount;
+  const WGPUBindGroupLayout* bindGroupLayouts;
+};
+
 struct VertexAttribute {
   VertexFormat format;
   uint64_t offset;
@@ -124,6 +143,54 @@ struct VertexBufferLayout {
   VertexStepMode stepMode;
   uint32_t attributeCount;
   const VertexAttribute* attributes;
+};
+
+struct BlendComponent {
+  BlendOperation operation;
+  BlendFactor srcFactor;
+  BlendFactor dstFactor;
+};
+
+struct BlendState {
+  BlendComponent color;
+  BlendComponent alpha;
+};
+
+struct ColorTargetState {
+  TextureFormat format;
+  BlendState* blend;
+  ColorWriteMask writeMask;
+};
+
+struct FragmentState {
+  WGPUShaderModule module;
+  const char* entryPoint;
+  uint32_t targetCount;
+  const ColorTargetState* targets;
+};
+
+struct VertexState {
+  WGPUShaderModule module;
+  const char* entryPoint;
+  uint32_t bufferCount;
+  const VertexBufferLayout* buffers;
+};
+
+struct PrimitiveState {
+  PrimitiveTopology topology;
+  CullMode cullMode;
+};
+
+struct MultisampleState {
+  uint32_t count;
+};
+
+struct RenderPipelineDescriptor {
+  WGPUPipelineLayout layout;
+  VertexState vertex;
+  const FragmentState* fragment;
+  PrimitiveState primitive;
+  MultisampleState multisample;
 };
 
 // Buffer class
@@ -184,9 +251,15 @@ class Queue {
 
 // Inline implementations
 inline ShaderModule Device::CreateShaderModule(
-    const ShaderModuleDescriptor*) const {
-  // TODO: Implement
-  return ShaderModule();
+    const ShaderModuleDescriptor* desc) const {
+  WGPUShaderModuleWGSLDescriptor wgsl = {};
+  wgsl.chain.sType = WGPUSType_ShaderModuleWGSLDescriptor;
+  wgsl.code = desc->nextInChain->code;
+  
+  WGPUShaderModuleDescriptor wgpu_desc = {};
+  wgpu_desc.nextInChain = (const WGPUChainedStruct*)&wgsl;
+  
+  return ShaderModule(wgpuDeviceCreateShaderModule(handle_, &wgpu_desc));
 }
 
 inline Buffer Device::CreateBuffer(
@@ -196,6 +269,67 @@ inline Buffer Device::CreateBuffer(
   wgpu_desc.size = desc->size;
   wgpu_desc.usage = desc->usage;
   return Buffer(wgpuDeviceCreateBuffer(handle_, &wgpu_desc));
+}
+
+inline BindGroupLayout Device::CreateBindGroupLayout(
+    const BindGroupLayoutDescriptor* desc) const {
+  // Convert entries
+  WGPUBindGroupLayoutEntry* entries = 
+      new WGPUBindGroupLayoutEntry[desc->entryCount];
+  for (uint32_t i = 0; i < desc->entryCount; ++i) {
+    entries[i] = {};
+    entries[i].binding = desc->entries[i].binding;
+    entries[i].visibility = desc->entries[i].visibility;
+    entries[i].buffer.type = static_cast<WGPUBufferBindingType>(
+        desc->entries[i].buffer.type);
+  }
+  
+  WGPUBindGroupLayoutDescriptor wgpu_desc = {};
+  wgpu_desc.entryCount = desc->entryCount;
+  wgpu_desc.entries = entries;
+  
+  auto result = BindGroupLayout(
+      wgpuDeviceCreateBindGroupLayout(handle_, &wgpu_desc));
+  delete[] entries;
+  return result;
+}
+
+inline BindGroup Device::CreateBindGroup(
+    const BindGroupDescriptor* desc) const {
+  WGPUBindGroupEntry* entries = 
+      new WGPUBindGroupEntry[desc->entryCount];
+  for (uint32_t i = 0; i < desc->entryCount; ++i) {
+    entries[i] = {};
+    entries[i].binding = desc->entries[i].binding;
+    entries[i].buffer = desc->entries[i].buffer;
+    entries[i].size = desc->entries[i].size;
+  }
+  
+  WGPUBindGroupDescriptor wgpu_desc = {};
+  wgpu_desc.layout = desc->layout;
+  wgpu_desc.entryCount = desc->entryCount;
+  wgpu_desc.entries = entries;
+  
+  auto result = BindGroup(wgpuDeviceCreateBindGroup(handle_, &wgpu_desc));
+  delete[] entries;
+  return result;
+}
+
+inline PipelineLayout Device::CreatePipelineLayout(
+    const PipelineLayoutDescriptor* desc) const {
+  WGPUPipelineLayoutDescriptor wgpu_desc = {};
+  wgpu_desc.bindGroupLayoutCount = desc->bindGroupLayoutCount;
+  wgpu_desc.bindGroupLayouts = desc->bindGroupLayouts;
+  
+  return PipelineLayout(
+      wgpuDeviceCreatePipelineLayout(handle_, &wgpu_desc));
+}
+
+inline RenderPipeline Device::CreateRenderPipeline(
+    const RenderPipelineDescriptor* desc) const {
+  // This is complex - just return null for now
+  // TODO: Implement full conversion
+  return RenderPipeline(nullptr);
 }
 
 inline Queue Device::GetQueue() const {
