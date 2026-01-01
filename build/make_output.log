@@ -1,0 +1,63 @@
+[  2%] Building CXX object vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/nodesoup/src/nodesoup.cpp.o
+[  4%] Building CXX object vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/nodesoup/src/kamada_kawai.cpp.o
+[ 10%] Building CXX object vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/nodesoup/src/layout.cpp.o
+[ 10%] Building CXX object vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/nodesoup/src/fruchterman_reingold.cpp.o
+[ 10%] Building CXX object vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/nodesoup/src/algebra.cpp.o
+[ 12%] Linking CXX static library libnodesoup.a
+[ 12%] Built target nodesoup
+[ 14%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/backend/gnuplot.cpp.o
+[ 16%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/core/figure_registry.cpp.o
+[ 18%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/backend/backend_interface.cpp.o
+[ 20%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/core/legend.cpp.o
+[ 24%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/backend/backend_registry.cpp.o
+[ 26%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/core/axes_object.cpp.o
+[ 26%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/core/axes_type.cpp.o
+[ 28%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/core/line_spec.cpp.o
+[ 30%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/core/axis_type.cpp.o
+[ 32%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/util/colors.cpp.o
+[ 34%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/util/contourc.cpp.o
+[ 36%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/util/popen.cpp.o
+[ 40%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/util/common.cpp.o
+[ 40%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/util/world_cities.cpp.o
+[ 42%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/util/world_map_10m.cpp.o
+[ 44%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/core/figure_type.cpp.o
+[ 46%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/bars.cpp.o
+[ 48%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/util/world_map_110m.cpp.o
+[ 50%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/util/world_map_50m.cpp.o
+[ 52%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/box_chart.cpp.o
+[ 54%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/circles.cpp.o
+[ 56%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/contours.cpp.o
+[ 58%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/error_bar.cpp.o
+[ 60%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/filled_area.cpp.o
+[ 62%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/function_line.cpp.o
+[ 64%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/histogram.cpp.o
+[ 66%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/labels.cpp.o
+[ 68%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/line.cpp.o
+[ 70%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/matrix.cpp.o
+[ 72%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/network.cpp.o
+[ 74%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/parallel_lines.cpp.o
+[ 76%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/stair.cpp.o
+[ 78%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/string_function.cpp.o
+[ 80%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/surface.cpp.o
+[ 82%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/axes_objects/vectors.cpp.o
+[ 84%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/freestanding/axes_functions.cpp.o
+[ 86%] Building CXX object vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/freestanding/histcounts.cpp.o
+[ 88%] Linking CXX static library libmatplot.a
+[ 88%] Built target matplot
+[ 90%] Building CXX object CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o
+[ 92%] Building CXX object CMakeFiles/mpl_wgpu_backend.dir/src/backend/wgpu_backend.cc.o
+In file included from /home/karl/prsn/mpl-wgpu/src/backend/primitive_renderer.cc:4:
+In file included from /home/karl/prsn/mpl-wgpu/src/backend/primitive_renderer.h:10:
+/home/karl/prsn/mpl-wgpu/build/_deps/webgpu_dist-src/wgpu-native/include/webgpu/webgpu.hpp:37:10: fatal error: 'webgpu/webgpu.h' file not found
+   37 | #include <webgpu/webgpu.h>
+      |          ^~~~~~~~~~~~~~~~~
+/home/karl/prsn/mpl-wgpu/src/backend/wgpu_backend.cc:7:10: fatal error: 'plotting/wgpu_backend.h' file not found
+    7 | #include "plotting/wgpu_backend.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make[2]: *** [CMakeFiles/mpl_wgpu_backend.dir/build.make:79: CMakeFiles/mpl_wgpu_backend.dir/src/backend/wgpu_backend.cc.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+1 error generated.
+make[2]: *** [CMakeFiles/mpl_wgpu_backend.dir/build.make:93: CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:194: CMakeFiles/mpl_wgpu_backend.dir/all] Error 2
+make: *** [Makefile:136: all] Error 2

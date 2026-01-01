@@ -7,7 +7,7 @@
 #ifndef MPL_WGPU_PRIMITIVE_RENDERER_H_
 #define MPL_WGPU_PRIMITIVE_RENDERER_H_
 
-#include <webgpu/webgpu.hpp>
+#include <webgpu.h>
 #include <array>
 #include <vector>
 

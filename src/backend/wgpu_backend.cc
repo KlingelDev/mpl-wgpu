@@ -1,11 +1,9 @@
 // Copyright (c) 2025 Optris GmbH & Co. KG
-// SPDX-License-Identifier: MIT
 //
-// WebGPU backend for matplot++ plotting library
-// This file is designed to be contributed upstream to matplotplusplus.
+// WebGPU-based backend for Matplot++.
+// Designed for upstream contribution.
 
-#include "plotting/wgpu_backend.h"
-#include "processor/gpu_processor.h"
+#include "matplot/backend/wgpu_backend.h"
 
 #include <spdlog/spdlog.h>
 

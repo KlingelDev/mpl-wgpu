@@ -1,0 +1,14 @@
+# Target labels
+ wgpu_native-populate
+# Source files and their labels
+/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-subbuild/CMakeFiles/wgpu_native-populate
+/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-subbuild/CMakeFiles/wgpu_native-populate.rule
+/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-subbuild/CMakeFiles/wgpu_native-populate-complete.rule
+/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-subbuild/wgpu_native-populate-prefix/src/wgpu_native-populate-stamp/wgpu_native-populate-build.rule
+/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-subbuild/wgpu_native-populate-prefix/src/wgpu_native-populate-stamp/wgpu_native-populate-configure.rule
+/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-subbuild/wgpu_native-populate-prefix/src/wgpu_native-populate-stamp/wgpu_native-populate-download.rule
+/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-subbuild/wgpu_native-populate-prefix/src/wgpu_native-populate-stamp/wgpu_native-populate-install.rule
+/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-subbuild/wgpu_native-populate-prefix/src/wgpu_native-populate-stamp/wgpu_native-populate-mkdir.rule
+/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-subbuild/wgpu_native-populate-prefix/src/wgpu_native-populate-stamp/wgpu_native-populate-patch.rule
+/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-subbuild/wgpu_native-populate-prefix/src/wgpu_native-populate-stamp/wgpu_native-populate-test.rule
+/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-subbuild/wgpu_native-populate-prefix/src/wgpu_native-populate-stamp/wgpu_native-populate-update.rule

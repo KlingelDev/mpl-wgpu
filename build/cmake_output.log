@@ -1,0 +1,272 @@
+-- The CXX compiler identification is Clang 19.1.7
+-- The C compiler identification is Clang 19.1.7
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/clang++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1")
+-- Found JPEG: /usr/lib/x86_64-linux-gnu/libjpeg.so (found version "62")
+-- Found TIFF: /usr/lib/x86_64-linux-gnu/libtiff.so (found version "4.7.0")
+-- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version "1.3.1")
+-- Found PNG: /usr/lib/x86_64-linux-gnu/libpng.so (found version "1.6.48")
+-- Looking for sgemm_
+-- Looking for sgemm_ - not found
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Could NOT find BLAS (missing: BLAS_LIBRARIES) 
+-- Could NOT find LAPACK (missing: LAPACK_LIBRARIES) 
+    Reason given by package: LAPACK could not be found because dependency BLAS could not be found.
+
+-- Could NOT find BLAS (missing: BLAS_LIBRARIES) 
+-- Could NOT find FFTW (missing: FFTW_INCLUDE_DIRS) 
+-- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY
+-- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY - Success
+-- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY
+-- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY - Success
+-- Performing Test COMPILER_HAS_DEPRECATED_ATTR
+-- Performing Test COMPILER_HAS_DEPRECATED_ATTR - Success
+Setting matplotplusplus compiler options
+-- Looking for __fbufsize
+-- Looking for __fbufsize - found
+-- webgpu_dist populated: /home/karl/prsn/mpl-wgpu/build/_deps/webgpu_dist-src
+-- Building wgpu-native...
+cargo build --release 
+    Updating git repository `https://github.com/gfx-rs/wgpu`
+ Downloading crates ...
+  Downloaded equivalent v1.0.1
+  Downloaded clang-sys v1.7.0
+  Downloaded ahash v0.8.11
+  Downloaded autocfg v1.2.0
+  Downloaded either v1.11.0
+  Downloaded arrayvec v0.7.4
+  Downloaded bitflags v2.5.0
+  Downloaded home v0.5.9
+  Downloaded errno v0.3.8
+  Downloaded fixedbitset v0.4.2
+  Downloaded lazy_static v1.4.0
+  Downloaded unicode-xid v0.2.4
+  Downloaded allocator-api2 v0.2.18
+  Downloaded thiserror-impl v1.0.58
+  Downloaded profiling v1.0.15
+  Downloaded version_check v0.9.4
+  Downloaded glob v0.3.1
+  Downloaded quote v1.0.36
+  Downloaded libloading v0.8.3
+  Downloaded paste v1.0.14
+  Downloaded raw-window-handle v0.6.0
+  Downloaded pkg-config v0.3.30
+  Downloaded parking_lot_core v0.9.9
+  Downloaded once_cell v1.19.0
+  Downloaded unicode-width v0.1.11
+  Downloaded lock_api v0.4.11
+  Downloaded log v0.4.21
+  Downloaded unicode-ident v1.0.12
+  Downloaded parking_lot v0.12.1
+  Downloaded thiserror v1.0.58
+  Downloaded smallvec v1.13.2
+  Downloaded num-traits v0.2.18
+  Downloaded proc-macro2 v1.0.81
+  Downloaded prettyplease v0.2.19
+  Downloaded memchr v2.7.2
+  Downloaded indexmap v2.2.6
+  Downloaded hashbrown v0.14.3
+  Downloaded zerocopy v0.7.32
+  Downloaded bindgen v0.69.4
+  Downloaded petgraph v0.6.4
+  Downloaded regex v1.10.4
+  Downloaded syn v2.0.60
+  Downloaded regex-syntax v0.8.3
+  Downloaded rustix v0.38.32
+  Downloaded regex-automata v0.4.6
+  Downloaded libc v0.2.153
+  Downloaded linux-raw-sys v0.4.13
+   Compiling cfg-if v1.0.0
+   Compiling proc-macro2 v1.0.81
+   Compiling unicode-ident v1.0.12
+   Compiling autocfg v1.2.0
+   Compiling version_check v0.9.4
+   Compiling bitflags v2.5.0
+   Compiling once_cell v1.19.0
+   Compiling cfg_aliases v0.1.1
+   Compiling zerocopy v0.7.32
+   Compiling libc v0.2.153
+   Compiling allocator-api2 v0.2.18
+   Compiling glob v0.3.1
+   Compiling rustix v0.38.32
+   Compiling prettyplease v0.2.19
+   Compiling either v1.11.0
+   Compiling regex-syntax v0.8.3
+   Compiling parking_lot_core v0.9.9
+   Compiling equivalent v1.0.1
+   Compiling thiserror v1.0.58
+   Compiling linux-raw-sys v0.4.13
+   Compiling memchr v2.7.2
+   Compiling minimal-lexical v0.2.1
+   Compiling libloading v0.8.3
+   Compiling fixedbitset v0.4.2
+   Compiling bit-vec v0.6.3
+   Compiling bindgen v0.69.4
+   Compiling unicode-width v0.1.11
+   Compiling ahash v0.8.11
+   Compiling smallvec v1.13.2
+   Compiling unicode-xid v0.2.4
+   Compiling lock_api v0.4.11
+   Compiling num-traits v0.2.18
+   Compiling scopeguard v1.2.0
+   Compiling khronos-egl v6.0.0
+   Compiling termcolor v1.4.1
+   Compiling ash v0.37.3+1.3.251
+   Compiling clang-sys v1.7.0
+   Compiling home v0.5.9
+   Compiling bit-set v0.5.3
+   Compiling pp-rs v0.2.1
+   Compiling itertools v0.12.1
+   Compiling gpu-alloc-types v0.3.0
+   Compiling spirv v0.3.0+sdk-1.3.268.0
+   Compiling gpu-descriptor-types v0.1.2
+   Compiling wgpu-hal v0.19.4 (https://github.com/gfx-rs/wgpu?rev=87576b72b37c6b78b41104eb25fc31893af94092#87576b72)
+   Compiling libloading v0.7.4
+   Compiling lazycell v1.3.0
+   Compiling hashbrown v0.14.3
+   Compiling log v0.4.21
+   Compiling codespan-reporting v0.11.1
+   Compiling nom v7.1.3
+   Compiling shlex v1.3.0
+   Compiling rustc-hash v1.1.0
+   Compiling quote v1.0.36
+   Compiling lazy_static v1.4.0
+   Compiling hexf-parse v0.2.1
+   Compiling gpu-alloc v0.6.0
+   Compiling wgpu-types v0.19.2 (https://github.com/gfx-rs/wgpu?rev=87576b72b37c6b78b41104eb25fc31893af94092#87576b72)
+   Compiling wgpu-core v0.19.4 (https://github.com/gfx-rs/wgpu?rev=87576b72b37c6b78b41104eb25fc31893af94092#87576b72)
+   Compiling syn v2.0.60
+   Compiling profiling v1.0.15
+   Compiling arrayvec v0.7.4
+   Compiling raw-window-handle v0.6.0
+   Compiling glow v0.13.1
+   Compiling paste v1.0.14
+   Compiling parking_lot v0.12.1
+   Compiling regex-automata v0.4.6
+   Compiling indexmap v2.2.6
+   Compiling gpu-descriptor v0.2.4
+   Compiling which v4.4.2
+   Compiling petgraph v0.6.4
+   Compiling cexpr v0.6.0
+   Compiling regex v1.10.4
+   Compiling thiserror-impl v1.0.58
+   Compiling naga v0.19.2 (https://github.com/gfx-rs/wgpu?rev=87576b72b37c6b78b41104eb25fc31893af94092#87576b72)
+   Compiling wgpu-native v0.0.0 (/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src)
+warning: unexpected `cfg` condition name: `vulkan`
+    --> src/conv.rs:1009:11
+     |
+1009 |     #[cfg(vulkan)]
+     |           ^^^^^^
+     |
+     = help: expected names are: `docsrs`, `feature`, and `test` and 31 more
+     = help: consider using a Cargo feature instead
+     = help: or consider adding in `Cargo.toml` the `check-cfg` lint config for the lint:
+              [lints.rust]
+              unexpected_cfgs = { level = "warn", check-cfg = ['cfg(vulkan)'] }
+     = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(vulkan)");` to the top of the `build.rs`
+     = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+     = note: `#[warn(unexpected_cfgs)]` on by default
+
+warning: unexpected `cfg` condition name: `metal`
+    --> src/conv.rs:1015:11
+     |
+1015 |     #[cfg(metal)]
+     |           ^^^^^ help: found config with similar value: `feature = "metal"`
+     |
+     = help: consider using a Cargo feature instead
+     = help: or consider adding in `Cargo.toml` the `check-cfg` lint config for the lint:
+              [lints.rust]
+              unexpected_cfgs = { level = "warn", check-cfg = ['cfg(metal)'] }
+     = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(metal)");` to the top of the `build.rs`
+     = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `dx12`
+    --> src/conv.rs:1021:11
+     |
+1021 |     #[cfg(dx12)]
+     |           ^^^^ help: found config with similar value: `feature = "dx12"`
+     |
+     = help: consider using a Cargo feature instead
+     = help: or consider adding in `Cargo.toml` the `check-cfg` lint config for the lint:
+              [lints.rust]
+              unexpected_cfgs = { level = "warn", check-cfg = ['cfg(dx12)'] }
+     = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(dx12)");` to the top of the `build.rs`
+     = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `gles`
+    --> src/conv.rs:1027:11
+     |
+1027 |     #[cfg(gles)]
+     |           ^^^^
+     |
+     = help: consider using a Cargo feature instead
+     = help: or consider adding in `Cargo.toml` the `check-cfg` lint config for the lint:
+              [lints.rust]
+              unexpected_cfgs = { level = "warn", check-cfg = ['cfg(gles)'] }
+     = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(gles)");` to the top of the `build.rs`
+     = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `metal`
+    --> src/conv.rs:1436:11
+     |
+1436 |     #[cfg(metal)]
+     |           ^^^^^ help: found config with similar value: `feature = "metal"`
+     |
+     = help: consider using a Cargo feature instead
+     = help: or consider adding in `Cargo.toml` the `check-cfg` lint config for the lint:
+              [lints.rust]
+              unexpected_cfgs = { level = "warn", check-cfg = ['cfg(metal)'] }
+     = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(metal)");` to the top of the `build.rs`
+     = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `metal`
+    --> src/conv.rs:1496:11
+     |
+1496 |     #[cfg(metal)]
+     |           ^^^^^ help: found config with similar value: `feature = "metal"`
+     |
+     = help: consider using a Cargo feature instead
+     = help: or consider adding in `Cargo.toml` the `check-cfg` lint config for the lint:
+              [lints.rust]
+              unexpected_cfgs = { level = "warn", check-cfg = ['cfg(metal)'] }
+     = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(metal)");` to the top of the `build.rs`
+     = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unexpected `cfg` condition name: `metal`
+    --> src/lib.rs:2670:15
+     |
+2670 |         #[cfg(metal)]
+     |               ^^^^^ help: found config with similar value: `feature = "metal"`
+     |
+     = help: consider using a Cargo feature instead
+     = help: or consider adding in `Cargo.toml` the `check-cfg` lint config for the lint:
+              [lints.rust]
+              unexpected_cfgs = { level = "warn", check-cfg = ['cfg(metal)'] }
+     = help: or consider adding `println!("cargo::rustc-check-cfg=cfg(metal)");` to the top of the `build.rs`
+     = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+
+warning: unused variable: `metal`
+    --> src/conv.rs:1446:5
+     |
+1446 |     metal: Option<&native::WGPUSurfaceDescriptorFromMetalLayer>,
+     |     ^^^^^ help: if this is intentional, prefix it with an underscore: `_metal`
+     |
+     = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: `wgpu-native` (lib) generated 8 warnings (run `cargo fix --lib -p wgpu-native` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 24.65s
+-- WebGPU configured successfully
+-- Configuring done (44.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/karl/prsn/mpl-wgpu/build
