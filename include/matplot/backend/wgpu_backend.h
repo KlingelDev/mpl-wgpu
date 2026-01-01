@@ -203,8 +203,7 @@ class WgpuBackend : public backend_interface {
   /// @brief Draws point markers at the given coordinates.
   void draw_markers(const std::vector<double>& x,
                     const std::vector<double>& y,
-                    const std::array<float, 4>& color,
-                    const std::vector<double>& z = {}) override;
+                    const std::array<float, 4>& color) override;
 
   /// @brief Draws text at the given coordinates.
   void draw_text(const std::vector<double>& x, const std::vector<double>& y,
@@ -218,6 +217,7 @@ class WgpuBackend : public backend_interface {
   /// @brief Draws triangles.
   void draw_triangle(const std::vector<double>& x,
                      const std::vector<double>& y,
+                     const std::vector<double>& z,
                      const std::array<float, 4>& color) override;
 
   // Overload for 3D with normals

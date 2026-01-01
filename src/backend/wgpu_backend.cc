@@ -186,67 +186,9 @@ void WgpuBackend::draw_path(const std::vector<double>& x,
   }
 }
 
-void WgpuBackend::draw_path(const std::vector<double>& x, const std::vector<double>& y, const std::array<float, 4>& color, const std::string& style, const std::vector<double>& z) {
-  if (x.size() < 2 || y.size() < 2) return;
-  float scale_x = static_cast<float>(render_width_) / static_cast<float>(width_);
-  float scale_y = static_cast<float>(render_height_) / static_cast<float>(height_);
-  float rh = static_cast<float>(render_height_);
-  size_t count = std::min(x.size(), y.size());
-
-  float dash_len = 0.0f, gap_len = 0.0f;
-  if (style == "--") { dash_len = 8.0f; gap_len = 4.0f; }
-  else if (style == ":") { dash_len = 2.0f; gap_len = 2.0f; }
-  else if (style == "-.") { dash_len = 8.0f; gap_len = 4.0f; }
-
-  bool is_closed_rect = false;
-  if (count >= 4 && count <= 5 && z.empty()) {
-    bool is_closed = (count == 5 && std::abs(x[0]-x[4]) < 0.1 && std::abs(y[0]-y[4]) < 0.1) || (count == 4 && std::abs(x[0]-x[3]) < 0.1 && std::abs(y[0]-y[3]) < 0.1);
-    if (is_closed || count == 4) {
-      double min_x = std::min({x[0], x[1], x[2], x[3]}), max_x = std::max({x[0], x[1], x[2], x[3]});
-      double min_y = std::min({y[0], y[1], y[2], y[3]}), max_y = std::max({y[0], y[1], y[2], y[3]});
-      int corners = 0;
-      for (size_t i=0; i<4; ++i) if ((std::abs(x[i]-min_x)<0.1 || std::abs(x[i]-max_x)<0.1) && (std::abs(y[i]-min_y)<0.1 || std::abs(y[i]-max_y)<0.1)) corners++;
-      if (corners == 4 && (max_x-min_x)>1.0 && (max_y-min_y)>1.0) {
-        is_closed_rect = true;
-        std::array<float, 4> c = FixFillColor(color);
-        rects_.push_back({(float)min_x*scale_x, rh-(float)max_y*scale_y, (float)(max_x-min_x)*scale_x, (float)(max_y-min_y)*scale_y, c[0], c[1], c[2], c[3], 0.0f, 0.0f, {0,0}});
-      }
-    }
-  }
-
-  if (!is_closed_rect) {
-    if (count == 2 && z.empty()) {
-      pending_segments_.push_back({(float)x[0]*scale_x, rh-(float)y[0]*scale_y, (float)x[1]*scale_x, rh-(float)y[1]*scale_y, color[0], color[1], color[2], color[3]});
-    } else {
-      std::array<float, 4> c = FixColor(color);
-      double cumulative_len = 0.0;
-      float r_join = line_width_ * 0.5f;
-      for (size_t i = 0; i + 1 < count; ++i) {
-        float x1, y1, x2, y2, z1, z2;
-        if (!z.empty()) {
-          x1 = (float)x[i]; y1 = (float)y[i]; z1 = (float)z[i];
-          x2 = (float)x[i+1]; y2 = (float)y[i+1]; z2 = (float)z[i+1];
-        } else {
-          x1 = (float)x[i]*scale_x; y1 = rh-(float)y[i]*scale_y; z1 = 0.0f;
-          x2 = (float)x[i+1]*scale_x; y2 = rh-(float)y[i+1]*scale_y; z2 = 0.0f;
-        }
-        float seg_len = std::sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
-        lines_.push_back({x1, y1, z1, x2, y2, z2, c[0], c[1], c[2], c[3], line_width_, dash_len, gap_len, (float)cumulative_len, 0.0f});
-        cumulative_len += seg_len;
-        if (dash_len == 0.0f) circles_.push_back({x1, y1, z1, r_join, c[0], c[1], c[2], c[3], 0.0f});
-      }
-      if (count > 0 && dash_len == 0.0f) {
-        size_t last = count - 1;
-        float lx, ly, lz = (z.size()>last)?(float)z[last]:0.0f;
-        if (!z.empty()) { lx = (float)x[last]; ly = (float)y[last]; }
-        else { lx = (float)x[last]*scale_x; ly = rh-(float)y[last]*scale_y; }
-        circles_.push_back({lx, ly, lz, r_join, c[0], c[1], c[2], c[3], 0.0f});
-      }
-    }
-  }
-}
-
-void WgpuBackend::draw_markers(const std::vector<double>& x, const std::vector<double>& y, const std::array<float, 4>& color, const std::vector<double>& z) {
+void WgpuBackend::draw_markers(const std::vector<double>& x,
+                                 const std::vector<double>& y,
+                                 const std::array<float, 4>& color) {
   float scale_x = static_cast<float>(render_width_) / static_cast<float>(width_);
   float scale_y = static_cast<float>(render_height_) / static_cast<float>(height_);
   float rh = static_cast<float>(render_height_);
@@ -257,7 +199,7 @@ void WgpuBackend::draw_markers(const std::vector<double>& x, const std::vector<d
   if (marker_style_ == "s") marker_type = 10.0f;      // Square
   else if (marker_style_ == "d") marker_type = 11.0f; // Diamond
   else if (marker_style_ == "+") marker_type = 12.0f; // Plus
-  else if (marker_style_ == "x") marker_type = 13.0f; // Cross  
+  else if (marker_style_ == "x") marker_type = 13.0f; // Cross
   else if (marker_style_ == "^") marker_type = 14.0f; // Triangle Up
   else if (marker_style_ == "v") marker_type = 15.0f; // Triangle Down
   else if (marker_style_ == "*") marker_type = 16.0f; // Star
@@ -266,9 +208,9 @@ void WgpuBackend::draw_markers(const std::vector<double>& x, const std::vector<d
 
   for (size_t i = 0; i < count; ++i) {
     std::array<float, 4> c = FixColor(color);
-    float mx, my, mz = (z.size()>i)?static_cast<float>(z[i]):0.0f;
-    if (!z.empty()) { mx = static_cast<float>(x[i]); my = static_cast<float>(y[i]); }
-    else { mx = static_cast<float>(x[i])*scale_x; my = rh-static_cast<float>(y[i])*scale_y; }
+    float mx = static_cast<float>(x[i]) * scale_x;
+    float my = rh - static_cast<float>(y[i]) * scale_y;
+    float mz = 0.0f;
     
     WgpuRenderer::Circle circle;
     circle.cx = mx; circle.cy = my; circle.cz = mz;
@@ -296,37 +238,47 @@ void WgpuBackend::draw_image(const std::vector<std::vector<double>>& x, const st
   renderer_->DrawImage(data, img_width, img_height, sx, sy, sw, sh);
 }
 
-void WgpuBackend::draw_triangle(const std::vector<double>& x, const std::vector<double>& y, const std::array<float, 4>& color, const std::vector<double>& z) {
-  if (x.size() < 3 || y.size() < 3) return;
-  float scale_x = (float)render_width_/(float)width_, scale_y = (float)render_height_/(float)height_, rh = (float)render_height_;
-  std::array<float, 4> c = FixFillColor(color);
-  float z1 = z.size()>0?(float)z[0]:0.5f, z2 = z.size()>1?(float)z[1]:0.5f, z3 = z.size()>2?(float)z[2]:0.5f;
-  float tx1, ty1, tx2, ty2, tx3, ty3;
-  if (!z.empty()) {
-    tx1 = (float)x[0]; ty1 = (float)y[0];
-    tx2 = (float)x[1]; ty2 = (float)y[1];
-    tx3 = (float)x[2]; ty3 = (float)y[2];
-  } else {
-    tx1 = (float)x[0]*scale_x; ty1 = rh-(float)y[0]*scale_y;
-    tx2 = (float)x[1]*scale_x; ty2 = rh-(float)y[1]*scale_y;
-    tx3 = (float)x[2]*scale_x; ty3 = rh-(float)y[2]*scale_y;
-  }
-  triangles_.push_back({tx1, ty1, z1, 0, tx2, ty2, z2, 0, tx3, ty3, z3, 0, 0,0,1,0, 0,0,1,0, 0,0,1,0, c[0], c[1], c[2], c[3]});
+void WgpuBackend::draw_triangle(const std::vector<double>& x,
+                                 const std::vector<double>& y,
+                                 const std::vector<double>& z,
+                                 const std::array<float, 4>& color) {
+  draw_triangle_3d(x, y, z, color, {});
 }
 
-void WgpuBackend::draw_triangle(const std::vector<double>& x, const std::vector<double>& y, const std::array<float, 4>& color, const std::vector<double>& z, const std::vector<double>& normals) {
+void WgpuBackend::draw_triangle_3d(const std::vector<double>& x,
+                                    const std::vector<double>& y,
+                                    const std::vector<double>& z,
+                                    const std::array<float, 4>& color,
+                                    const std::vector<double>& normals) {
   if (x.size() < 3 || y.size() < 3) return;
-  std::array<float, 4> c = color;
-  float z1 = z.size()>0?(float)z[0]:0.5f, z2 = z.size()>1?(float)z[1]:0.5f, z3 = z.size()>2?(float)z[2]:0.5f;
-  float nx1=0, ny1=0, nz1=1, nx2=0, ny2=0, nz2=1, nx3=0, ny3=0, nz3=1;
-  if (normals.size()>=9) {
-      nx1=(float)normals[0]; ny1=(float)normals[1]; nz1=(float)normals[2];
-      nx2=(float)normals[3]; ny2=(float)normals[4]; nz2=(float)normals[5];
-      nx3=(float)normals[6]; ny3=(float)normals[7]; nz3=(float)normals[8];
-  } else if (normals.size()>=3) {
-      nx1=nx2=nx3=(float)normals[0]; ny1=ny2=ny3=(float)normals[1]; nz1=nz2=nz3=(float)normals[2];
+  std::array<float, 4> c = FixFillColor(color);
+  float z1 = z.size() > 0 ? (float)z[0] : 0.5f;
+  float z2 = z.size() > 1 ? (float)z[1] : 0.5f;
+  float z3 = z.size() > 2 ? (float)z[2] : 0.5f;
+  
+  float nx1 = 0, ny1 = 0, nz1 = 1;
+  float nx2 = 0, ny2 = 0, nz2 = 1;
+  float nx3 = 0, ny3 = 0, nz3 = 1;
+  
+  if (normals.size() >= 9) {
+    nx1 = (float)normals[0]; ny1 = (float)normals[1]; nz1 = (float)normals[2];
+    nx2 = (float)normals[3]; ny2 = (float)normals[4]; nz2 = (float)normals[5];
+    nx3 = (float)normals[6]; ny3 = (float)normals[7]; nz3 = (float)normals[8];
+  } else if (normals.size() >= 3) {
+    nx1 = nx2 = nx3 = (float)normals[0];
+    ny1 = ny2 = ny3 = (float)normals[1];
+    nz1 = nz2 = nz3 = (float)normals[2];
   }
-  triangles_.push_back({(float)x[0], (float)y[0], z1, 0, (float)x[1], (float)y[1], z2, 0, (float)x[2], (float)y[2], z3, 0, nx1, ny1, nz1, 0, nx2, ny2, nz2, 0, nx3, ny3, nz3, 0, c[0], c[1], c[2], c[3]});
+  
+  triangles_.push_back({
+      (float)x[0], (float)y[0], z1, 0,
+      (float)x[1], (float)y[1], z2, 0,
+      (float)x[2], (float)y[2], z3, 0,
+      nx1, ny1, nz1, 0,
+      nx2, ny2, nz2, 0,
+      nx3, ny3, nz3, 0,
+      c[0], c[1], c[2], c[3]
+  });
 }
 
 void WgpuBackend::ReconstructRectangles() {
