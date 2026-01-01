@@ -1,23 +1,181 @@
-# mpl-wgpu Roadmap to Feature Parity with Matplot++
+# mpl-wgpu: wgpu Rendering Backend for matplotplusplus
 
-This roadmap outlines the path to achieving complete feature parity with the [matplotplusplus](https://github.com/alandefreitas/matplotplusplus) library.
+## Architecture
 
-## Current Status (v0.0.1)
+`mpl-wgpu` provides **GPU-accelerated rendering** for [matplotplusplus](https://github.com/alandefreitas/matplotplusplus), bringing the full power of this mature C++ plotting library to Rust with hardware acceleration via wgpu.
 
-**Implemented:**
-- ✅ Basic 2D line plots
-- ✅ 2D scatter plots  
-- ✅ Basic 3D line plots and scatter
-- ✅ 3D surfaces with mesh and colormap
-- ✅ Histograms
-- ✅ Bar charts
-- ✅ Basic axis configuration (labels, titles, limits)
-- ✅ Auto-scaling
-- ✅ Grid lines
-- ✅ Line styles (solid, dashed, dotted)
-- ✅ Marker styles (circle, square, diamond, plus, cross, point)
+**Components:**
+1. **wgpu Backend (C++)** - Implements matplotplusplus `backend_interface` using wgpu
+2. **C API** - C-compatible interface for FFI
+3. **Rust Bindings** - Safe, idiomatic Rust wrapper
 
-## Phase 1: Core Plot Types (v0.1.0)
+**Benefits:**
+- 🚀 GPU-accelerated rendering via wgpu
+- 🦀 Use full matplotplusplus API from Rust
+- 🎨 All matplotplusplus plot types available immediately
+- 🔧 Leverages mature, well-tested plotting library
+- 💻 Cross-platform (Windows, Linux, macOS, WASM)
+
+## Implementation Roadmap
+
+### Phase 1: Minimal wgpu Backend (v0.1.0)
+
+**Goal:** Basic functional backend in C++
+
+**Deliverables:**
+- [ ] C++ wgpu backend class inheriting from `backend_interface`
+- [ ] Implement core rendering methods:
+  - [ ] `draw_background()` - Clear/fill background
+  - [ ] `draw_rectangle()` - Filled rectangles  
+  - [ ] `draw_path()` - Line rendering
+  - [ ] `new_frame()` / `render_data()` - Frame lifecycle
+- [ ] Integration with existing `PrimitiveRenderer`
+- [ ] Build system (CMake integration)
+- [ ] Simple test: render a basic 2D line plot
+
+**What we keep from current code:**
+- ✅ `PrimitiveRenderer` - Reuse for backend implementation
+- ✅ `TextRenderer` - Reuse for text drawing
+- ✅ Core wgpu infrastructure
+
+**What we remove:**
+- ❌ `PlotBackend` Rust struct (matplot++ handles this)
+- ❌ Rust plot implementations (error bars, area plots, etc.)
+
+---
+
+### Phase 2: Complete Backend Implementation (v0.2.0)
+
+**Goal:** Full vertex-based backend support
+
+**Deliverables:**
+- [ ] Implement remaining drawing methods:
+  - [ ] `draw_markers()` - Point/marker rendering
+  - [ ] `draw_text()` - Text rendering via `TextRenderer`
+  - [ ] `draw_triangle()` - Triangle primitives
+  - [ ] `draw_image()` - Image/texture display
+- [ ] Coordinate transformation system
+- [ ] Color management
+- [ ] Z-buffer/depth handling for 3D plots
+- [ ] Test suite covering all primitives
+
+---
+
+### Phase 3: C API Layer (v0.3.0)
+
+**Goal:** Expose backend via C API for FFI
+
+**Deliverables:**
+- [ ] Design C API surface
+- [ ] Export functions:
+  ```c
+  mpl_backend* mpl_wgpu_create(uint32_t w, uint32_t h);
+  void mpl_wgpu_destroy(mpl_backend*);
+  void mpl_wgpu_render(mpl_backend*, mpl_figure*);
+  uint8_t* mpl_wgpu_get_pixels(mpl_backend*);
+  ```
+- [ ] Error handling across FFI boundary
+- [ ] Memory management strategy
+- [ ] C API documentation
+
+---
+
+### Phase 4: Rust FFI Bindings (v0.4.0)
+
+**Goal:** Safe Rust wrapper around matplot++ with wgpu backend
+
+**Deliverables:**
+- [ ] Generate `bindgen` bindings
+- [ ] Create safe Rust wrappers:
+  ```rust
+  pub struct Figure { /* ... */ }
+  pub struct Axes { /* ... */ }
+  pub struct WgpuBackend { /* ... */ }
+  ```
+- [ ] Implement plot type methods:
+  - [ ] `plot()`, `plot3()`
+  - [ ] `scatter()`, `scatter3()`
+  - [ ] `bar()`, `histogram()`
+  - [ ] `surf()`, `mesh()`
+  - [ ] All matplot++ plot types
+- [ ] Idiomatic Rust API
+- [ ] Comprehensive examples
+- [ ] Documentation and tutorials
+
+---
+
+### Phase 5: Integration & Polish (v0.5.0)
+
+**Goal:** Production-ready release
+
+**Deliverables:**
+- [ ] Port matplot++ example gallery to Rust
+- [ ] Performance benchmarks
+- [ ] Memory leak analysis (Valgrind/AddressSanitizer)
+- [ ] Cross-platform testing (Linux, Windows, macOS)
+- [ ] WASM support
+- [ ] CI/CD pipeline
+- [ ] Published crate on crates.io
+
+---
+
+### Phase 6: Advanced Features (v1.0.0)
+
+**Goal:** Enhanced integration and performance
+
+**Deliverables:**
+- [ ] Interactive plots (mouse/keyboard)
+- [ ] Animation support
+- [ ] Real-time data streaming
+- [ ] Multiple figure windows
+- [ ] Custom colormaps
+- [ ] Theme system
+- [ ] Export formats (PNG, SVG, PDF)
+
+---
+
+## Current Status
+
+**✅ Completed:**
+- Research of matplotplusplus backend interface
+- Analysis of existing backends (gnuplot, OpenGL)
+- Identified reusable components (`PrimitiveRenderer`, `TextRenderer`)
+
+**🚧 In Progress:**
+- Setting up build system
+
+**📋 Next Steps:**
+1. Add matplotplusplus as git submodule
+2. Create `wgpu_backend.h/cpp` stub
+3. Implement minimal backend
+4. Test with simple plot
+
+---
+
+## Why This Approach?
+
+**vs. Reimplementing Everything in Rust:**
+- ✅ Get all matplot++ features immediately (100+ plot types)
+- ✅ Leverage mature, well-tested codebase
+- ✅ Focus on GPU rendering optimization
+- ✅ Smaller maintenance burden
+
+**Trade-offs:**
+- ⚠️ C++ dependency (but isolated in backend)
+- ⚠️ FFI overhead (minimal for rendering)
+- ✅ Best-in-class plotting + best-in-class GPU rendering
+
+---
+
+## Contributing
+
+Priority areas:
+1. Implementing backend primitive methods
+2. Testing across platforms
+3. Performance optimization
+4. Documentation and examples
+5. WASM compatibility
+
 
 ### 1.1 Line Plots Enhancement
 - [ ] Stair plots
@@ -195,16 +353,6 @@ This roadmap outlines the path to achieving complete feature parity with the [ma
 - **Feature Coverage**: 100% of core features, 80% of specialized features
 - **Performance**: 10x faster than CPU rendering for >10k+ points
 - **Cross-platform**: Windows, Linux, macOS, Web (via wasm)
-
-## Release Schedule
-
-- **v0.1.0** (Q1 2026): Core plot types
-- **v0.2.0** (Q2 2026): Advanced visualizations
-- **v0.3.0** (Q3 2026): Annotations & appearance
-- **v0.4.0** (Q4 2026): Graphs & networks
-- **v0.5.0** (Q1 2027): Images & statistical
-- **v0.6.0** (Q2 2027): Export & integration
-- **v1.0.0** (Q3 2027): Feature-complete, production-ready
 
 ## Contributing
 
