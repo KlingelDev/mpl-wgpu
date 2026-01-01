@@ -124,6 +124,30 @@ pub struct Surface {
     pub use_colormap: bool,
 }
 
+/// An area plot (filled region under a curve).
+#[derive(Debug, Clone)]
+pub struct AreaSeries {
+    pub x: Vec<f64>,
+    pub y: Vec<f64>,
+    pub color: Vec4,
+    /// Y-value for the baseline (default 0.0)
+    pub baseline: f64,
+    /// Transparency/alpha for the fill
+    pub alpha: f32,
+}
+
+impl Default for AreaSeries {
+    fn default() -> Self {
+        Self {
+            x: Vec::new(),
+            y: Vec::new(),
+            color: Vec4::new(0.0, 0.5, 1.0, 0.3),
+            baseline: 0.0,
+            alpha: 0.3,
+        }
+    }
+}
+
 /// A data series containing x, y, (optional z) coordinates and styling.
 ///
 /// Can represent line plots, scatter plots, or 3D curves depending on
@@ -202,6 +226,7 @@ pub struct PlotBackend {
     bars: Vec<(Vec<f64>, Vec4)>,
     histogram_bins: Vec<(f64, f64, f64, Vec4)>,
     surfaces: Vec<Surface>,
+    areas: Vec<AreaSeries>,
     background_color: Vec4,
     scale_factor: f32,
 }
@@ -226,6 +251,7 @@ impl PlotBackend {
             bars: Vec::new(),
             histogram_bins: Vec::new(),
             surfaces: Vec::new(),
+            areas: Vec::new(),
             background_color: Vec4::new(0.93, 0.93, 0.93, 1.0),
             scale_factor: 1.0,
         }
@@ -257,7 +283,7 @@ impl PlotBackend {
         self.bars.clear();
         self.histogram_bins.clear();
         self.surfaces.clear();
-        self.surfaces.clear();
+        self.areas.clear();
         self.axis = AxisConfig::default();
     }
 
@@ -630,6 +656,39 @@ impl PlotBackend {
         }
     }
 
+    /// Creates an area plot (filled region under a curve).
+    ///
+    /// # Arguments
+    ///
+    /// * `x` - X coordinates
+    /// * `y` - Y coordinates
+    /// * `color` - Fill color (use alpha channel for transparency)
+    pub fn area(&mut self, x: Vec<f64>, y: Vec<f64>, color: Vec4) {
+        self.areas.push(AreaSeries {
+            x,
+            y,
+            color,
+            ..Default::default()
+        });
+    }
+
+    /// Creates an area plot with custom baseline.
+    pub fn area_with_baseline(
+        &mut self,
+        x: Vec<f64>,
+        y: Vec<f64>,
+        baseline: f64,
+        color: Vec4,
+    ) {
+        self.areas.push(AreaSeries {
+            x,
+            y,
+            color,
+            baseline,
+            alpha: color.w,
+        });
+    }
+
     fn data_to_screen(&self, x: f64, y: f64) -> Vec2 {
         let plot_width = self.width as f32 - self.margin_left - self.margin_right;
         let plot_height = self.height as f32 - self.margin_top - self.margin_bottom;
@@ -712,7 +771,14 @@ impl PlotBackend {
             self.draw_3d_box_and_walls(renderer);
         }
 
-        // 3. Error Bars (before series so markers appear on top)
+        // 3. Area Plots (background fill)
+        if !is_3d {
+            for area in &self.areas {
+                self.draw_area(renderer, area);
+            }
+        }
+
+        // 4. Error Bars (before series so markers appear on top)
         if !is_3d {
             for series in &self.series {
                 self.draw_error_bars(renderer, series);
@@ -1389,6 +1455,54 @@ impl PlotBackend {
                 }
             }
             ErrorData::None => {}
+        }
+    }
+
+    fn draw_area(&self, renderer: &mut PrimitiveRenderer, area: &AreaSeries) {
+        let count = area.x.len().min(area.y.len());
+        if count < 2 {
+            return;
+        }
+
+        // Create fill color with alpha
+        let fill_color = Vec4::new(
+            area.color.x,
+            area.color.y,
+            area.color.z,
+            area.alpha,
+        );
+
+        // Draw filled triangles to create the area under the curve
+        for i in 0..count - 1 {
+            let x1 = area.x[i];
+            let y1 = area.y[i];
+            let x2 = area.x[i + 1];
+            let y2 = area.y[i + 1];
+
+            let p1 = self.data_to_screen(x1, y1);
+            let p2 = self.data_to_screen(x2, y2);
+            let base1 = self.data_to_screen(x1, area.baseline);
+            let base2 = self.data_to_screen(x2, area.baseline);
+
+            // Create a quad (two triangles) for this segment
+            // Triangle 1: p1, p2, base2
+            // Triangle 2: p1, base2, base1
+            
+            // For simplicity, using rectangles to approximate the fill
+            // A more sophisticated approach would use proper triangulation
+            let center_y = (p1.y + p2.y + base1.y + base2.y) / 4.0;
+            let center_x = (p1.x + p2.x + base1.x + base2.x) / 4.0;
+            
+            let width = (p2.x - p1.x).abs().max(1.0);
+            let height = ((p1.y + p2.y) / 2.0 - (base1.y + base2.y) / 2.0).abs();
+            
+            renderer.draw_rect(
+                Vec2::new(center_x, center_y),
+                Vec2::new(width, height),
+                fill_color,
+                0.0,
+                0.0,
+            );
         }
     }
 
