@@ -1,5 +1,3 @@
-```
-// Copyright (c) 2025 Optris GmbH & Co. KG
 // SPDX-License-Identifier: MIT
 //
 // WebGPU backend for matplot++ plotting library
@@ -203,7 +201,7 @@ class WgpuBackend : public backend_interface {
   /// @brief Draws point markers at the given coordinates.
   void draw_markers(const std::vector<double>& x,
                     const std::vector<double>& y,
-                    const std::array<float, 4>& color) override;
+                    const std::array<float, 4>& color);
 
   /// @brief Draws text at the given coordinates.
   void draw_text(const std::vector<double>& x, const std::vector<double>& y,
@@ -218,7 +216,7 @@ class WgpuBackend : public backend_interface {
   void draw_triangle(const std::vector<double>& x,
                      const std::vector<double>& y,
                      const std::vector<double>& z,
-                     const std::array<float, 4>& color) override;
+                     const std::array<float, 4>& color);
 
   // Overload for 3D with normals
   void draw_triangle_3d(const std::vector<double>& x,
