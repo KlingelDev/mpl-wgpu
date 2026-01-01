@@ -5,10 +5,11 @@
 
 #include "matplot/backend/wgpu_backend.h"
 
-#include <spdlog/spdlog.h>
-
 #include <algorithm>
 #include <cmath>
+#include <cstring>
+#include <iostream>
+#include <sstream>
 
 namespace matplot::backend {
 
@@ -36,7 +37,7 @@ inline std::array<float, 4> FixFillColor(const std::array<float, 4>& c) {
 
 WgpuBackend::WgpuBackend(std::shared_ptr<WgpuRenderer> renderer)
     : renderer_(std::move(renderer)) {
-  spdlog::debug("WgpuBackend created");
+  // Backend initialized
 }
 
 bool WgpuBackend::is_interactive() {
@@ -209,17 +210,17 @@ void WgpuBackend::draw_markers(const std::vector<double>& x, const std::vector<d
   float rh = static_cast<float>(render_height_);
   size_t count = std::min(x.size(), y.size());
 
-  using MarkerType = otc::visualization::processor::GpuProcessor::MarkerType;
-  MarkerType marker_type = MarkerType::kCircle;
-  if (marker_style_ == "s") marker_type = MarkerType::kSquare;
-  else if (marker_style_ == "d") marker_type = MarkerType::kDiamond;
-  else if (marker_style_ == "+") marker_type = MarkerType::kPlus;
-  else if (marker_style_ == "x") marker_type = MarkerType::kCross;
-  else if (marker_style_ == "^") marker_type = MarkerType::kTriangleUp;
-  else if (marker_style_ == "v") marker_type = MarkerType::kTriangleDown;
-  else if (marker_style_ == "*") marker_type = MarkerType::kStar;
-  else if (marker_style_ == ".") marker_type = MarkerType::kPoint;
-  else if (marker_style_ == "p") marker_type = MarkerType::kStar;
+  // Marker type constants (matching shader expectations)
+  float marker_type = 1.0f; // Circle
+  if (marker_style_ == "s") marker_type = 10.0f;      // Square
+  else if (marker_style_ == "d") marker_type = 11.0f; // Diamond
+  else if (marker_style_ == "+") marker_type = 12.0f; // Plus
+  else if (marker_style_ == "x") marker_type = 13.0f; // Cross  
+  else if (marker_style_ == "^") marker_type = 14.0f; // Triangle Up
+  else if (marker_style_ == "v") marker_type = 15.0f; // Triangle Down
+  else if (marker_style_ == "*") marker_type = 16.0f; // Star
+  else if (marker_style_ == ".") marker_type = 17.0f; // Point
+  else if (marker_style_ == "p") marker_type = 16.0f; // Star (alt)
 
   for (size_t i = 0; i < count; ++i) {
     std::array<float, 4> c = FixColor(color);

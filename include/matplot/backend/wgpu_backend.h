@@ -198,14 +198,7 @@ class WgpuBackend : public backend_interface {
 
   /// @brief Draws a path (polyline) as connected line segments.
   void draw_path(const std::vector<double>& x, const std::vector<double>& y,
-                 const std::array<float, 4>& color,
-                 const std::string& style = "-") override;
-
-  /// @brief Draws a 3D path.
-  void draw_path(const std::vector<double>& x, const std::vector<double>& y,
-                 const std::array<float, 4>& color,
-                 const std::string& style,
-                 const std::vector<double>& z);
+                 const std::array<float, 4>& color) override;
 
   /// @brief Draws point markers at the given coordinates.
   void draw_markers(const std::vector<double>& x,
@@ -225,15 +218,14 @@ class WgpuBackend : public backend_interface {
   /// @brief Draws triangles.
   void draw_triangle(const std::vector<double>& x,
                      const std::vector<double>& y,
-                     const std::array<float, 4>& color,
-                     const std::vector<double>& z = {}) override;
+                     const std::array<float, 4>& color) override;
 
   // Overload for 3D with normals
-  void draw_triangle(const std::vector<double>& x,
-                     const std::vector<double>& y,
-                     const std::array<float, 4>& color,
-                     const std::vector<double>& z,
-                     const std::vector<double>& normals);
+  void draw_triangle_3d(const std::vector<double>& x,
+                       const std::vector<double>& y,
+                       const std::vector<double>& z,
+                       const std::array<float, 4>& color,
+                       const std::vector<double>& normals);
 
   // 3D Text Helper (Uses stored MVP matrix)
   void draw_text_3d(const std::string& text, float x, float y, float z,
