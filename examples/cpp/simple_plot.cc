@@ -1,68 +1,50 @@
 // Copyright (c) 2026 Karl Ruskowski
 // SPDX-License-Identifier: MIT
 
-// Simple example showing how to use mpl-wgpu backend
+/// Simple example with window display using GLFW
 
+#include "minimal_renderer.h"
 #include <matplot/backend/wgpu_backend.h>
 #include <matplot/matplot.h>
 
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include <memory>
 #include <vector>
 
-// Minimal WgpuRenderer implementation for demonstration
-class MinimalRenderer : public matplot::backend::WgpuRenderer {
- public:
-  void DrawRects(const std::vector<Rect>& rects, float screen_width,
-                 float screen_height) override {
-    std::cout << "Drawing " << rects.size() << " rectangles\n";
-  }
-
-  void DrawLines(const std::vector<Line>& lines, float screen_width,
-                 float screen_height) override {
-    std::cout << "Drawing " << lines.size() << " lines\n";
-  }
-
-  void DrawCircles(const std::vector<Circle>& circles,
-                   float screen_width, float screen_height) override {
-    std::cout << "Drawing " << circles.size() << " circles\n";
-  }
-
-  void DrawTriangles(const std::vector<Triangle>& triangles,
-                     float screen_width,
-                     float screen_height) override {
-    std::cout << "Drawing " << triangles.size() << " triangles\n";
-  }
-
-  void DrawText(const std::string& text, float x, float y,
-                float font_size,
-                const std::array<float, 4>& color,
-                float rotation) override {
-    std::cout << "Drawing text: " << text << "\n";
-  }
-
-  void Clear(const std::array<float, 4>& color) override {
-    std::cout << "Clearing with color\n";
-  }
-
-  void DrawImage(const std::vector<float>& data, size_t img_width,
-                 size_t img_height, float x, float y, float width,
-                 float height) override {
-    std::cout << "Drawing image\n";
-  }
-};
-
 int main() {
-  std::cout << "mpl-wgpu Simple Plot Example\n";
+  std::cout << "mpl-wgpu Simple Plot Example (C++)\n";
+
+  // Initialize GLFW
+  if (!glfwInit()) {
+    std::cerr << "Failed to initialize GLFW\n";
+    return 1;
+  }
+
+  // Create window
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+  const int width = 800;
+  const int height = 600;
+  GLFWwindow* window = glfwCreateWindow(
+      width, height, "mpl-wgpu Example", nullptr, nullptr);
+  
+  if (!window) {
+    std::cerr << "Failed to create window\n";
+    glfwTerminate();
+    return 1;
+  }
 
   // Create renderer and backend
-  auto renderer = std::make_shared<MinimalRenderer>();
+  auto renderer = std::make_shared<mpl_wgpu::MinimalRenderer>(
+      width, height);
   auto backend =
       std::make_shared<matplot::backend::WgpuBackend>(renderer);
 
-  // Create figure and set backend
+  // Create figure and set backend  
   auto fig = matplot::figure();
   fig->backend(backend);
+  backend->width(width);
+  backend->height(height);
 
   // Create a simple plot
   std::vector<double> x = {1, 2, 3, 4, 5};
@@ -73,9 +55,27 @@ int main() {
   matplot::xlabel("X Axis");
   matplot::ylabel("Y = X²");
 
-  // Render
+  // Render once
   fig->draw();
 
-  std::cout << "Plot rendered successfully!\n";
+  std::cout << "Plot rendered! Window open, press ESC to close\n";
+
+  // Main loop
+  while (!glfwWindowShouldClose(window)) {
+    glfwPollEvents();
+
+    // Check for ESC key
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+      glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+
+    // TODO: Display pixel buffer to window
+    // For now, just keep window open
+  }
+
+  glfwDestroyWindow(window);
+  glfwTerminate();
+
+  std::cout << "Example complete!\n";
   return 0;
 }
