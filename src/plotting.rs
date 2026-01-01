@@ -81,6 +81,38 @@ pub enum MarkerStyle {
   Point,
 }
 
+/// Error bar data for representing uncertainty in measurements.
+#[derive(Debug, Clone)]
+pub enum ErrorData {
+    /// No error bars
+    None,
+    /// Symmetric error bars (same magnitude above and below)
+    Symmetric { values: Vec<f64> },
+    /// Asymmetric error bars (different magnitudes above and below)
+    Asymmetric { low: Vec<f64>, high: Vec<f64> },
+}
+
+/// Configuration for error bar rendering.
+#[derive(Debug, Clone, Copy)]
+pub struct ErrorBarStyle {
+    /// Width of error bar line
+    pub line_width: f32,
+    /// Width of cap at error bar ends (0.0 = no cap)
+    pub cap_width: f32,
+    /// Whether to draw error bars
+    pub enabled: bool,
+}
+
+impl Default for ErrorBarStyle {
+    fn default() -> Self {
+        Self {
+            line_width: 1.5,
+            cap_width: 8.0,
+            enabled: true,
+        }
+    }
+}
+
 /// A 3D surface mesh for surface plots.
 #[derive(Debug, Clone)]
 pub struct Surface {
@@ -107,6 +139,12 @@ pub struct Series {
     pub line_style: LineStyle,
     pub marker_style: Option<MarkerStyle>,
     pub marker_size: f32,
+    /// X-axis error data
+    pub x_error: ErrorData,
+    /// Y-axis error data
+    pub y_error: ErrorData,
+    /// Error bar styling
+    pub error_style: ErrorBarStyle,
 }
 
 impl Default for Series {
@@ -120,6 +158,9 @@ impl Default for Series {
             line_style: LineStyle::Solid,
             marker_style: None,
             marker_size: 10.0,
+            x_error: ErrorData::None,
+            y_error: ErrorData::None,
+            error_style: ErrorBarStyle::default(),
         }
     }
 }
@@ -459,6 +500,73 @@ impl PlotBackend {
         });
     }
 
+    /// Creates a plot with vertical error bars.
+    ///
+    /// # Arguments
+    ///
+    /// * `x` - X coordinates
+    /// * `y` - Y coordinates
+    /// * `y_err` - Symmetric Y error values
+    /// * `color` - Line/marker color
+    pub fn errorbar(
+        &mut self,
+        x: Vec<f64>,
+        y: Vec<f64>,
+        y_err: Vec<f64>,
+        color: Vec4,
+    ) {
+        self.series.push(Series {
+            x,
+            y,
+            y_error: ErrorData::Symmetric { values: y_err },
+            color,
+            marker_style: Some(MarkerStyle::Circle),
+            ..Default::default()
+        });
+    }
+
+    /// Creates a plot with both horizontal and vertical error bars.
+    pub fn errorbar_xy(
+        &mut self,
+        x: Vec<f64>,
+        y: Vec<f64>,
+        x_err: Vec<f64>,
+        y_err: Vec<f64>,
+        color: Vec4,
+    ) {
+        self.series.push(Series {
+            x,
+            y,
+            x_error: ErrorData::Symmetric { values: x_err },
+            y_error: ErrorData::Symmetric { values: y_err },
+            color,
+            marker_style: Some(MarkerStyle::Circle),
+            ..Default::default()
+        });
+    }
+
+    /// Creates a plot with asymmetric vertical error bars.
+    pub fn errorbar_asymmetric(
+        &mut self,
+        x: Vec<f64>,
+        y: Vec<f64>,
+        y_err_low: Vec<f64>,
+        y_err_high: Vec<f64>,
+        color: Vec4,
+    ) {
+        self.series.push(Series {
+            x,
+            y,
+            y_error: ErrorData::Asymmetric {
+                low: y_err_low,
+                high: y_err_high,
+            },
+            color,
+            marker_style: Some(MarkerStyle::Circle),
+            ..Default::default()
+        });
+    }
+
     /// Creates a 3D surface plot with solid color.
     pub fn surface(&mut self, x: Vec<f64>, y: Vec<f64>, z: Vec<f64>, color: Vec4) {
         self.surfaces.push(Surface { x, y, z, color, use_colormap: false });
@@ -604,7 +712,14 @@ impl PlotBackend {
             self.draw_3d_box_and_walls(renderer);
         }
 
-        // 3. Plotted Data (Series)
+        // 3. Error Bars (before series so markers appear on top)
+        if !is_3d {
+            for series in &self.series {
+                self.draw_error_bars(renderer, series);
+            }
+        }
+
+        // 4. Plotted Data (Series)
         for series in &self.series {
             self.draw_series(renderer, series, is_3d);
         }
@@ -1059,6 +1174,221 @@ impl PlotBackend {
             let half_size = Vec2::new((br.x - tl.x).abs() / 2.0, (br.y - tl.y).abs() / 2.0);
 
             renderer.draw_rect(center, half_size * 2.0, *color, 0.0, 0.0);
+        }
+    }
+
+    fn draw_error_bars(
+        &self,
+        renderer: &mut PrimitiveRenderer,
+        series: &Series,
+    ) {
+        if !series.error_style.enabled {
+            return;
+        }
+
+        let count = series.x.len().min(series.y.len());
+        let err_color = series.color;
+        let line_width = series.error_style.line_width * self.scale_factor;
+        let cap_width = series.error_style.cap_width * self.scale_factor;
+
+        // Draw Y error bars
+        match &series.y_error {
+            ErrorData::Symmetric { values } => {
+                for i in 0..count.min(values.len()) {
+                    let x = series.x[i];
+                    let y = series.y[i];
+                    let err = values[i];
+
+                    let top = self.data_to_screen(x, y + err);
+                    let bottom = self.data_to_screen(x, y - err);
+
+                    // Vertical line
+                    renderer.draw_line(
+                        top.extend(0.0),
+                        bottom.extend(0.0),
+                        line_width,
+                        err_color,
+                        0.0,
+                        0.0,
+                        0.0,
+                    );
+
+                    // Top cap
+                    if cap_width > 0.0 {
+                        renderer.draw_line(
+                            (top - Vec2::new(cap_width / 2.0, 0.0)).extend(0.0),
+                            (top + Vec2::new(cap_width / 2.0, 0.0)).extend(0.0),
+                            line_width,
+                            err_color,
+                            0.0,
+                            0.0,
+                            0.0,
+                        );
+                    }
+
+                    // Bottom cap
+                    if cap_width > 0.0 {
+                        renderer.draw_line(
+                            (bottom - Vec2::new(cap_width / 2.0, 0.0)).extend(0.0),
+                            (bottom + Vec2::new(cap_width / 2.0, 0.0)).extend(0.0),
+                            line_width,
+                            err_color,
+                            0.0,
+                            0.0,
+                            0.0,
+                        );
+                    }
+                }
+            }
+            ErrorData::Asymmetric { low, high } => {
+                for i in 0..count.min(low.len()).min(high.len()) {
+                    let x = series.x[i];
+                    let y = series.y[i];
+                    let err_low = low[i];
+                    let err_high = high[i];
+
+                    let top = self.data_to_screen(x, y + err_high);
+                    let bottom = self.data_to_screen(x, y - err_low);
+
+                    // Vertical line
+                    renderer.draw_line(
+                        top.extend(0.0),
+                        bottom.extend(0.0),
+                        line_width,
+                        err_color,
+                        0.0,
+                        0.0,
+                        0.0,
+                    );
+
+                    // Top cap
+                    if cap_width > 0.0 {
+                        renderer.draw_line(
+                            (top - Vec2::new(cap_width / 2.0, 0.0)).extend(0.0),
+                            (top + Vec2::new(cap_width / 2.0, 0.0)).extend(0.0),
+                            line_width,
+                            err_color,
+                            0.0,
+                            0.0,
+                            0.0,
+                        );
+                    }
+
+                    // Bottom cap
+                    if cap_width > 0.0 {
+                        renderer.draw_line(
+                            (bottom - Vec2::new(cap_width / 2.0, 0.0)).extend(0.0),
+                            (bottom + Vec2::new(cap_width / 2.0, 0.0)).extend(0.0),
+                            line_width,
+                            err_color,
+                            0.0,
+                            0.0,
+                            0.0,
+                        );
+                    }
+                }
+            }
+            ErrorData::None => {}
+        }
+
+        // Draw X error bars
+        match &series.x_error {
+            ErrorData::Symmetric { values } => {
+                for i in 0..count.min(values.len()) {
+                    let x = series.x[i];
+                    let y = series.y[i];
+                    let err = values[i];
+
+                    let left = self.data_to_screen(x - err, y);
+                    let right = self.data_to_screen(x + err, y);
+
+                    // Horizontal line
+                    renderer.draw_line(
+                        left.extend(0.0),
+                        right.extend(0.0),
+                        line_width,
+                        err_color,
+                        0.0,
+                        0.0,
+                        0.0,
+                    );
+
+                    // Left cap
+                    if cap_width > 0.0 {
+                        renderer.draw_line(
+                            (left - Vec2::new(0.0, cap_width / 2.0)).extend(0.0),
+                            (left + Vec2::new(0.0, cap_width / 2.0)).extend(0.0),
+                            line_width,
+                            err_color,
+                            0.0,
+                            0.0,
+                            0.0,
+                        );
+                    }
+
+                    // Right cap
+                    if cap_width > 0.0 {
+                        renderer.draw_line(
+                            (right - Vec2::new(0.0, cap_width / 2.0)).extend(0.0),
+                            (right + Vec2::new(0.0, cap_width / 2.0)).extend(0.0),
+                            line_width,
+                            err_color,
+                            0.0,
+                            0.0,
+                            0.0,
+                        );
+                    }
+                }
+            }
+            ErrorData::Asymmetric { low, high } => {
+                for i in 0..count.min(low.len()).min(high.len()) {
+                    let x = series.x[i];
+                    let y = series.y[i];
+                    let err_low = low[i];
+                    let err_high = high[i];
+
+                    let left = self.data_to_screen(x - err_low, y);
+                    let right = self.data_to_screen(x + err_high, y);
+
+                    // Horizontal line
+                    renderer.draw_line(
+                        left.extend(0.0),
+                        right.extend(0.0),
+                        line_width,
+                        err_color,
+                        0.0,
+                        0.0,
+                        0.0,
+                    );
+
+                    // Left cap
+                    if cap_width > 0.0 {
+                        renderer.draw_line(
+                            (left - Vec2::new(0.0, cap_width / 2.0)).extend(0.0),
+                            (left + Vec2::new(0.0, cap_width / 2.0)).extend(0.0),
+                            line_width,
+                            err_color,
+                            0.0,
+                            0.0,
+                            0.0,
+                        );
+                    }
+
+                    // Right cap
+                    if cap_width > 0.0 {
+                        renderer.draw_line(
+                            (right - Vec2::new(0.0, cap_width / 2.0)).extend(0.0),
+                            (right + Vec2::new(0.0, cap_width / 2.0)).extend(0.0),
+                            line_width,
+                            err_color,
+                            0.0,
+                            0.0,
+                            0.0,
+                        );
+                    }
+                }
+            }
+            ErrorData::None => {}
         }
     }
 
