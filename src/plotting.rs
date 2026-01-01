@@ -33,6 +33,8 @@ pub struct AxisConfig {
   pub y_label: String,
   pub z_label: String,
   pub show_grid: bool,
+  pub x_scale: AxisScale,
+  pub y_scale: AxisScale,
 }
 
 impl Default for AxisConfig {
@@ -49,8 +51,27 @@ impl Default for AxisConfig {
       y_label: String::new(),
       z_label: String::new(),
       show_grid: true,
+      x_scale: AxisScale::Linear,
+      y_scale: AxisScale::Linear,
     }
   }
+}
+
+/// Axis scaling type for transforming data coordinates.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AxisScale {
+    /// Linear scaling (no transformation)
+    Linear,
+    /// Base-10 logarithmic scaling
+    Log10,
+    /// Natural logarithm scaling  
+    Ln,
+}
+
+impl Default for AxisScale {
+    fn default() -> Self {
+        Self::Linear
+    }
 }
 
 /// Line style options for rendering paths and series.
@@ -315,6 +336,16 @@ impl PlotBackend {
         self.axis.z_max = z_max;
     }
 
+    /// Sets the X-axis scale (linear or logarithmic).
+    pub fn set_xscale(&mut self, scale: AxisScale) {
+        self.axis.x_scale = scale;
+    }
+
+    /// Sets the Y-axis scale (linear or logarithmic).
+    pub fn set_yscale(&mut self, scale: AxisScale) {
+        self.axis.y_scale = scale;
+    }
+
     /// Automatically scales axes to fit all plotted data.
     ///
     /// Analyzes all series, bars, histograms, and surfaces to determine
@@ -435,6 +466,27 @@ impl PlotBackend {
             line_style,
             ..Default::default()
         });
+    }
+
+    /// Creates a log-log plot (both axes logarithmic).
+    pub fn loglog(&mut self, x: Vec<f64>, y: Vec<f64>, color: Vec4) {
+        self.axis.x_scale = AxisScale::Log10;
+        self.axis.y_scale = AxisScale::Log10;
+        self.plot(x, y, color);
+    }
+
+    /// Creates a semi-log plot (X-axis logarithmic, Y-axis linear).
+    pub fn semilogx(&mut self, x: Vec<f64>, y: Vec<f64>, color: Vec4) {
+        self.axis.x_scale = AxisScale::Log10;
+        self.axis.y_scale = AxisScale::Linear;
+        self.plot(x, y, color);
+    }
+
+    /// Creates a semi-log plot (X-axis linear, Y-axis logarithmic).
+    pub fn semilogy(&mut self, x: Vec<f64>, y: Vec<f64>, color: Vec4) {
+        self.axis.x_scale = AxisScale::Linear;
+        self.axis.y_scale = AxisScale::Log10;
+        self.plot(x, y, color);
     }
 
     /// Creates a 3D line plot.
