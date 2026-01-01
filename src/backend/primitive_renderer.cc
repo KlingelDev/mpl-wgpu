@@ -11,14 +11,22 @@ namespace mpl_wgpu {
 
 namespace {
 
-// Load WGSL shader from file or embedded string
+// Load WGSL shader from file
 std::string LoadShader() {
-  // For now, return embedded shader
-  // TODO: Load from primitives.wgsl file
-  return R"(
-    // Shader will be loaded here
-    // See src/backend/primitives.wgsl
-  )";
+  std::ifstream file("src/backend/primitives.wgsl");
+  if (!file.is_open()) {
+    // Try alternate path for build directory
+    file.open("../src/backend/primitives.wgsl");
+  }
+  
+  if (!file.is_open()) {
+    throw std::runtime_error(
+        "Failed to load primitives.wgsl shader");
+  }
+  
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  return buffer.str();
 }
 
 }  // namespace
