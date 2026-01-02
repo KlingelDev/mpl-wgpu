@@ -52,15 +52,15 @@ PrimitiveRenderer::PrimitiveRenderer(wgpu::Device device,
   wgpu::BufferDescriptor uniform_buf_desc{};
   uniform_buf_desc.label = "PrimitiveUniforms";
   uniform_buf_desc.size = 64 + 16 + 16;  // Mat4 + Vec2 + Camera + pad
-  uniform_buf_desc.usage = wgpu::BufferUsage::Uniform | 
-                           wgpu::BufferUsage::CopyDst;
+  uniform_buf_desc.usage = static_cast<uint32_t>(wgpu::BufferUsage::Uniform | 
+                           wgpu::BufferUsage::CopyDst);
   uniform_buffer_ = device.CreateBuffer(&uniform_buf_desc);
 
   // Create bind group layout
   wgpu::BindGroupLayoutEntry bg_entry{};
   bg_entry.binding = 0;
-  bg_entry.visibility = wgpu::ShaderStage::Vertex | 
-                        wgpu::ShaderStage::Fragment;
+  bg_entry.visibility = static_cast<uint32_t>(wgpu::ShaderStage::Vertex | 
+                        wgpu::ShaderStage::Fragment);
   bg_entry.buffer.type = wgpu::BufferBindingType::Uniform;
 
   wgpu::BindGroupLayoutDescriptor bg_layout_desc{};
@@ -72,19 +72,20 @@ PrimitiveRenderer::PrimitiveRenderer(wgpu::Device device,
   // Create bind group
   wgpu::BindGroupEntry bg_bind_entry{};
   bg_bind_entry.binding = 0;
-  bg_bind_entry.buffer = uniform_buffer_;
+  bg_bind_entry.buffer = uniform_buffer_.Get();
   bg_bind_entry.size = uniform_buf_desc.size;
 
   wgpu::BindGroupDescriptor bg_desc{};
-  bg_desc.layout = bg_layout;
+  bg_desc.layout = bg_layout.Get();
   bg_desc.entryCount = 1;
   bg_desc.entries = &bg_bind_entry;
   bind_group_ = device.CreateBindGroup(&bg_desc);
 
   // Create pipeline layout
+  WGPUBindGroupLayout raw_bg_layout = bg_layout.Get();
   wgpu::PipelineLayoutDescriptor layout_desc{};
   layout_desc.bindGroupLayoutCount = 1;
-  layout_desc.bindGroupLayouts = &bg_layout;
+  layout_desc.bindGroupLayouts = &raw_bg_layout;
   wgpu::PipelineLayout pipeline_layout = 
       device.CreatePipelineLayout(&layout_desc);
 
@@ -134,14 +135,14 @@ PrimitiveRenderer::PrimitiveRenderer(wgpu::Device device,
   color_target.writeMask = wgpu::ColorWriteMask::All;
 
   wgpu::FragmentState fragment{};
-  fragment.module = shader;
+  fragment.module = shader.Get();
   fragment.entryPoint = "fs_main";
   fragment.targetCount = 1;
   fragment.targets = &color_target;
 
   wgpu::RenderPipelineDescriptor pipeline_desc{};
-  pipeline_desc.layout = pipeline_layout;
-  pipeline_desc.vertex.module = shader;
+  pipeline_desc.layout = pipeline_layout.Get();
+  pipeline_desc.vertex.module = shader.Get();
   pipeline_desc.vertex.entryPoint = "vs_main";
   pipeline_desc.vertex.bufferCount = 1;
   pipeline_desc.vertex.buffers = &vertex_buffer;
@@ -158,8 +159,8 @@ PrimitiveRenderer::PrimitiveRenderer(wgpu::Device device,
   wgpu::BufferDescriptor inst_buf_desc{};
   inst_buf_desc.label = "InstanceBuffer";
   inst_buf_desc.size = capacity_ * sizeof(Instance);
-  inst_buf_desc.usage = wgpu::BufferUsage::Vertex | 
-                        wgpu::BufferUsage::CopyDst;
+  inst_buf_desc.usage = static_cast<uint32_t>(wgpu::BufferUsage::Vertex | 
+                        wgpu::BufferUsage::CopyDst);
   instance_buffer_ = device.CreateBuffer(&inst_buf_desc);
 
   UpdateUniforms(device.GetQueue());
@@ -349,7 +350,7 @@ void PrimitiveRenderer::ResizeInstanceBuffer(size_t new_capacity) {
   wgpu::BufferDescriptor desc{};
   desc.label = "InstanceBuffer";
   desc.size = capacity_ * sizeof(Instance);
-  desc.usage = wgpu::BufferUsage::Vertex | wgpu::BufferUsage::CopyDst;
+  desc.usage = static_cast<uint32_t>(wgpu::BufferUsage::Vertex | wgpu::BufferUsage::CopyDst);
   
   instance_buffer_ = device_.CreateBuffer(&desc);
 }

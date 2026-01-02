@@ -262,17 +262,21 @@ class WgpuBackend : public backend_interface {
  
    /// @brief Disables the scissor rect.
    void disable_scissor();
+
+  /// @brief Override to indicate this backend doesn't support gnuplot
+  /// This prevents matplot++ from trying to send gnuplot commands
+  void run_command(const std::string&) override {}
  
   protected:
-    std::shared_ptr<WgpuRenderer> renderer_;
-    float width_{0.0f};
-    float height_{0.0f};
+  std::shared_ptr<WgpuRenderer> renderer_;
+  unsigned int width_{0};
+  unsigned int height_{0};
     
-    // 3D Matrix Storage (Column-Major)
-    float view_proj_[16] = {0};
-    bool has_view_proj_ = false;
+  // 3D Matrix Storage (Column-Major)
+  float view_proj_[16] = {0};
+  bool has_view_proj_ = false;
 
-   // Buffers for batching
+  // Buffers for batching
   unsigned int pos_x_ = 100;
   unsigned int pos_y_ = 100;
   bool should_close_ = false;

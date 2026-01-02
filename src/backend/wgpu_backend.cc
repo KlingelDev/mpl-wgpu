@@ -1,7 +1,7 @@
-// Copyright (c) 2025 Optris GmbH & Co. KG
+// Copyright (c) 2026 Karl Ruskowski
+// SPDX-License-Identifier: MIT
 //
 // WebGPU-based backend for Matplot++.
-// Designed for upstream contribution.
 
 #include "matplot/backend/wgpu_backend.h"
 
