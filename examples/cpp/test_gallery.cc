@@ -254,6 +254,168 @@ void TestPolarPlot(matplot::figure_handle f) {
     ax->title_color({0, 0, 0, 1});
 }
 
+void TestPieChart(matplot::figure_handle f) {
+    if (!f) return;
+    f->children(std::vector<std::shared_ptr<matplot::axes_type>>{});
+    auto ax = f->add_axes();
+    
+    std::vector<double> values = {35, 25, 20, 15, 5};
+    ax->pie(values);
+    ax->title("Pie Chart");
+    ax->title_color({0, 0, 0, 1});
+}
+
+void TestHeatmap(matplot::figure_handle f) {
+    if (!f) return;
+    f->children(std::vector<std::shared_ptr<matplot::axes_type>>{});
+    auto ax = f->add_axes();
+    
+    // Create 10x10 matrix
+    std::vector<std::vector<double>> data(10, std::vector<double>(10));
+    for (size_t i = 0; i < 10; ++i) {
+        for (size_t j = 0; j < 10; ++j) {
+            data[i][j] = std::sin(i * 0.5) * std::cos(j * 0.5);
+        }
+    }
+    
+    ax->heatmap(data);
+    ax->title("Heatmap");
+    ax->title_color({0, 0, 0, 1});
+}
+
+void TestContour(matplot::figure_handle f) {
+    if (!f) return;
+    f->children(std::vector<std::shared_ptr<matplot::axes_type>>{});
+    auto ax = f->add_axes();
+    
+    // Create grid data
+    auto [X, Y] = matplot::meshgrid(
+        matplot::linspace(-2, 2, 20),
+        matplot::linspace(-2, 2, 20)
+    );
+    auto Z = matplot::transform(X, Y, [](double x, double y) {
+        return std::exp(-(x*x + y*y));
+    });
+    
+    ax->contour(X, Y, Z);
+    ax->title("Contour Plot");
+    ax->title_color({0, 0, 0, 1});
+}
+
+void TestBoxPlot(matplot::figure_handle f) {
+    if (!f) return;
+    f->children(std::vector<std::shared_ptr<matplot::axes_type>>{});
+    auto ax = f->add_axes();
+    
+    // Create sample data
+    std::vector<std::vector<double>> data = {
+        {1, 2, 3, 4, 5, 6, 7},
+        {2, 3, 4, 5, 6, 7, 8},
+        {3, 4, 5, 6, 7, 8, 10}
+    };
+    
+    ax->boxplot(data);
+    ax->title("Box Plot");
+    ax->title_color({0, 0, 0, 1});
+}
+
+void TestQuiver(matplot::figure_handle f) {
+    if (!f) return;
+    f->children(std::vector<std::shared_ptr<matplot::axes_type>>{});
+    auto ax = f->add_axes();
+    
+    // Vector field
+    std::vector<double> x = {0, 1, 2, 0, 1, 2, 0, 1, 2};
+    std::vector<double> y = {0, 0, 0, 1, 1, 1, 2, 2, 2};
+    std::vector<double> u = {1, 1, 1, 0, 0, 0, -1, -1, -1};
+    std::vector<double> v = {0, 1, 0, 1, 0, -1, 0, -1, 0};
+    
+    ax->quiver(x, y, u, v);
+    ax->title("Vector Field (Quiver)");
+    ax->title_color({0, 0, 0, 1});
+}
+
+void TestMultiLine(matplot::figure_handle f) {
+    if (!f) return;
+    f->children(std::vector<std::shared_ptr<matplot::axes_type>>{});
+    auto ax = f->add_axes();
+    
+    std::vector<double> x = matplot::linspace(0, 2 * M_PI, 200);
+    ax->plot(x, matplot::transform(x, [](double v){ return std::sin(v); }));
+    ax->hold(true);
+    ax->plot(x, matplot::transform(x, [](double v){ return std::cos(v); }));
+    ax->plot(x, matplot::transform(x, [](double v){ return std::sin(2*v); }));
+    ax->hold(false);
+    
+    ax->title("Multiple Lines");
+    ax->title_color({0, 0, 0, 1});
+    ax->xlabel("X");
+    ax->ylabel("Y");
+}
+
+void TestScatter3D(matplot::figure_handle f) {
+    if (!f) return;
+    f->children(std::vector<std::shared_ptr<matplot::axes_type>>{});
+    auto ax = f->add_axes();
+    
+    // Random 3D points
+    std::vector<double> x, y, z;
+    for (int i = 0; i < 50; ++i) {
+        double t = i * 0.2;
+        x.push_back(std::cos(t) * (1 + 0.3 * std::sin(t * 3)));
+        y.push_back(std::sin(t) * (1 + 0.3 * std::cos(t * 2)));
+        z.push_back(t * 0.1);
+    }
+    
+    ax->scatter3(x, y, z);
+    ax->title("3D Scatter");
+    ax->title_color({0, 0, 0, 1});
+}
+
+void TestStem3D(matplot::figure_handle f) {
+    if (!f) return;
+    f->children(std::vector<std::shared_ptr<matplot::axes_type>>{});
+    auto ax = f->add_axes();
+    
+    std::vector<double> x, y, z;
+    for (int i = 0; i < 20; ++i) {
+        double t = i * 0.3;
+        x.push_back(std::cos(t));
+        y.push_back(std::sin(t));
+        z.push_back(t * 0.2);
+    }
+    
+    ax->stem3(x, y, z);
+    ax->title("3D Stem");
+    ax->title_color({0, 0, 0, 1});
+}
+
+void TestSemiLogX(matplot::figure_handle f) {
+    if (!f) return;
+    f->children(std::vector<std::shared_ptr<matplot::axes_type>>{});
+    auto ax = f->add_axes();
+    
+    std::vector<double> x = {1, 10, 100, 1000, 10000};
+    std::vector<double> y = {1, 2, 3, 4, 5};
+    
+    ax->semilogx(x, y);
+    ax->title("Semi-Log X");
+    ax->title_color({0, 0, 0, 1});
+}
+
+void TestSemiLogY(matplot::figure_handle f) {
+    if (!f) return;
+    f->children(std::vector<std::shared_ptr<matplot::axes_type>>{});
+    auto ax = f->add_axes();
+    
+    std::vector<double> x = {1, 2, 3, 4, 5};
+    std::vector<double> y = {1, 10, 100, 1000, 10000};
+    
+    ax->semilogy(x, y);
+    ax->title("Semi-Log Y");
+    ax->title_color({0, 0, 0, 1});
+}
+
 // --- Main Harness ---
 
 int main() {
@@ -289,7 +451,16 @@ int main() {
             {"Stairs Plot", TestStairs},
             {"Log-Log Plot", TestLogLog},
             {"Error Bars", TestErrorBar},
-            {"Polar Plot", TestPolarPlot}
+            {"Polar Plot", TestPolarPlot},
+            {"Box Plot", TestBoxPlot},
+            {"Vector Field", TestQuiver},
+            {"Heatmap", TestHeatmap},
+            {"Pie Chart", TestPieChart},
+            {"Multi-Line", TestMultiLine},
+            {"3D Scatter", TestScatter3D},
+            {"3D Stem", TestStem3D},
+            {"Semi-Log X", TestSemiLogX},
+            {"Semi-Log Y", TestSemiLogY}
         };
 
         int current_test = 0;
