@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 
-# Find GLFW
+# Find dependencies
 find_package(glfw3 REQUIRED)
+find_package(OpenGL REQUIRED)
 
 # Simple line plot example with window
 add_executable(simple_plot 
@@ -12,4 +13,5 @@ add_executable(simple_plot
 target_link_libraries(simple_plot 
   mpl_wgpu_backend
   glfw
+  OpenGL::GL
 )

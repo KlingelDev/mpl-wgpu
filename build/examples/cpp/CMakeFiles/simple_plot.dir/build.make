@@ -123,6 +123,8 @@ examples/cpp/simple_plot: /usr/lib/x86_64-linux-gnu/libz.so
 examples/cpp/simple_plot: /usr/lib/x86_64-linux-gnu/libpng.so
 examples/cpp/simple_plot: vendor/matplotplusplus/source/3rd_party/libnodesoup.a
 examples/cpp/simple_plot: _deps/wgpu_native-src/target/release/libwgpu_native.a
+examples/cpp/simple_plot: /usr/lib/x86_64-linux-gnu/libGLX.so
+examples/cpp/simple_plot: /usr/lib/x86_64-linux-gnu/libOpenGL.so
 examples/cpp/simple_plot: examples/cpp/CMakeFiles/simple_plot.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable simple_plot"
 	cd /home/karl/prsn/mpl-wgpu/build/examples/cpp && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/simple_plot.dir/link.txt --verbose=$(VERBOSE)

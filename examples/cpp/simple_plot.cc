@@ -7,7 +7,16 @@
 #include <matplot/backend/wgpu_backend.h>
 #include <matplot/matplot.h>
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+
+// OpenGL headers
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
+
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -21,8 +30,14 @@ int main() {
     return 1;
   }
 
-  // Create window
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+  // Create window with OpenGL context for display
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  #ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  #endif
+  
   const int width = 800;
   const int height = 600;
   GLFWwindow* window = glfwCreateWindow(
@@ -58,20 +73,56 @@ int main() {
   // Render once
   fig->draw();
 
-  std::cout << "Plot rendered! Window open, press ESC to close\n";
+  std::cout << "Plot rendered! Setting up display...\n";
+
+  // Make OpenGL context current
+  glfwMakeContextCurrent(window);
+  glfwSwapInterval(1); // Enable vsync
+
+  // Create OpenGL texture for pixel buffer
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  std::cout << "Display ready! Press ESC to close\n";
 
   // Main loop
   while (!glfwWindowShouldClose(window)) {
-    glfwPollEvents();
-
     // Check for ESC key
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
       glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
 
-    // TODO: Display pixel buffer to window
-    // For now, just keep window open
+    // Upload pixel buffer to texture
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, renderer->GetPixels());
+
+    // Clear and render full-screen quad with texture
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    // Use immediate mode for simplicity (works in compatibility profile)
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2f(-1.0f, -1.0f);
+    glTexCoord2f(1.0f, 1.0f); glVertex2f( 1.0f, -1.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex2f( 1.0f,  1.0f);
+    glTexCoord2f(0.0f, 0.0f); glVertex2f(-1.0f,  1.0f);
+    glEnd();
+    
+    glDisable(GL_TEXTURE_2D);
+
+    glfwSwapBuffers(window);
+    glfwPollEvents();
   }
+
+  glDeleteTextures(1, &texture);
 
   glfwDestroyWindow(window);
   glfwTerminate();

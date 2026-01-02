@@ -10,10 +10,8 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.31.6/CMakeSystem.cmake"
   "CMakeLists.txt"
   "webgpu_dist-populate-prefix/tmp/webgpu_dist-populate-mkdirs.cmake"
-  "/usr/share/cmake-3.31/Modules/CMakeDetermineSystem.cmake"
   "/usr/share/cmake-3.31/Modules/CMakeGenericSystem.cmake"
   "/usr/share/cmake-3.31/Modules/CMakeInitializeConfigs.cmake"
-  "/usr/share/cmake-3.31/Modules/CMakeSystem.cmake.in"
   "/usr/share/cmake-3.31/Modules/CMakeSystemSpecificInformation.cmake"
   "/usr/share/cmake-3.31/Modules/CMakeSystemSpecificInitialize.cmake"
   "/usr/share/cmake-3.31/Modules/ExternalProject.cmake"
@@ -38,7 +36,6 @@ set(CMAKE_MAKEFILE_OUTPUTS
 
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
-  "CMakeFiles/3.31.6/CMakeSystem.cmake"
   "webgpu_dist-populate-prefix/tmp/webgpu_dist-populate-mkdirs.cmake"
   "webgpu_dist-populate-prefix/tmp/webgpu_dist-populate-gitclone.cmake"
   "webgpu_dist-populate-prefix/src/webgpu_dist-populate-stamp/webgpu_dist-populate-gitinfo.txt"

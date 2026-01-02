@@ -285,8 +285,8 @@ vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/clean:
 # Target rules for target examples/cpp/CMakeFiles/simple_plot.dir
 
 # All Build rule for target.
-examples/cpp/CMakeFiles/simple_plot.dir/all: vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/all
 examples/cpp/CMakeFiles/simple_plot.dir/all: CMakeFiles/mpl_wgpu_backend.dir/all
+examples/cpp/CMakeFiles/simple_plot.dir/all: vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/all
 examples/cpp/CMakeFiles/simple_plot.dir/all: vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/all
 	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/depend
 	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/build

@@ -496,6 +496,45 @@ Matplot++_SOURCE_DIR:STATIC=/home/karl/prsn/mpl-wgpu/vendor/matplotplusplus
 
 OPENCV_FOUND:BOOL=FALSE
 
+//Path to a file.
+OPENGL_EGL_INCLUDE_DIR:PATH=/usr/include
+
+//Path to a file.
+OPENGL_GLES2_INCLUDE_DIR:PATH=/usr/include
+
+//Path to a file.
+OPENGL_GLES3_INCLUDE_DIR:PATH=/usr/include
+
+//Path to a file.
+OPENGL_GLU_INCLUDE_DIR:PATH=/usr/include
+
+//Path to a file.
+OPENGL_GLX_INCLUDE_DIR:PATH=/usr/include
+
+//Path to a file.
+OPENGL_INCLUDE_DIR:PATH=/usr/include
+
+//Path to a library.
+OPENGL_egl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libEGL.so
+
+//Path to a library.
+OPENGL_gles2_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libGLESv2.so
+
+//Path to a library.
+OPENGL_gles3_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libGLESv2.so
+
+//Path to a library.
+OPENGL_glu_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libGLU.so
+
+//Path to a library.
+OPENGL_glx_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libGLX.so
+
+//Path to a library.
+OPENGL_opengl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libOpenGL.so
+
+//Path to a file.
+OPENGL_xmesa_INCLUDE_DIR:PATH=OPENGL_xmesa_INCLUDE_DIR-NOTFOUND
+
 OpenCV_CONFIG_PATH:FILEPATH=/home/karl/prsn/mpl-wgpu/vendor/matplotplusplus/cmake
 
 OpenCV_FOUND:BOOL=FALSE
@@ -820,6 +859,8 @@ FFTW_LONGDOUBLE_OPENMP_LIB-ADVANCED:INTERNAL=1
 FFTW_LONGDOUBLE_THREADS_LIB-ADVANCED:INTERNAL=1
 //Details about finding JPEG
 FIND_PACKAGE_MESSAGE_DETAILS_JPEG:INTERNAL=[/usr/lib/x86_64-linux-gnu/libjpeg.so][/usr/include][v62()]
+//Details about finding OpenGL
+FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[/usr/lib/x86_64-linux-gnu/libOpenGL.so][/usr/lib/x86_64-linux-gnu/libGLX.so][/usr/include][c ][v()]
 //Details about finding PNG
 FIND_PACKAGE_MESSAGE_DETAILS_PNG:INTERNAL=[/usr/lib/x86_64-linux-gnu/libpng.so][/usr/include][v1.6.48()]
 //Details about finding PkgConfig
@@ -840,6 +881,32 @@ JPEG_INCLUDE_DIR-ADVANCED:INTERNAL=1
 JPEG_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: JPEG_LIBRARY_RELEASE
 JPEG_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_EGL_INCLUDE_DIR
+OPENGL_EGL_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_GLES2_INCLUDE_DIR
+OPENGL_GLES2_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_GLES3_INCLUDE_DIR
+OPENGL_GLES3_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_GLU_INCLUDE_DIR
+OPENGL_GLU_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_GLX_INCLUDE_DIR
+OPENGL_GLX_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_INCLUDE_DIR
+OPENGL_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_egl_LIBRARY
+OPENGL_egl_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_gles2_LIBRARY
+OPENGL_gles2_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_gles3_LIBRARY
+OPENGL_gles3_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_glu_LIBRARY
+OPENGL_glu_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_glx_LIBRARY
+OPENGL_glx_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_opengl_LIBRARY
+OPENGL_opengl_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENGL_xmesa_INCLUDE_DIR
+OPENGL_xmesa_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: PKG_CONFIG_ARGN
 PKG_CONFIG_ARGN-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
