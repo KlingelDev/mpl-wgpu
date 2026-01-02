@@ -128,28 +128,50 @@ int main() {
     
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // Get logical window size for projection
+    int win_width, win_height;
+    glfwGetWindowSize(window, &win_width, &win_height);
+
+    // Calculate scaling to preserve aspect ratio
+    float aspect_plot = (float)width / (float)height;
+    float aspect_window = (float)win_width / (float)win_height;
+    
+    float draw_w, draw_h;
+    float offset_x = 0, offset_y = 0;
+    
+    if (aspect_window > aspect_plot) {
+        // Window is wider than plot (pillarbox)
+        draw_h = (float)win_height;
+        draw_w = draw_h * aspect_plot;
+        offset_x = (win_width - draw_w) / 2.0f;
+    } else {
+        // Window is taller than plot (letterbox)
+        draw_w = (float)win_width;
+        draw_h = draw_w / aspect_plot;
+        offset_y = (win_height - draw_h) / 2.0f;
+    }
+
     // Upload pixel buffer to texture
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
                  GL_RGBA, GL_UNSIGNED_BYTE, renderer->GetPixels());
 
     // Set up orthographic projection matching LOGICAL coordinates
-    // This maps (0,0)-(width,height) to NDC (-1,1)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, width, height, 0, -1, 1);  // Top-left origin
+    glOrtho(0, win_width, win_height, 0, -1, 1);  // Top-left origin
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
-    // Draw textured quad filling entire LOGICAL window space
+    // Draw textured quad centered in window preserving aspect ratio
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texture);
     
     glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);           // Top-left
-    glTexCoord2f(1.0f, 0.0f); glVertex2f((float)width, 0.0f);   // Top-right  
-    glTexCoord2f(1.0f, 1.0f); glVertex2f((float)width, (float)height); // Bottom-right
-    glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, (float)height);  // Bottom-left
+    glTexCoord2f(0.0f, 0.0f); glVertex2f(offset_x, offset_y);
+    glTexCoord2f(1.0f, 0.0f); glVertex2f(offset_x + draw_w, offset_y);
+    glTexCoord2f(1.0f, 1.0f); glVertex2f(offset_x + draw_w, offset_y + draw_h);
+    glTexCoord2f(0.0f, 1.0f); glVertex2f(offset_x, offset_y + draw_h);
     glEnd();
     
     glDisable(GL_TEXTURE_2D);
