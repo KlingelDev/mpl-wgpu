@@ -162,6 +162,20 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+examples/cpp/CMakeFiles/test_render.dir/rule:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 examples/cpp/CMakeFiles/test_render.dir/rule
+.PHONY : examples/cpp/CMakeFiles/test_render.dir/rule
+
+# Convenience name for target.
+test_render: examples/cpp/CMakeFiles/test_render.dir/rule
+.PHONY : test_render
+
+# fast build rule for target.
+test_render/fast:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/build
+.PHONY : test_render/fast
+
+# Convenience name for target.
 examples/cpp/CMakeFiles/simple_plot.dir/rule:
 	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 examples/cpp/CMakeFiles/simple_plot.dir/rule
 .PHONY : examples/cpp/CMakeFiles/simple_plot.dir/rule
@@ -180,6 +194,7 @@ minimal_renderer.o: minimal_renderer.cc.o
 
 # target to build an object file
 minimal_renderer.cc.o:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/minimal_renderer.cc.o
 	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/minimal_renderer.cc.o
 .PHONY : minimal_renderer.cc.o
 
@@ -188,6 +203,7 @@ minimal_renderer.i: minimal_renderer.cc.i
 
 # target to preprocess a source file
 minimal_renderer.cc.i:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/minimal_renderer.cc.i
 	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/minimal_renderer.cc.i
 .PHONY : minimal_renderer.cc.i
 
@@ -196,6 +212,7 @@ minimal_renderer.s: minimal_renderer.cc.s
 
 # target to generate assembly for a file
 minimal_renderer.cc.s:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/minimal_renderer.cc.s
 	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/minimal_renderer.cc.s
 .PHONY : minimal_renderer.cc.s
 
@@ -223,6 +240,30 @@ simple_plot.cc.s:
 	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/simple_plot.cc.s
 .PHONY : simple_plot.cc.s
 
+test_render.o: test_render.cc.o
+.PHONY : test_render.o
+
+# target to build an object file
+test_render.cc.o:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/test_render.cc.o
+.PHONY : test_render.cc.o
+
+test_render.i: test_render.cc.i
+.PHONY : test_render.i
+
+# target to preprocess a source file
+test_render.cc.i:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/test_render.cc.i
+.PHONY : test_render.cc.i
+
+test_render.s: test_render.cc.s
+.PHONY : test_render.s
+
+# target to generate assembly for a file
+test_render.cc.s:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/test_render.cc.s
+.PHONY : test_render.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -236,12 +277,16 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... simple_plot"
+	@echo "... test_render"
 	@echo "... minimal_renderer.o"
 	@echo "... minimal_renderer.i"
 	@echo "... minimal_renderer.s"
 	@echo "... simple_plot.o"
 	@echo "... simple_plot.i"
 	@echo "... simple_plot.s"
+	@echo "... test_render.o"
+	@echo "... test_render.i"
+	@echo "... test_render.s"
 .PHONY : help
 
 

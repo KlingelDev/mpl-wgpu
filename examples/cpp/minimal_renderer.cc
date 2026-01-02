@@ -50,6 +50,13 @@ void MinimalRenderer::DrawLines(const std::vector<Line>& lines,
                                 float screen_width,
                                 float screen_height) {
   std::cout << "DrawLines: " << lines.size() << " lines\n";
+  std::cout << "  Screen: " << screen_width << "x" << screen_height << "\n";
+  std::cout << "  Buffer: " << width_ << "x" << height_ << "\n";
+  
+  if (!lines.empty()) {
+    std::cout << "  First line: (" << lines[0].x1 << "," << lines[0].y1 
+              << ") -> (" << lines[0].x2 << "," << lines[0].y2 << ")\n";
+  }
   
   float scale_x = static_cast<float>(width_) / screen_width;
   float scale_y = static_cast<float>(height_) / screen_height;

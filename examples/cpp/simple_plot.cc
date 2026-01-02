@@ -20,6 +20,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <fstream>
 
 int main() {
   std::cout << "mpl-wgpu Simple Plot Example (C++)\n";
@@ -95,6 +96,15 @@ int main() {
   }
   std::cout << "DEBUG: Pixel buffer has " << non_zero << " non-zero bytes out of " 
             << (width * height * 4) << " total\n";
+
+  // Save pixel buffer to file for inspection
+  std::ofstream ppm("output.ppm", std::ios::binary);
+  ppm << "P6\n" << width << " " << height << "\n255\n";
+  for (size_t i = 0; i < width * height; i++) {
+    ppm.write(reinterpret_cast<const char*>(&pixels[i*4]), 3); // RGB only
+  }
+  ppm.close();
+  std::cout << "DEBUG: Saved pixel buffer to output.ppm\n";
 
   // Main loop
   while (!glfwWindowShouldClose(window)) {

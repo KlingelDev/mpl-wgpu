@@ -89,10 +89,12 @@ clean: examples/cpp/clean
 # Directory level rules for directory examples/cpp
 
 # Recursive "all" directory target.
+examples/cpp/all: examples/cpp/CMakeFiles/test_render.dir/all
 examples/cpp/all: examples/cpp/CMakeFiles/simple_plot.dir/all
 .PHONY : examples/cpp/all
 
 # Recursive "codegen" directory target.
+examples/cpp/codegen: examples/cpp/CMakeFiles/test_render.dir/codegen
 examples/cpp/codegen: examples/cpp/CMakeFiles/simple_plot.dir/codegen
 .PHONY : examples/cpp/codegen
 
@@ -101,6 +103,7 @@ examples/cpp/preinstall:
 .PHONY : examples/cpp/preinstall
 
 # Recursive "clean" directory target.
+examples/cpp/clean: examples/cpp/CMakeFiles/test_render.dir/clean
 examples/cpp/clean: examples/cpp/CMakeFiles/simple_plot.dir/clean
 .PHONY : examples/cpp/clean
 
@@ -280,6 +283,40 @@ vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/codegen:
 vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/clean:
 	$(MAKE) $(MAKESILENT) -f vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/build.make vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/clean
 .PHONY : vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/clean
+
+#=============================================================================
+# Target rules for target examples/cpp/CMakeFiles/test_render.dir
+
+# All Build rule for target.
+examples/cpp/CMakeFiles/test_render.dir/all: CMakeFiles/mpl_wgpu_backend.dir/all
+examples/cpp/CMakeFiles/test_render.dir/all: vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/all
+examples/cpp/CMakeFiles/test_render.dir/all: vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/all
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/depend
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=51,52,53 "Built target test_render"
+.PHONY : examples/cpp/CMakeFiles/test_render.dir/all
+
+# Build rule for subdir invocation for target.
+examples/cpp/CMakeFiles/test_render.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/prsn/mpl-wgpu/build/CMakeFiles 50
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 examples/cpp/CMakeFiles/test_render.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/prsn/mpl-wgpu/build/CMakeFiles 0
+.PHONY : examples/cpp/CMakeFiles/test_render.dir/rule
+
+# Convenience name for target.
+test_render: examples/cpp/CMakeFiles/test_render.dir/rule
+.PHONY : test_render
+
+# codegen rule for target.
+examples/cpp/CMakeFiles/test_render.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=51,52,53 "Finished codegen for target test_render"
+.PHONY : examples/cpp/CMakeFiles/test_render.dir/codegen
+
+# clean rule for target.
+examples/cpp/CMakeFiles/test_render.dir/clean:
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/clean
+.PHONY : examples/cpp/CMakeFiles/test_render.dir/clean
 
 #=============================================================================
 # Target rules for target examples/cpp/CMakeFiles/simple_plot.dir

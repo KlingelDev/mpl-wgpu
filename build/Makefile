@@ -201,6 +201,19 @@ matplot/fast:
 .PHONY : matplot/fast
 
 #=============================================================================
+# Target rules for targets named test_render
+
+# Build rule for target.
+test_render: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_render
+.PHONY : test_render
+
+# fast build rule for target.
+test_render/fast:
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/build
+.PHONY : test_render/fast
+
+#=============================================================================
 # Target rules for targets named simple_plot
 
 # Build rule for target.
@@ -277,6 +290,7 @@ help:
 	@echo "... mpl_wgpu_backend"
 	@echo "... nodesoup"
 	@echo "... simple_plot"
+	@echo "... test_render"
 	@echo "... src/backend/primitive_renderer.o"
 	@echo "... src/backend/primitive_renderer.i"
 	@echo "... src/backend/primitive_renderer.s"

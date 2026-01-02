@@ -55,18 +55,23 @@ bool WgpuBackend::new_frame() {
 
 bool WgpuBackend::render_data() {
   if (!renderer_) return false;
-  ReconstructRectangles();
+
   float w = static_cast<float>(render_width_);
   float h = static_cast<float>(render_height_);
+
+  ReconstructRectangles();
   
-  // Rects first (Background often included here)
   if (!rects_.empty()) renderer_->DrawRects(rects_, w, h);
-  // Triangles (3D Surface)
-  if (!triangles_.empty()) renderer_->DrawTriangles(triangles_, w, h);
-  // Lines (Wireframe/Grid - Overlay)
   if (!lines_.empty()) renderer_->DrawLines(lines_, w, h);
-  // Circles (Markers - Overlay)
   if (!circles_.empty()) renderer_->DrawCircles(circles_, w, h);
+  if (!triangles_.empty()) renderer_->DrawTriangles(triangles_, w, h);
+
+  rects_.clear();
+  lines_.clear();
+  circles_.clear();
+  triangles_.clear();
+  pending_segments_.clear();
+
   return true;
 }
 
@@ -157,10 +162,12 @@ void WgpuBackend::draw_path(const std::vector<double>& x,
   float gap_len = 0.0f;
 
   for (size_t i = 0; i < n - 1; ++i) {
-    float x1 = static_cast<float>(x[i]) * rw;
-    float y1 = static_cast<float>(y[i]) * rh;
-    float x2 = static_cast<float>(x[i + 1]) * rw;
-    float y2 = static_cast<float>(y[i + 1]) * rh;
+    // matplot++ passes coordinates in 0-100 range (percentage)
+    // Convert to pixel coordinates: (coord / 100) * render_size
+    float x1 = static_cast<float>(x[i]) / 100.0f * rw;
+    float y1 = static_cast<float>(y[i]) / 100.0f * rh;
+    float x2 = static_cast<float>(x[i + 1]) / 100.0f * rw;
+    float y2 = static_cast<float>(y[i + 1]) / 100.0f * rh;
 
     lines_.push_back({x1, y1, 0.0f, x2, y2, 0.0f,
                       c[0], c[1], c[2], c[3],
@@ -176,8 +183,8 @@ void WgpuBackend::draw_path(const std::vector<double>& x,
 
   // Final point circle
   if (n > 0) {
-    float lx = static_cast<float>(x[n - 1]) * rw;
-    float ly = static_cast<float>(y[n - 1]) * rh;
+    float lx = static_cast<float>(x[n - 1]) / 100.0f * rw;
+    float ly = static_cast<float>(y[n - 1]) / 100.0f * rh;
     float r_join = lw * 0.5f;
     if (dash_len == 0.0f) {
       circles_.push_back({lx, ly, 0.0f, r_join, 
