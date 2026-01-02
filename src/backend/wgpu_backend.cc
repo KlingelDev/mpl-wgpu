@@ -84,6 +84,7 @@ bool WgpuBackend::should_close() {
 }
 
 void WgpuBackend::show(matplot::figure_type* /*fig*/) {
+  std::cout << "WgpuBackend::show() called!\n";
   render_data();
 }
 
@@ -166,12 +167,12 @@ void WgpuBackend::draw_path(const std::vector<double>& x,
   float gap_len = 0.0f;
 
   for (size_t i = 0; i < n - 1; ++i) {
-    // matplot++ passes coordinates in 0-100 range (percentage)
-    // Convert to pixel coordinates: (coord / 100) * render_size
-    float x1 = static_cast<float>(x[i]) / 100.0f * rw;
-    float y1 = static_cast<float>(y[i]) / 100.0f * rh;
-    float x2 = static_cast<float>(x[i + 1]) / 100.0f * rw;
-    float y2 = static_cast<float>(y[i + 1]) / 100.0f * rh;
+    // matplot++ passes coordinates in pixel space (based on width/height)
+    // Use them directly, no scaling needed
+    float x1 = static_cast<float>(x[i]);
+    float y1 = static_cast<float>(y[i]);
+    float x2 = static_cast<float>(x[i + 1]);
+    float y2 = static_cast<float>(y[i + 1]);
 
     lines_.push_back({x1, y1, 0.0f, x2, y2, 0.0f,
                       c[0], c[1], c[2], c[3],
@@ -187,8 +188,8 @@ void WgpuBackend::draw_path(const std::vector<double>& x,
 
   // Final point circle
   if (n > 0) {
-    float lx = static_cast<float>(x[n - 1]) / 100.0f * rw;
-    float ly = static_cast<float>(y[n - 1]) / 100.0f * rh;
+    float lx = static_cast<float>(x[n - 1]);
+    float ly = static_cast<float>(y[n - 1]);
     float r_join = lw * 0.5f;
     if (dash_len == 0.0f) {
       circles_.push_back({lx, ly, 0.0f, r_join, 
@@ -219,9 +220,9 @@ void WgpuBackend::draw_markers(const std::vector<double>& x,
 
   for (size_t i = 0; i < count; ++i) {
     std::array<float, 4> c = FixColor(color);
-    // matplot++ coordinates are 0-100, convert to pixels
-    float mx = (static_cast<float>(x[i]) / 100.0f) * static_cast<float>(render_width_);
-    float my = static_cast<float>(render_height_) - (static_cast<float>(y[i]) / 100.0f) * static_cast<float>(render_height_);
+    // matplot++ coordinates are already in pixel space
+    float mx = static_cast<float>(x[i]);
+    float my = static_cast<float>(render_height_) - static_cast<float>(y[i]);
     float mz = 0.0f;
     
     WgpuRenderer::Circle circle;

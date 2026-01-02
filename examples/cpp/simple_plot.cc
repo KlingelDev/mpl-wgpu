@@ -68,8 +68,13 @@ int main() {
   matplot::xlabel("X Axis");
   matplot::ylabel("Y = X²");
 
+  std::cout << "About to call fig->draw()...\n";
+  std::cout << "Backend pointer: " << backend.get() << "\n";
+  
   // Render once
   fig->draw();
+
+  std::cout << "fig->draw() completed!\n";
 
   std::cout << "Plot rendered! Setting up display...\n";
 
