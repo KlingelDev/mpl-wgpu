@@ -14,7 +14,14 @@ fn main() {
     // I should add c_api.cpp to CMakeLists.txt first!
     
     println!("cargo:rustc-link-lib=static=mpl_wgpu_backend");
+    
+    // Add path to matplot build artifact
+    let build_dir = dst.join("build");
+    println!("cargo:rustc-link-search=native={}", build_dir.join("vendor/matplotplusplus/source/matplot").display());
+    println!("cargo:rustc-link-search=native={}", build_dir.join("vendor/matplotplusplus/source/3rd_party").display());
+
     println!("cargo:rustc-link-lib=static=matplot");
+    println!("cargo:rustc-link-lib=static=nodesoup");
     
     // C++ std lib
     #[cfg(target_os = "linux")]
