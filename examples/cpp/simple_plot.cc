@@ -35,6 +35,7 @@ int main() {
   // Use compatibility profile for immediate mode rendering
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+  glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);  // Hide title bar
   
   const int width = 800;
   const int height = 600;
