@@ -18,163 +18,109 @@
 
 ## Implementation Roadmap
 
-### Phase 1: Minimal wgpu Backend (v0.1.0)
+## Implementation Roadmap
 
-**Goal:** Basic functional backend in C++
-
-**Deliverables:**
-- [ ] C++ wgpu backend class inheriting from `backend_interface`
-- [ ] Implement core rendering methods:
-  - [ ] `draw_background()` - Clear/fill background
-  - [ ] `draw_rectangle()` - Filled rectangles  
-  - [ ] `draw_path()` - Line rendering
-  - [ ] `new_frame()` / `render_data()` - Frame lifecycle
-- [ ] Integration with existing `PrimitiveRenderer`
-- [ ] Build system (CMake integration)
-- [ ] Simple test: render a basic 2D line plot
-
-**What we keep from current code:**
-- ✅ `PrimitiveRenderer` - Reuse for backend implementation
-- ✅ `TextRenderer` - Reuse for text drawing
-- ✅ Core wgpu infrastructure
-
-**What we remove:**
-- ❌ `PlotBackend` Rust struct (matplot++ handles this)
-- ❌ Rust plot implementations (error bars, area plots, etc.)
-
----
-
-### Phase 2: Complete Backend Implementation (v0.2.0)
-
-**Goal:** Full vertex-based backend support
+### ✅ Phase 1: Core Backend Implementation (v0.1.0) - COMPLETE
+**Goal:** Functional C++ backend rendering to pixel buffer
 
 **Deliverables:**
-- [ ] Implement remaining drawing methods:
-  - [ ] `draw_markers()` - Point/marker rendering
-  - [ ] `draw_text()` - Text rendering via `TextRenderer`
-  - [ ] `draw_triangle()` - Triangle primitives
-  - [ ] `draw_image()` - Image/texture display
-- [ ] Coordinate transformation system
-- [ ] Color management
-- [ ] Z-buffer/depth handling for 3D plots
-- [ ] Test suite covering all primitives
+- [x] C++ backend class (`WgpuBackend`) inheriting from `matplot::backend::backend_interface`
+- [x] Implementation of core primitives:
+  - [x] `draw_rectangle()` - Backgrounds and bars
+  - [x] `draw_path()` - Lines and curves
+  - [x] `draw_markers()` - Scatter plot points (circles)
+  - [x] `draw_triangle()` - Filled areas and 3D surfaces
+  - [x] `draw_text()` - Basic text placement
+- [x] WebGPU Integration:
+  - [x] Custom C++ wrapper for `wgpu-native`
+  - [x] Shader compilation and pipeline state management
+  - [x] Vertex and index buffer management
+- [x] Coordinate System:
+  - [x] Correct mapping from matplot++ (0-100) to pixel coordinates
+- [x] Build System:
+  - [x] CMake integration with `FetchContent` for dependencies
+  - [x] No external dependencies required (auto-downloads wgpu-native)
 
----
-
-### Phase 3: C API Layer (v0.3.0)
-
-**Goal:** Expose backend via C API for FFI
-
-**Deliverables:**
-- [ ] Design C API surface
-- [ ] Export functions:
-  ```c
-  mpl_backend* mpl_wgpu_create(uint32_t w, uint32_t h);
-  void mpl_wgpu_destroy(mpl_backend*);
-  void mpl_wgpu_render(mpl_backend*, mpl_figure*);
-  uint8_t* mpl_wgpu_get_pixels(mpl_backend*);
-  ```
-- [ ] Error handling across FFI boundary
-- [ ] Memory management strategy
-- [ ] C API documentation
-
----
-
-### Phase 4: Rust FFI Bindings (v0.4.0)
-
-**Goal:** Safe Rust wrapper around matplot++ with wgpu backend
+### Phase 2: Native Surface & Performance (v0.2.0)
+**Goal:** Direct rendering to window surface and optimization
 
 **Deliverables:**
-- [ ] Generate `bindgen` bindings
-- [ ] Create safe Rust wrappers:
-  ```rust
-  pub struct Figure { /* ... */ }
-  pub struct Axes { /* ... */ }
-  pub struct WgpuBackend { /* ... */ }
-  ```
-- [ ] Implement plot type methods:
-  - [ ] `plot()`, `plot3()`
-  - [ ] `scatter()`, `scatter3()`
-  - [ ] `bar()`, `histogram()`
-  - [ ] `surf()`, `mesh()`
-  - [ ] All matplot++ plot types
-- [ ] Idiomatic Rust API
-- [ ] Comprehensive examples
-- [ ] Documentation and tutorials
+- [ ] **Surface Integration:**
+  - [ ] Remove OpenGL dependency (currently used for display)
+  - [ ] Implement direct `wgpu::Surface` configuration
+  - [ ] Support SwapChain resizing
+- [ ] **Text Rendering:**
+  - [ ] Implement proper font atlas system
+  - [ ] Support high-quality text rendering (SDF or high-res texture)
+- [ ] **Optimization:**
+  - [ ] Instanced rendering for markers (currently 1 draw call per marker group)
+  - [ ] Uniform buffer optimization
 
----
-
-### Phase 5: Integration & Polish (v0.5.0)
-
-**Goal:** Production-ready release
+### Phase 3: Rust Bindings (v0.3.0)
+**Goal:** Safe, idiomatic Rust API
 
 **Deliverables:**
-- [ ] Port matplot++ example gallery to Rust
-- [ ] Performance benchmarks
-- [ ] Memory leak analysis (Valgrind/AddressSanitizer)
-- [ ] Cross-platform testing (Linux, Windows, macOS)
-- [ ] WASM support
-- [ ] CI/CD pipeline
-- [ ] Published crate on crates.io
+- [ ] **FFI Layer:**
+  - [ ] Expose C API for backend creation/destruction
+  - [ ] Expose render functions
+- [ ] **Rust Wrapper:**
+  - [ ] `mpl-wgpu` crate structure
+  - [ ] Safe wrappers for `Figure`, `Axes`, `Plot`
+  - [ ] Integration with `winit` for window management
 
----
-
-### Phase 6: Advanced Features (v1.0.0)
-
-**Goal:** Enhanced integration and performance
+### Phase 4: Interactivity & Advanced Features (v0.4.0)
+**Goal:** Full interactive plotting support
 
 **Deliverables:**
-- [ ] Interactive plots (mouse/keyboard)
-- [ ] Animation support
-- [ ] Real-time data streaming
-- [ ] Multiple figure windows
-- [ ] Custom colormaps
-- [ ] Theme system
-- [ ] Export formats (PNG, SVG, PDF)
+- [ ] Mouse and keyboard event handling
+- [ ] Zoom and pan support
+- [ ] Real-time data updates (streaming plots)
+- [ ] 3D camera controls
+- [ ] Export to image formats (PNG/buffer capture)
 
 ---
 
 ## Current Status
 
 **✅ Completed:**
-- Research of matplotplusplus backend interface
-- Analysis of existing backends (gnuplot, OpenGL)
-- Identified reusable components (`PrimitiveRenderer`, `TextRenderer`)
+- Fully functional C++ backend (`WgpuBackend`)
+- WebGPU rendering engine (`PrimitiveRenderer`) using `wgpu-native`
+- Verified rendering of basic plot types:
+  - Line plots (axes, grids, data)
+  - Scatter plots (markers)
+  - Filled areas (rectangles)
+- Example application (`simple_plot`) rendering to window
 
-**🚧 In Progress:**
-- Setting up build system
+**🚧 Immediate Focus:**
+- Transitioning from software-rasterized pixel buffer to direct GPU presentation
+- Creating Rust FFI bindings to make this usable from Rust projects
 
-**📋 Next Steps:**
-1. Add matplotplusplus as git submodule
-2. Create `wgpu_backend.h/cpp` stub
-3. Implement minimal backend
-4. Test with simple plot
+**📋 Known Issues:**
+- Text rendering is basic
+- Current display uses OpenGL for presentation (rendering is WGPU-based but blitted via OpenGL)
 
 ---
 
 ## Why This Approach?
 
-**vs. Reimplementing Everything in Rust:**
-- ✅ Get all matplot++ features immediately (100+ plot types)
-- ✅ Leverage mature, well-tested codebase
-- ✅ Focus on GPU rendering optimization
-- ✅ Smaller maintenance burden
+**Hybrid Architecture:**
+- **C++ Core:** Leverages existing high-performance C++ backend code
+- **Rust Shell:** Provides safe, ergonomic Rust API
+- **WebGPU:** Modern, cross-platform low-level graphics API
 
-**Trade-offs:**
-- ⚠️ C++ dependency (but isolated in backend)
-- ⚠️ FFI overhead (minimal for rendering)
-- ✅ Best-in-class plotting + best-in-class GPU rendering
+**Benefits:**
+- **Performance:** Hardware acceleration for large datasets
+- **Portability:** Runs on Vulkan, Metal, DX12, and WebGPU (browser)
+- **Feature Parity:** Instant access to 100+ plot types from `matplot++` without reimplementation
 
 ---
 
 ## Contributing
 
 Priority areas:
-1. Implementing backend primitive methods
-2. Testing across platforms
-3. Performance optimization
-4. Documentation and examples
-5. WASM compatibility
+1. **Rust Integration:** Helping build the safe Rust bindings
+2. **Text Rendering:** Improving font quality and performance
+3. **Surface Support:** Implementing platform-specific surface creation for Windows/Linux/macOS
 
 
 ### 1.1 Line Plots Enhancement

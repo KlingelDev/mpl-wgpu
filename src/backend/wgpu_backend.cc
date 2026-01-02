@@ -56,6 +56,10 @@ bool WgpuBackend::new_frame() {
 bool WgpuBackend::render_data() {
   if (!renderer_) return false;
 
+  std::cout << "DEBUG: render_data() called!\n";
+  std::cout << "  Rects: " << rects_.size() << ", Lines: " << lines_.size() 
+            << ", Circles: " << circles_.size() << "\n";
+
   float w = static_cast<float>(render_width_);
   float h = static_cast<float>(render_height_);
 
@@ -215,8 +219,9 @@ void WgpuBackend::draw_markers(const std::vector<double>& x,
 
   for (size_t i = 0; i < count; ++i) {
     std::array<float, 4> c = FixColor(color);
-    float mx = static_cast<float>(x[i]) * scale_x;
-    float my = rh - static_cast<float>(y[i]) * scale_y;
+    // matplot++ coordinates are 0-100, convert to pixels
+    float mx = (static_cast<float>(x[i]) / 100.0f) * static_cast<float>(render_width_);
+    float my = static_cast<float>(render_height_) - (static_cast<float>(y[i]) / 100.0f) * static_cast<float>(render_height_);
     float mz = 0.0f;
     
     WgpuRenderer::Circle circle;
