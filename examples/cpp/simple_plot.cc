@@ -31,12 +31,9 @@ int main() {
   }
 
   // Create window with OpenGL context for display
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  #ifdef __APPLE__
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  #endif
+  // Use compatibility profile for immediate mode rendering
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   
   const int width = 800;
   const int height = 600;
@@ -89,6 +86,15 @@ int main() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   std::cout << "Display ready! Press ESC to close\n";
+
+  // Debug: Check if pixel buffer has data
+  const uint8_t* pixels = renderer->GetPixels();
+  int non_zero = 0;
+  for (size_t i = 0; i < width * height * 4; i++) {
+    if (pixels[i] != 0) non_zero++;
+  }
+  std::cout << "DEBUG: Pixel buffer has " << non_zero << " non-zero bytes out of " 
+            << (width * height * 4) << " total\n";
 
   // Main loop
   while (!glfwWindowShouldClose(window)) {

@@ -50,14 +50,92 @@ void MinimalRenderer::DrawLines(const std::vector<Line>& lines,
                                 float screen_width,
                                 float screen_height) {
   std::cout << "DrawLines: " << lines.size() << " lines\n";
-  // TODO: Actual GPU line rendering
+  
+  float scale_x = static_cast<float>(width_) / screen_width;
+  float scale_y = static_cast<float>(height_) / screen_height;
+  
+  for (const auto& line : lines) {
+    // Transform coordinates
+    int x0 = static_cast<int>(line.x1 * scale_x);
+    int y0 = static_cast<int>(line.y1 * scale_y);
+    int x1 = static_cast<int>(line.x2 * scale_x);
+    int y1 = static_cast<int>(line.y2 * scale_y);
+    
+    uint8_t r = static_cast<uint8_t>(line.r * 255);
+    uint8_t g = static_cast<uint8_t>(line.g * 255);
+    uint8_t b = static_cast<uint8_t>(line.b * 255);
+    uint8_t a = static_cast<uint8_t>(line.a * 255);
+    
+    // Bresenham's line algorithm
+    int dx = std::abs(x1 - x0);
+    int dy = std::abs(y1 - y0);
+    int sx = x0 < x1 ? 1 : -1;
+    int sy = y0 < y1 ? 1 : -1;
+    int err = dx - dy;
+    
+    int x = x0, y = y0;
+    while (true) {
+      // Draw pixel
+      if (x >= 0 && x < static_cast<int>(width_) && 
+          y >= 0 && y < static_cast<int>(height_)) {
+        size_t idx = (y * width_ + x) * 4;
+        pixel_buffer_[idx + 0] = r;
+        pixel_buffer_[idx + 1] = g;
+        pixel_buffer_[idx + 2] = b;
+        pixel_buffer_[idx + 3] = a;
+      }
+      
+      if (x == x1 && y == y1) break;
+      
+      int e2 = 2 * err;
+      if (e2 > -dy) {
+        err -= dy;
+        x += sx;
+      }
+      if (e2 < dx) {
+        err += dx;
+        y += sy;
+      }
+    }
+  }
 }
 
 void MinimalRenderer::DrawCircles(const std::vector<Circle>& circles,
                                   float screen_width,
                                   float screen_height) {
   std::cout << "DrawCircles: " << circles.size() << " circles\n";
-  // TODO: Actual GPU circle rendering
+  
+  float scale_x = static_cast<float>(width_) / screen_width;
+  float scale_y = static_cast<float>(height_) / screen_height;
+  
+  for (const auto& circle : circles) {
+    int cx = static_cast<int>(circle.cx * scale_x);
+    int cy = static_cast<int>(circle.cy * scale_y);
+    int radius = static_cast<int>(circle.radius);
+    
+    uint8_t r = static_cast<uint8_t>(circle.r * 255);
+    uint8_t g = static_cast<uint8_t>(circle.g * 255);
+    uint8_t b = static_cast<uint8_t>(circle.b * 255);
+    uint8_t a = static_cast<uint8_t>(circle.a * 255);
+    
+    // Draw filled circle
+    for (int y = cy - radius; y <= cy + radius; ++y) {
+      for (int x = cx - radius; x <= cx + radius; ++x) {
+        int dx = x - cx;
+        int dy = y - cy;
+        if (dx * dx + dy * dy <= radius * radius) {
+          if (x >= 0 && x < static_cast<int>(width_) &&
+              y >= 0 && y < static_cast<int>(height_)) {
+            size_t idx = (y * width_ + x) * 4;
+            pixel_buffer_[idx + 0] = r;
+            pixel_buffer_[idx + 1] = g;
+            pixel_buffer_[idx + 2] = b;
+            pixel_buffer_[idx + 3] = a;
+          }
+        }
+      }
+    }
+  }
 }
 
 void MinimalRenderer::DrawTriangles(

@@ -644,7 +644,11 @@ examples/cpp/simple_plot: _deps/wgpu_native-src/target/release/libwgpu_native.a 
   /lib/x86_64-linux-gnu/Scrt1.o \
   /lib/x86_64-linux-gnu/crti.o \
   /lib/x86_64-linux-gnu/crtn.o \
+  /lib/x86_64-linux-gnu/libGLdispatch.so.0 \
   /lib/x86_64-linux-gnu/libLerc.so.4 \
+  /lib/x86_64-linux-gnu/libX11.so.6 \
+  /lib/x86_64-linux-gnu/libXau.so.6 \
+  /lib/x86_64-linux-gnu/libXdmcp.so.6 \
   /lib/x86_64-linux-gnu/libc.so \
   /lib/x86_64-linux-gnu/libc.so.6 \
   /lib/x86_64-linux-gnu/libdeflate.so.0 \
@@ -656,6 +660,7 @@ examples/cpp/simple_plot: _deps/wgpu_native-src/target/release/libwgpu_native.a 
   /lib/x86_64-linux-gnu/libmvec.so.1 \
   /lib/x86_64-linux-gnu/libsharpyuv.so.0 \
   /lib/x86_64-linux-gnu/libwebp.so.7 \
+  /lib/x86_64-linux-gnu/libxcb.so.1 \
   /lib/x86_64-linux-gnu/libzstd.so.1 \
   /lib64/ld-linux-x86-64.so.2 \
   /usr/lib/gcc/x86_64-linux-gnu/14/crtbeginS.o \
@@ -663,6 +668,8 @@ examples/cpp/simple_plot: _deps/wgpu_native-src/target/release/libwgpu_native.a 
   /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a \
   /usr/lib/gcc/x86_64-linux-gnu/14/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/14/libstdc++.so \
+  /usr/lib/x86_64-linux-gnu/libGLX.so \
+  /usr/lib/x86_64-linux-gnu/libOpenGL.so \
   /usr/lib/x86_64-linux-gnu/libc_nonshared.a \
   /usr/lib/x86_64-linux-gnu/libglfw.so.3.4 \
   /usr/lib/x86_64-linux-gnu/libjpeg.so \
@@ -681,17 +688,25 @@ examples/cpp/CMakeFiles/simple_plot.dir/minimal_renderer.cc.o:
 
 /usr/lib/x86_64-linux-gnu/libc_nonshared.a:
 
+/usr/lib/x86_64-linux-gnu/libOpenGL.so:
+
 /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/14/crtendS.o:
 
 /usr/lib/gcc/x86_64-linux-gnu/14/crtbeginS.o:
 
+/lib/x86_64-linux-gnu/libxcb.so.1:
+
 /lib/x86_64-linux-gnu/libsharpyuv.so.0:
 
 /lib/x86_64-linux-gnu/liblzma.so.5:
 
 /lib/x86_64-linux-gnu/libc.so:
+
+/lib/x86_64-linux-gnu/libXau.so.6:
+
+/lib/x86_64-linux-gnu/libGLdispatch.so.0:
 
 /lib/x86_64-linux-gnu/crti.o:
 
@@ -790,6 +805,8 @@ _deps/wgpu_native-src/target/release/libwgpu_native.a:
 /home/karl/prsn/mpl-wgpu/vendor/matplotplusplus/source/matplot/backend/backend_registry.h:
 
 /home/karl/prsn/mpl-wgpu/vendor/matplotplusplus/source/matplot/axes_objects/string_function.h:
+
+/usr/lib/x86_64-linux-gnu/libGLX.so:
 
 /home/karl/prsn/mpl-wgpu/vendor/matplotplusplus/source/matplot/util/concepts.h:
 
@@ -963,6 +980,8 @@ _deps/wgpu_native-src/target/release/libwgpu_native.a:
 
 /usr/include/x86_64-linux-gnu/bits/types/time_t.h:
 
+/lib/x86_64-linux-gnu/libX11.so.6:
+
 /usr/include/x86_64-linux-gnu/bits/posix_opt.h:
 
 /usr/include/c++/14/bits/streambuf.tcc:
@@ -1134,6 +1153,8 @@ vendor/matplotplusplus/source/matplot/matplot/detail/exports.h:
 /usr/include/asm-generic/errno.h:
 
 /usr/include/c++/14/bits/predefined_ops.h:
+
+/lib/x86_64-linux-gnu/libXdmcp.so.6:
 
 /usr/include/c++/14/cstdlib:
 
