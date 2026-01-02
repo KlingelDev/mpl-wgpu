@@ -29,6 +29,7 @@
 pub mod backend;
 pub mod ffi;
 pub mod primitives;
+pub mod plotting;
 pub mod text;
 
 pub use backend::{Figure, WgpuBackend};

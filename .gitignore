@@ -1,0 +1,7 @@
+target/
+build/
+cmake-build-debug/
+.idea/
+.vscode/
+*.swp
+*.DS_Store

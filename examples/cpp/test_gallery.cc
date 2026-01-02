@@ -460,7 +460,8 @@ int main() {
             {"3D Scatter", TestScatter3D},
             {"3D Stem", TestStem3D},
             {"Semi-Log X", TestSemiLogX},
-            {"Semi-Log Y", TestSemiLogY}
+            {"Semi-Log Y", TestSemiLogY},
+            {"Contour Plot", TestContour}
         };
 
         int current_test = 0;

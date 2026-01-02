@@ -56,17 +56,17 @@
   - [ ] Instanced rendering for markers (currently 1 draw call per marker group)
   - [ ] Uniform buffer optimization
 
-### Phase 3: Rust Bindings (v0.3.0)
+### Phase 3: Rust Bindings (v0.3.0) ✅ COMPLETE
 **Goal:** Safe, idiomatic Rust API
 
 **Deliverables:**
-- [ ] **FFI Layer:**
-  - [ ] Expose C API for backend creation/destruction
-  - [ ] Expose render functions
-- [ ] **Rust Wrapper:**
-  - [ ] `mpl-wgpu` crate structure
-  - [ ] Safe wrappers for `Figure`, `Axes`, `Plot`
-  - [ ] Integration with `winit` for window management
+- [x] **FFI Layer:**
+  - [x] Expose C API for backend creation/destruction
+  - [x] Expose render functions
+- [x] **Rust Wrapper:**
+  - [x] `mpl-wgpu` crate structure
+  - [x] Safe wrappers for `Figure`, `Axes`
+  - [x] Integration with `winit` for window management
 
 ### Phase 4: Interactivity & Advanced Features (v0.4.0)
 **Goal:** Full interactive plotting support
@@ -85,11 +85,18 @@
 **✅ Completed:**
 - Fully functional C++ backend (`WgpuBackend`)
 - WebGPU rendering engine (`PrimitiveRenderer`) using `wgpu-native`
+- **Idiomatic Rust API** (`Figure`, `Axes`) accessing Backend
+- **Implemented Plot Types** in Rust:
+  - `plot` (Line plots)
+  - `scatter` (Markers)
+  - `bar` (Bar charts)
+  - `hist` (Histograms)
+  - `surf` (3D Surfaces/Heatmaps)
 - Verified rendering of basic plot types:
   - Line plots (axes, grids, data)
   - Scatter plots (markers)
   - Filled areas (rectangles)
-- Example application (`simple_plot`) rendering to window
+- Example application (`simple_plot`, `plotting_showcase`) rendering to window
 
 **🚧 Immediate Focus:**
 - Transitioning from software-rasterized pixel buffer to direct GPU presentation
@@ -132,13 +139,14 @@ Priority areas:
 - [ ] Log-scale plots (log, semilogx, semilogy, loglog)
 
 ### 1.2 Data Distribution
+- [x] Histograms
 - [ ] Box plots
 - [ ] Violin plots
 - [ ] Stem-and-leaf plots
 - [ ] Pie charts
 - [ ] Pareto charts
 - [ ] Word clouds
-- [ ] Heatmaps
+- [x] Heatmaps
 
 ### 1.3 Discrete Data
 - [ ] Grouped bar charts

@@ -1,15 +1,13 @@
 # mpl-wgpu: wgpu Rendering Backend for matplotplusplus
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 GPU-accelerated rendering backend for [matplotplusplus](https://github.com/alandefreitas/matplotplusplus) using wgpu.
 
 ## Features
 
 - 🚀 **GPU-Accelerated** - Hardware-accelerated rendering via wgpu
-- 🦀 **Rust Integration** - Safe Rust bindings to matplotplusplus
-- 🎨 **Full matplot++ API** - Access all 100+ plot types
-- 💻 **Cross-platform** - Windows, Linux, macOS, WASM
+- 🦀 **Rust Wrapper** - Safe, Object-Oriented Rust API (`Figure`, `Axes`)
+- 🎨 **Matplotlib-like API** - Familiar syntax (`plot`, `scatter`, `bar`, `hist`)
+- 💻 **Cross-platform** - Windows, Linux, macOS, WASM support
 - ⚡ **High Performance** - Batched rendering, optimized for large datasets
 
 ## Architecture
@@ -33,9 +31,11 @@ matplotplusplus (C++)     ← Plotting library (all plot types)
 
 ```
 mpl-wgpu/
-├── include/matplot/backend/  # Public C++ headers
-├── src/backend/              # C++ implementation  
-├── src/ffi/                  # C FFI and Rust bindings
+├── src/                      # Source code
+│   ├── c_api.cpp/h           # C API wrapper implementation
+│   ├── ffi.rs                # Rust FFI bindings
+│   ├── plotting.rs           # Safe, Object-Oriented Rust wrappers
+│   └── ...                   # Backend implementation
 ├── examples/
 │   ├── cpp/                  # C++ examples
 │   └── rust/                 # Rust examples
@@ -87,13 +87,22 @@ int main() {
 ## Quick Start (Rust)
 
 ```rust
-use mpl_wgpu::{Figure, WgpuBackend};
+use mpl_wgpu::plotting::{PlotBackend}; // PlotBackend manages the figure context
 
-fn main() {
-  let mut fig = Figure::new();
-  fig.plot(&[1.0, 2.0, 3.0], &[1.0, 4.0, 9.0]);
-  fig.render();
+// Example usage within a rendering loop (e.g. winit)
+fn draw_frame(backend: &mut PlotBackend) {
+    // Access the Figure and Axes
+    let fig = backend.figure();
+    let ax = fig.current_axes();
+    
+    // Plot data using standard Matplotlib style strings
+    ax.plot(&[1.0, 2.0, 3.0], &[1.0, 4.0, 9.0], "-o");
+    
+    // Configure plot
+    ax.set_title("Hello from Rust!");
+    ax.grid(true);
 }
+// See examples/rust/ for full application structure.
 ```
 
 ## Documentation

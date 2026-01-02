@@ -26,6 +26,7 @@ add_library(mpl_wgpu_backend
     src/backend/wgpu_backend.cc
     src/backend/primitive_renderer.cc
     include/matplot/backend/wgpu_backend.h
+    src/c_api.cpp
     src/backend/primitive_renderer.h
 )
 

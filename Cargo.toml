@@ -15,7 +15,8 @@ name = "mpl_wgpu"
 path = "src/lib.rs"
 
 [dependencies]
-wgpu = "0.19"
+wgpu = "0.20"
+wgpu_text = "0.8"
 glam = "0.25"
 bytemuck = { version = "1.14", features = ["derive"] }
 anyhow = "1.0"
@@ -25,6 +26,7 @@ pollster = "0.3"
 [build-dependencies]
 cc = "1.0"
 bindgen = "0.69"
+cmake = "0.1"
 
 [dev-dependencies]
 env_logger = "0.11"
