@@ -119,23 +119,31 @@ int main() {
       glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
 
+    // Set viewport to full window
+    glViewport(0, 0, width, height);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     // Upload pixel buffer to texture
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
                  GL_RGBA, GL_UNSIGNED_BYTE, renderer->GetPixels());
 
-    // Clear and render full-screen quad with texture
-    glClear(GL_COLOR_BUFFER_BIT);
+    // Set up orthographic projection (pixel coordinates)
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, width, height, 0, -1, 1);  // Top-left origin
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     
-    // Use immediate mode for simplicity (works in compatibility profile)
+    // Draw textured quad filling entire window
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texture);
     
     glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f); glVertex2f(-1.0f, -1.0f);
-    glTexCoord2f(1.0f, 1.0f); glVertex2f( 1.0f, -1.0f);
-    glTexCoord2f(1.0f, 0.0f); glVertex2f( 1.0f,  1.0f);
-    glTexCoord2f(0.0f, 0.0f); glVertex2f(-1.0f,  1.0f);
+    glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f);           // Top-left
+    glTexCoord2f(1.0f, 0.0f); glVertex2f((float)width, 0.0f);   // Top-right  
+    glTexCoord2f(1.0f, 1.0f); glVertex2f((float)width, (float)height); // Bottom-right
+    glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, (float)height);  // Bottom-left
     glEnd();
     
     glDisable(GL_TEXTURE_2D);
