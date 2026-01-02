@@ -124,4 +124,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/DependInfo.cmake"
   "examples/cpp/CMakeFiles/test_render.dir/DependInfo.cmake"
   "examples/cpp/CMakeFiles/simple_plot.dir/DependInfo.cmake"
+  "examples/cpp/CMakeFiles/gpu_plot.dir/DependInfo.cmake"
+  "examples/cpp/CMakeFiles/test_gallery.dir/DependInfo.cmake"
   )

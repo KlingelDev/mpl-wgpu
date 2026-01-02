@@ -23,3 +23,39 @@ target_link_libraries(simple_plot
   glfw
   OpenGL::GL
 )
+
+add_executable(gpu_plot
+  gpu_plot.cc
+  window.cc
+  window.h
+  ../../src/backend/primitive_renderer.cc # Need to compile this too if not in lib
+  ../../src/backend/primitive_renderer.h
+)
+# Ensure we find WebGPU (assumed linked in backend, but we need headers)
+# For now, linking backend might be enough if it exposes includes
+target_include_directories(gpu_plot PRIVATE 
+  ../../src/backend 
+  ../../include
+)
+target_link_libraries(gpu_plot
+  mpl_wgpu_backend
+  glfw
+  webgpu
+)
+
+add_executable(test_gallery
+  test_gallery.cc
+  window.cc
+  window.h
+  ../../src/backend/primitive_renderer.cc 
+  ../../src/backend/primitive_renderer.h
+)
+target_include_directories(test_gallery PRIVATE 
+  ../../src/backend 
+  ../../include
+)
+target_link_libraries(test_gallery
+  mpl_wgpu_backend
+  glfw
+  webgpu
+)

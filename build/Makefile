@@ -226,6 +226,32 @@ simple_plot/fast:
 	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/build
 .PHONY : simple_plot/fast
 
+#=============================================================================
+# Target rules for targets named gpu_plot
+
+# Build rule for target.
+gpu_plot: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gpu_plot
+.PHONY : gpu_plot
+
+# fast build rule for target.
+gpu_plot/fast:
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/build
+.PHONY : gpu_plot/fast
+
+#=============================================================================
+# Target rules for targets named test_gallery
+
+# Build rule for target.
+test_gallery: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_gallery
+.PHONY : test_gallery
+
+# fast build rule for target.
+test_gallery/fast:
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/build
+.PHONY : test_gallery/fast
+
 src/backend/primitive_renderer.o: src/backend/primitive_renderer.cc.o
 .PHONY : src/backend/primitive_renderer.o
 
@@ -286,10 +312,12 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... gpu_plot"
 	@echo "... matplot"
 	@echo "... mpl_wgpu_backend"
 	@echo "... nodesoup"
 	@echo "... simple_plot"
+	@echo "... test_gallery"
 	@echo "... test_render"
 	@echo "... src/backend/primitive_renderer.o"
 	@echo "... src/backend/primitive_renderer.i"

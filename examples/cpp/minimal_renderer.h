@@ -37,6 +37,10 @@ class MinimalRenderer : public matplot::backend::WgpuRenderer {
                 float font_size, const std::array<float, 4>& color,
                 float rotation = 0.0f) override;
 
+  float MeasureText(const std::string& text, float font_size) override {
+      return 0.0f; 
+  }
+
   void Clear(const std::array<float, 4>& color) override;
 
   void DrawImage(const std::vector<float>& data, size_t img_width,

@@ -286,5 +286,41 @@
   "command": "/usr/bin/clang++ -DMATPLOT_BUILD_HIGH_RESOLUTION_WORLD_MAP -DNOMINMAX -I/home/karl/prsn/mpl-wgpu/include -I/home/karl/prsn/mpl-wgpu/vendor/matplotplusplus/source -I/home/karl/prsn/mpl-wgpu/build/vendor/matplotplusplus/source/matplot -std=gnu++17 -o CMakeFiles/simple_plot.dir/minimal_renderer.cc.o -c /home/karl/prsn/mpl-wgpu/examples/cpp/minimal_renderer.cc",
   "file": "/home/karl/prsn/mpl-wgpu/examples/cpp/minimal_renderer.cc",
   "output": "examples/cpp/CMakeFiles/simple_plot.dir/minimal_renderer.cc.o"
+},
+{
+  "directory": "/home/karl/prsn/mpl-wgpu/build/examples/cpp",
+  "command": "/usr/bin/clang++ -DMATPLOT_BUILD_HIGH_RESOLUTION_WORLD_MAP -DNOMINMAX -DWEBGPU_BACKEND_WGPU -I/home/karl/prsn/mpl-wgpu/examples/cpp/../../src/backend -I/home/karl/prsn/mpl-wgpu/examples/cpp/../../include -I/home/karl/prsn/mpl-wgpu/include -I/home/karl/prsn/mpl-wgpu/vendor/matplotplusplus/source -I/home/karl/prsn/mpl-wgpu/build/vendor/matplotplusplus/source/matplot -I/home/karl/prsn/mpl-wgpu/build/_deps/webgpu_dist-src/wgpu-native/include -I/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi/webgpu-headers -isystem /home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi -std=gnu++17 -o CMakeFiles/gpu_plot.dir/gpu_plot.cc.o -c /home/karl/prsn/mpl-wgpu/examples/cpp/gpu_plot.cc",
+  "file": "/home/karl/prsn/mpl-wgpu/examples/cpp/gpu_plot.cc",
+  "output": "examples/cpp/CMakeFiles/gpu_plot.dir/gpu_plot.cc.o"
+},
+{
+  "directory": "/home/karl/prsn/mpl-wgpu/build/examples/cpp",
+  "command": "/usr/bin/clang++ -DMATPLOT_BUILD_HIGH_RESOLUTION_WORLD_MAP -DNOMINMAX -DWEBGPU_BACKEND_WGPU -I/home/karl/prsn/mpl-wgpu/examples/cpp/../../src/backend -I/home/karl/prsn/mpl-wgpu/examples/cpp/../../include -I/home/karl/prsn/mpl-wgpu/include -I/home/karl/prsn/mpl-wgpu/vendor/matplotplusplus/source -I/home/karl/prsn/mpl-wgpu/build/vendor/matplotplusplus/source/matplot -I/home/karl/prsn/mpl-wgpu/build/_deps/webgpu_dist-src/wgpu-native/include -I/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi/webgpu-headers -isystem /home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi -std=gnu++17 -o CMakeFiles/gpu_plot.dir/window.cc.o -c /home/karl/prsn/mpl-wgpu/examples/cpp/window.cc",
+  "file": "/home/karl/prsn/mpl-wgpu/examples/cpp/window.cc",
+  "output": "examples/cpp/CMakeFiles/gpu_plot.dir/window.cc.o"
+},
+{
+  "directory": "/home/karl/prsn/mpl-wgpu/build/examples/cpp",
+  "command": "/usr/bin/clang++ -DMATPLOT_BUILD_HIGH_RESOLUTION_WORLD_MAP -DNOMINMAX -DWEBGPU_BACKEND_WGPU -I/home/karl/prsn/mpl-wgpu/examples/cpp/../../src/backend -I/home/karl/prsn/mpl-wgpu/examples/cpp/../../include -I/home/karl/prsn/mpl-wgpu/include -I/home/karl/prsn/mpl-wgpu/vendor/matplotplusplus/source -I/home/karl/prsn/mpl-wgpu/build/vendor/matplotplusplus/source/matplot -I/home/karl/prsn/mpl-wgpu/build/_deps/webgpu_dist-src/wgpu-native/include -I/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi/webgpu-headers -isystem /home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi -std=gnu++17 -o CMakeFiles/gpu_plot.dir/__/__/src/backend/primitive_renderer.cc.o -c /home/karl/prsn/mpl-wgpu/src/backend/primitive_renderer.cc",
+  "file": "/home/karl/prsn/mpl-wgpu/src/backend/primitive_renderer.cc",
+  "output": "examples/cpp/CMakeFiles/gpu_plot.dir/__/__/src/backend/primitive_renderer.cc.o"
+},
+{
+  "directory": "/home/karl/prsn/mpl-wgpu/build/examples/cpp",
+  "command": "/usr/bin/clang++ -DMATPLOT_BUILD_HIGH_RESOLUTION_WORLD_MAP -DNOMINMAX -DWEBGPU_BACKEND_WGPU -I/home/karl/prsn/mpl-wgpu/examples/cpp/../../src/backend -I/home/karl/prsn/mpl-wgpu/examples/cpp/../../include -I/home/karl/prsn/mpl-wgpu/include -I/home/karl/prsn/mpl-wgpu/vendor/matplotplusplus/source -I/home/karl/prsn/mpl-wgpu/build/vendor/matplotplusplus/source/matplot -I/home/karl/prsn/mpl-wgpu/build/_deps/webgpu_dist-src/wgpu-native/include -I/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi/webgpu-headers -isystem /home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi -std=gnu++17 -o CMakeFiles/test_gallery.dir/test_gallery.cc.o -c /home/karl/prsn/mpl-wgpu/examples/cpp/test_gallery.cc",
+  "file": "/home/karl/prsn/mpl-wgpu/examples/cpp/test_gallery.cc",
+  "output": "examples/cpp/CMakeFiles/test_gallery.dir/test_gallery.cc.o"
+},
+{
+  "directory": "/home/karl/prsn/mpl-wgpu/build/examples/cpp",
+  "command": "/usr/bin/clang++ -DMATPLOT_BUILD_HIGH_RESOLUTION_WORLD_MAP -DNOMINMAX -DWEBGPU_BACKEND_WGPU -I/home/karl/prsn/mpl-wgpu/examples/cpp/../../src/backend -I/home/karl/prsn/mpl-wgpu/examples/cpp/../../include -I/home/karl/prsn/mpl-wgpu/include -I/home/karl/prsn/mpl-wgpu/vendor/matplotplusplus/source -I/home/karl/prsn/mpl-wgpu/build/vendor/matplotplusplus/source/matplot -I/home/karl/prsn/mpl-wgpu/build/_deps/webgpu_dist-src/wgpu-native/include -I/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi/webgpu-headers -isystem /home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi -std=gnu++17 -o CMakeFiles/test_gallery.dir/window.cc.o -c /home/karl/prsn/mpl-wgpu/examples/cpp/window.cc",
+  "file": "/home/karl/prsn/mpl-wgpu/examples/cpp/window.cc",
+  "output": "examples/cpp/CMakeFiles/test_gallery.dir/window.cc.o"
+},
+{
+  "directory": "/home/karl/prsn/mpl-wgpu/build/examples/cpp",
+  "command": "/usr/bin/clang++ -DMATPLOT_BUILD_HIGH_RESOLUTION_WORLD_MAP -DNOMINMAX -DWEBGPU_BACKEND_WGPU -I/home/karl/prsn/mpl-wgpu/examples/cpp/../../src/backend -I/home/karl/prsn/mpl-wgpu/examples/cpp/../../include -I/home/karl/prsn/mpl-wgpu/include -I/home/karl/prsn/mpl-wgpu/vendor/matplotplusplus/source -I/home/karl/prsn/mpl-wgpu/build/vendor/matplotplusplus/source/matplot -I/home/karl/prsn/mpl-wgpu/build/_deps/webgpu_dist-src/wgpu-native/include -I/home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi/webgpu-headers -isystem /home/karl/prsn/mpl-wgpu/build/_deps/wgpu_native-src/ffi -std=gnu++17 -o CMakeFiles/test_gallery.dir/__/__/src/backend/primitive_renderer.cc.o -c /home/karl/prsn/mpl-wgpu/src/backend/primitive_renderer.cc",
+  "file": "/home/karl/prsn/mpl-wgpu/src/backend/primitive_renderer.cc",
+  "output": "examples/cpp/CMakeFiles/test_gallery.dir/__/__/src/backend/primitive_renderer.cc.o"
 }
 ]

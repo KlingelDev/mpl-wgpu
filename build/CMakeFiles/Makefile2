@@ -91,11 +91,15 @@ clean: examples/cpp/clean
 # Recursive "all" directory target.
 examples/cpp/all: examples/cpp/CMakeFiles/test_render.dir/all
 examples/cpp/all: examples/cpp/CMakeFiles/simple_plot.dir/all
+examples/cpp/all: examples/cpp/CMakeFiles/gpu_plot.dir/all
+examples/cpp/all: examples/cpp/CMakeFiles/test_gallery.dir/all
 .PHONY : examples/cpp/all
 
 # Recursive "codegen" directory target.
 examples/cpp/codegen: examples/cpp/CMakeFiles/test_render.dir/codegen
 examples/cpp/codegen: examples/cpp/CMakeFiles/simple_plot.dir/codegen
+examples/cpp/codegen: examples/cpp/CMakeFiles/gpu_plot.dir/codegen
+examples/cpp/codegen: examples/cpp/CMakeFiles/test_gallery.dir/codegen
 .PHONY : examples/cpp/codegen
 
 # Recursive "preinstall" directory target.
@@ -105,6 +109,8 @@ examples/cpp/preinstall:
 # Recursive "clean" directory target.
 examples/cpp/clean: examples/cpp/CMakeFiles/test_render.dir/clean
 examples/cpp/clean: examples/cpp/CMakeFiles/simple_plot.dir/clean
+examples/cpp/clean: examples/cpp/CMakeFiles/gpu_plot.dir/clean
+examples/cpp/clean: examples/cpp/CMakeFiles/test_gallery.dir/clean
 .PHONY : examples/cpp/clean
 
 #=============================================================================
@@ -195,7 +201,7 @@ CMakeFiles/mpl_wgpu_backend.dir/all: vendor/matplotplusplus/source/3rd_party/CMa
 CMakeFiles/mpl_wgpu_backend.dir/all: vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mpl_wgpu_backend.dir/build.make CMakeFiles/mpl_wgpu_backend.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mpl_wgpu_backend.dir/build.make CMakeFiles/mpl_wgpu_backend.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=39,40,41 "Built target mpl_wgpu_backend"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=43,44,45 "Built target mpl_wgpu_backend"
 .PHONY : CMakeFiles/mpl_wgpu_backend.dir/all
 
 # Build rule for subdir invocation for target.
@@ -212,7 +218,7 @@ mpl_wgpu_backend: CMakeFiles/mpl_wgpu_backend.dir/rule
 # codegen rule for target.
 CMakeFiles/mpl_wgpu_backend.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mpl_wgpu_backend.dir/build.make CMakeFiles/mpl_wgpu_backend.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=39,40,41 "Finished codegen for target mpl_wgpu_backend"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=43,44,45 "Finished codegen for target mpl_wgpu_backend"
 .PHONY : CMakeFiles/mpl_wgpu_backend.dir/codegen
 
 # clean rule for target.
@@ -227,7 +233,7 @@ CMakeFiles/mpl_wgpu_backend.dir/clean:
 vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/all:
 	$(MAKE) $(MAKESILENT) -f vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/build.make vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/depend
 	$(MAKE) $(MAKESILENT) -f vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/build.make vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=42,43,44,45,46,47 "Built target nodesoup"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=46,47,48,49,50,51 "Built target nodesoup"
 .PHONY : vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/all
 
 # Build rule for subdir invocation for target.
@@ -244,7 +250,7 @@ nodesoup: vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/rule
 # codegen rule for target.
 vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/build.make vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=42,43,44,45,46,47 "Finished codegen for target nodesoup"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=46,47,48,49,50,51 "Finished codegen for target nodesoup"
 .PHONY : vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/codegen
 
 # clean rule for target.
@@ -259,7 +265,7 @@ vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/clean:
 vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/all: vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/all
 	$(MAKE) $(MAKESILENT) -f vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/build.make vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/depend
 	$(MAKE) $(MAKESILENT) -f vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/build.make vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38 "Built target matplot"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42 "Built target matplot"
 .PHONY : vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/all
 
 # Build rule for subdir invocation for target.
@@ -276,7 +282,7 @@ matplot: vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/rule
 # codegen rule for target.
 vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/build.make vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38 "Finished codegen for target matplot"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42 "Finished codegen for target matplot"
 .PHONY : vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/codegen
 
 # clean rule for target.
@@ -293,7 +299,7 @@ examples/cpp/CMakeFiles/test_render.dir/all: vendor/matplotplusplus/source/3rd_p
 examples/cpp/CMakeFiles/test_render.dir/all: vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/all
 	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/depend
 	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=51,52,53 "Built target test_render"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=59,60,61 "Built target test_render"
 .PHONY : examples/cpp/CMakeFiles/test_render.dir/all
 
 # Build rule for subdir invocation for target.
@@ -310,7 +316,7 @@ test_render: examples/cpp/CMakeFiles/test_render.dir/rule
 # codegen rule for target.
 examples/cpp/CMakeFiles/test_render.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=51,52,53 "Finished codegen for target test_render"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=59,60,61 "Finished codegen for target test_render"
 .PHONY : examples/cpp/CMakeFiles/test_render.dir/codegen
 
 # clean rule for target.
@@ -327,7 +333,7 @@ examples/cpp/CMakeFiles/simple_plot.dir/all: vendor/matplotplusplus/source/3rd_p
 examples/cpp/CMakeFiles/simple_plot.dir/all: vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/all
 	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/depend
 	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=48,49,50 "Built target simple_plot"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=52,53,54 "Built target simple_plot"
 .PHONY : examples/cpp/CMakeFiles/simple_plot.dir/all
 
 # Build rule for subdir invocation for target.
@@ -344,13 +350,81 @@ simple_plot: examples/cpp/CMakeFiles/simple_plot.dir/rule
 # codegen rule for target.
 examples/cpp/CMakeFiles/simple_plot.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=48,49,50 "Finished codegen for target simple_plot"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=52,53,54 "Finished codegen for target simple_plot"
 .PHONY : examples/cpp/CMakeFiles/simple_plot.dir/codegen
 
 # clean rule for target.
 examples/cpp/CMakeFiles/simple_plot.dir/clean:
 	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/clean
 .PHONY : examples/cpp/CMakeFiles/simple_plot.dir/clean
+
+#=============================================================================
+# Target rules for target examples/cpp/CMakeFiles/gpu_plot.dir
+
+# All Build rule for target.
+examples/cpp/CMakeFiles/gpu_plot.dir/all: CMakeFiles/mpl_wgpu_backend.dir/all
+examples/cpp/CMakeFiles/gpu_plot.dir/all: vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/all
+examples/cpp/CMakeFiles/gpu_plot.dir/all: vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/all
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/depend
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=1,2,3,4 "Built target gpu_plot"
+.PHONY : examples/cpp/CMakeFiles/gpu_plot.dir/all
+
+# Build rule for subdir invocation for target.
+examples/cpp/CMakeFiles/gpu_plot.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/prsn/mpl-wgpu/build/CMakeFiles 51
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 examples/cpp/CMakeFiles/gpu_plot.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/prsn/mpl-wgpu/build/CMakeFiles 0
+.PHONY : examples/cpp/CMakeFiles/gpu_plot.dir/rule
+
+# Convenience name for target.
+gpu_plot: examples/cpp/CMakeFiles/gpu_plot.dir/rule
+.PHONY : gpu_plot
+
+# codegen rule for target.
+examples/cpp/CMakeFiles/gpu_plot.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=1,2,3,4 "Finished codegen for target gpu_plot"
+.PHONY : examples/cpp/CMakeFiles/gpu_plot.dir/codegen
+
+# clean rule for target.
+examples/cpp/CMakeFiles/gpu_plot.dir/clean:
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/clean
+.PHONY : examples/cpp/CMakeFiles/gpu_plot.dir/clean
+
+#=============================================================================
+# Target rules for target examples/cpp/CMakeFiles/test_gallery.dir
+
+# All Build rule for target.
+examples/cpp/CMakeFiles/test_gallery.dir/all: CMakeFiles/mpl_wgpu_backend.dir/all
+examples/cpp/CMakeFiles/test_gallery.dir/all: vendor/matplotplusplus/source/3rd_party/CMakeFiles/nodesoup.dir/all
+examples/cpp/CMakeFiles/test_gallery.dir/all: vendor/matplotplusplus/source/matplot/CMakeFiles/matplot.dir/all
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/depend
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=55,56,57,58 "Built target test_gallery"
+.PHONY : examples/cpp/CMakeFiles/test_gallery.dir/all
+
+# Build rule for subdir invocation for target.
+examples/cpp/CMakeFiles/test_gallery.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/prsn/mpl-wgpu/build/CMakeFiles 51
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 examples/cpp/CMakeFiles/test_gallery.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/karl/prsn/mpl-wgpu/build/CMakeFiles 0
+.PHONY : examples/cpp/CMakeFiles/test_gallery.dir/rule
+
+# Convenience name for target.
+test_gallery: examples/cpp/CMakeFiles/test_gallery.dir/rule
+.PHONY : test_gallery
+
+# codegen rule for target.
+examples/cpp/CMakeFiles/test_gallery.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/karl/prsn/mpl-wgpu/build/CMakeFiles --progress-num=55,56,57,58 "Finished codegen for target test_gallery"
+.PHONY : examples/cpp/CMakeFiles/test_gallery.dir/codegen
+
+# clean rule for target.
+examples/cpp/CMakeFiles/test_gallery.dir/clean:
+	$(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/clean
+.PHONY : examples/cpp/CMakeFiles/test_gallery.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

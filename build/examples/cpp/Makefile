@@ -189,6 +189,85 @@ simple_plot/fast:
 	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/build
 .PHONY : simple_plot/fast
 
+# Convenience name for target.
+examples/cpp/CMakeFiles/gpu_plot.dir/rule:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 examples/cpp/CMakeFiles/gpu_plot.dir/rule
+.PHONY : examples/cpp/CMakeFiles/gpu_plot.dir/rule
+
+# Convenience name for target.
+gpu_plot: examples/cpp/CMakeFiles/gpu_plot.dir/rule
+.PHONY : gpu_plot
+
+# fast build rule for target.
+gpu_plot/fast:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/build
+.PHONY : gpu_plot/fast
+
+# Convenience name for target.
+examples/cpp/CMakeFiles/test_gallery.dir/rule:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 examples/cpp/CMakeFiles/test_gallery.dir/rule
+.PHONY : examples/cpp/CMakeFiles/test_gallery.dir/rule
+
+# Convenience name for target.
+test_gallery: examples/cpp/CMakeFiles/test_gallery.dir/rule
+.PHONY : test_gallery
+
+# fast build rule for target.
+test_gallery/fast:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/build
+.PHONY : test_gallery/fast
+
+__/__/src/backend/primitive_renderer.o: __/__/src/backend/primitive_renderer.cc.o
+.PHONY : __/__/src/backend/primitive_renderer.o
+
+# target to build an object file
+__/__/src/backend/primitive_renderer.cc.o:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/__/__/src/backend/primitive_renderer.cc.o
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/__/__/src/backend/primitive_renderer.cc.o
+.PHONY : __/__/src/backend/primitive_renderer.cc.o
+
+__/__/src/backend/primitive_renderer.i: __/__/src/backend/primitive_renderer.cc.i
+.PHONY : __/__/src/backend/primitive_renderer.i
+
+# target to preprocess a source file
+__/__/src/backend/primitive_renderer.cc.i:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/__/__/src/backend/primitive_renderer.cc.i
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/__/__/src/backend/primitive_renderer.cc.i
+.PHONY : __/__/src/backend/primitive_renderer.cc.i
+
+__/__/src/backend/primitive_renderer.s: __/__/src/backend/primitive_renderer.cc.s
+.PHONY : __/__/src/backend/primitive_renderer.s
+
+# target to generate assembly for a file
+__/__/src/backend/primitive_renderer.cc.s:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/__/__/src/backend/primitive_renderer.cc.s
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/__/__/src/backend/primitive_renderer.cc.s
+.PHONY : __/__/src/backend/primitive_renderer.cc.s
+
+gpu_plot.o: gpu_plot.cc.o
+.PHONY : gpu_plot.o
+
+# target to build an object file
+gpu_plot.cc.o:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/gpu_plot.cc.o
+.PHONY : gpu_plot.cc.o
+
+gpu_plot.i: gpu_plot.cc.i
+.PHONY : gpu_plot.i
+
+# target to preprocess a source file
+gpu_plot.cc.i:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/gpu_plot.cc.i
+.PHONY : gpu_plot.cc.i
+
+gpu_plot.s: gpu_plot.cc.s
+.PHONY : gpu_plot.s
+
+# target to generate assembly for a file
+gpu_plot.cc.s:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/gpu_plot.cc.s
+.PHONY : gpu_plot.cc.s
+
 minimal_renderer.o: minimal_renderer.cc.o
 .PHONY : minimal_renderer.o
 
@@ -240,6 +319,30 @@ simple_plot.cc.s:
 	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/simple_plot.dir/build.make examples/cpp/CMakeFiles/simple_plot.dir/simple_plot.cc.s
 .PHONY : simple_plot.cc.s
 
+test_gallery.o: test_gallery.cc.o
+.PHONY : test_gallery.o
+
+# target to build an object file
+test_gallery.cc.o:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/test_gallery.cc.o
+.PHONY : test_gallery.cc.o
+
+test_gallery.i: test_gallery.cc.i
+.PHONY : test_gallery.i
+
+# target to preprocess a source file
+test_gallery.cc.i:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/test_gallery.cc.i
+.PHONY : test_gallery.cc.i
+
+test_gallery.s: test_gallery.cc.s
+.PHONY : test_gallery.s
+
+# target to generate assembly for a file
+test_gallery.cc.s:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/test_gallery.cc.s
+.PHONY : test_gallery.cc.s
+
 test_render.o: test_render.cc.o
 .PHONY : test_render.o
 
@@ -264,6 +367,33 @@ test_render.cc.s:
 	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_render.dir/build.make examples/cpp/CMakeFiles/test_render.dir/test_render.cc.s
 .PHONY : test_render.cc.s
 
+window.o: window.cc.o
+.PHONY : window.o
+
+# target to build an object file
+window.cc.o:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/window.cc.o
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/window.cc.o
+.PHONY : window.cc.o
+
+window.i: window.cc.i
+.PHONY : window.i
+
+# target to preprocess a source file
+window.cc.i:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/window.cc.i
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/window.cc.i
+.PHONY : window.cc.i
+
+window.s: window.cc.s
+.PHONY : window.s
+
+# target to generate assembly for a file
+window.cc.s:
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/gpu_plot.dir/build.make examples/cpp/CMakeFiles/gpu_plot.dir/window.cc.s
+	cd /home/karl/prsn/mpl-wgpu/build && $(MAKE) $(MAKESILENT) -f examples/cpp/CMakeFiles/test_gallery.dir/build.make examples/cpp/CMakeFiles/test_gallery.dir/window.cc.s
+.PHONY : window.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -276,17 +406,31 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... gpu_plot"
 	@echo "... simple_plot"
+	@echo "... test_gallery"
 	@echo "... test_render"
+	@echo "... __/__/src/backend/primitive_renderer.o"
+	@echo "... __/__/src/backend/primitive_renderer.i"
+	@echo "... __/__/src/backend/primitive_renderer.s"
+	@echo "... gpu_plot.o"
+	@echo "... gpu_plot.i"
+	@echo "... gpu_plot.s"
 	@echo "... minimal_renderer.o"
 	@echo "... minimal_renderer.i"
 	@echo "... minimal_renderer.s"
 	@echo "... simple_plot.o"
 	@echo "... simple_plot.i"
 	@echo "... simple_plot.s"
+	@echo "... test_gallery.o"
+	@echo "... test_gallery.i"
+	@echo "... test_gallery.s"
 	@echo "... test_render.o"
 	@echo "... test_render.i"
 	@echo "... test_render.s"
+	@echo "... window.o"
+	@echo "... window.i"
+	@echo "... window.s"
 .PHONY : help
 
 

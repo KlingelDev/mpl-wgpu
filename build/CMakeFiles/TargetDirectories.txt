@@ -33,6 +33,8 @@
 /home/karl/prsn/mpl-wgpu/build/vendor/matplotplusplus/source/matplot/CMakeFiles/install/strip.dir
 /home/karl/prsn/mpl-wgpu/build/examples/cpp/CMakeFiles/test_render.dir
 /home/karl/prsn/mpl-wgpu/build/examples/cpp/CMakeFiles/simple_plot.dir
+/home/karl/prsn/mpl-wgpu/build/examples/cpp/CMakeFiles/gpu_plot.dir
+/home/karl/prsn/mpl-wgpu/build/examples/cpp/CMakeFiles/test_gallery.dir
 /home/karl/prsn/mpl-wgpu/build/examples/cpp/CMakeFiles/edit_cache.dir
 /home/karl/prsn/mpl-wgpu/build/examples/cpp/CMakeFiles/rebuild_cache.dir
 /home/karl/prsn/mpl-wgpu/build/examples/cpp/CMakeFiles/list_install_components.dir

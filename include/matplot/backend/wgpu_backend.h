@@ -43,7 +43,8 @@ class WgpuRenderer {
     float r, g, b, a;
     float stroke_width;
     float corner_radius;
-    float padding[2];
+    float z;
+    float padding; // Reduced padding
   };
 
   /// @brief Line instance data for batched rendering.
@@ -76,6 +77,15 @@ class WgpuRenderer {
       float r, g, b, a;
   };
 
+  /// @brief Text instance data for batched rendering.
+  struct TextCommand {
+    std::string text;
+    float x, y;
+    float r, g, b, a;
+    float font_size;
+    float rotation;
+  };
+
   // =========================================================================
   // Rendering Interface
   // =========================================================================
@@ -101,6 +111,7 @@ class WgpuRenderer {
                         float font_size, const std::array<float, 4>& color,
                         float rotation = 0.0f) = 0;
 
+  virtual float MeasureText(const std::string& text, float font_size) = 0;
 
   /// @brief Clears the current frame.
   virtual void Clear(const std::array<float, 4>& color) = 0;
@@ -198,14 +209,37 @@ class WgpuBackend : public backend_interface {
   void draw_path(const std::vector<double>& x, const std::vector<double>& y,
                  const std::array<float, 4>& color) override;
 
+  /// @brief Fills a polygon.
+  void fill(const std::vector<double>& x, const std::vector<double>& y,
+            const std::array<float, 4>& color) override;
+
+  /// @brief Draws point markers at the given coordinates.
   /// @brief Draws point markers at the given coordinates.
   void draw_markers(const std::vector<double>& x,
                     const std::vector<double>& y,
-                    const std::array<float, 4>& color);
+                    const std::vector<double>& z,
+                    const std::array<float, 4>& color) override;
+
+  // Configuration overrides
+  void marker_size(float size) override { set_marker_radius(size); }
+  void marker_style(const std::string& style) override { marker_style_ = style; }
 
   /// @brief Draws text at the given coordinates.
   void draw_text(const std::vector<double>& x, const std::vector<double>& y,
                  const std::vector<double>& z = {}) override;
+
+  /// \brief Get text width
+  double text_width(const std::string &text) override {
+      if (!renderer_) return 0.0;
+      // Use standard font size of 24.0 or whatever draw_text uses
+      // Ideally we should track current font settings
+      return static_cast<double>(renderer_->MeasureText(text, 24.0f));
+  }
+
+  /// \brief Set text color
+  void text_color(const std::array<float, 4> &color) override {
+      current_text_color_ = color;
+  }
 
   /// @brief Draws an image/heatmap.
   void draw_image(const std::vector<std::vector<double>>& x,
@@ -216,7 +250,7 @@ class WgpuBackend : public backend_interface {
   void draw_triangle(const std::vector<double>& x,
                      const std::vector<double>& y,
                      const std::vector<double>& z,
-                     const std::array<float, 4>& color);
+                     const std::array<float, 4>& color) override;
 
   // Overload for 3D with normals
   void draw_triangle_3d(const std::vector<double>& x,
@@ -248,7 +282,6 @@ class WgpuBackend : public backend_interface {
   }
 
   /// @brief Sets the marker style (e.g., 'o', 's', '+').
-  void marker_style(const std::string& style) { marker_style_ = style; }
   const std::string& marker_style() const { return marker_style_; }
 
   /// @brief Sets the actual render target size (independent of matplot++).
@@ -281,7 +314,8 @@ class WgpuBackend : public backend_interface {
   unsigned int pos_y_ = 100;
   bool should_close_ = false;
 
-  // Drawing parameters
+  std::array<float, 4> current_text_color_ = {0.0f, 0.0f, 0.0f, 1.0f}; // Default Black
+  
   float line_width_ = 2.0f;    // Default line width (pixels)
   float marker_radius_ = 6.0f; // Default marker radius (pixels)
   std::array<float, 4> marker_color_ = {1.0f, 0.0f, 0.0f, 1.0f};
@@ -292,6 +326,7 @@ class WgpuBackend : public backend_interface {
   std::vector<WgpuRenderer::Line> lines_;
   std::vector<WgpuRenderer::Circle> circles_;
   std::vector<WgpuRenderer::Triangle> triangles_;
+  std::vector<WgpuRenderer::TextCommand> texts_;
 
 
   // Raw segment data for rectangle reconstruction

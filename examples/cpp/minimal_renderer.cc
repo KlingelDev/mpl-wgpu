@@ -49,60 +49,104 @@ void MinimalRenderer::DrawRects(const std::vector<Rect>& rects,
 void MinimalRenderer::DrawLines(const std::vector<Line>& lines,
                                 float screen_width,
                                 float screen_height) {
-  std::cout << "DrawLines: " << lines.size() << " lines\n";
-  std::cout << "  Screen: " << screen_width << "x" << screen_height << "\n";
-  std::cout << "  Buffer: " << width_ << "x" << height_ << "\n";
-  
-  if (!lines.empty()) {
-    std::cout << "  First line: (" << lines[0].x1 << "," << lines[0].y1 
-              << ") -> (" << lines[0].x2 << "," << lines[0].y2 << ")\n";
-  }
-  
+  if (lines.empty()) return;
+
   float scale_x = static_cast<float>(width_) / screen_width;
   float scale_y = static_cast<float>(height_) / screen_height;
   
+  auto draw_pixel_aa = [&](int x, int y, uint8_t r, uint8_t g, uint8_t b, float coverage) {
+      if (x < 0 || x >= static_cast<int>(width_) || 
+          y < 0 || y >= static_cast<int>(height_)) return;
+      
+      size_t idx = (y * width_ + x) * 4;
+      
+      // Simple alpha blending: src * coverage + dst * (1 - coverage)
+      // Assuming line color is opaque (alpha 1.0) scaled by coverage
+      float bg_r = pixel_buffer_[idx + 0];
+      float bg_g = pixel_buffer_[idx + 1];
+      float bg_b = pixel_buffer_[idx + 2];
+      
+      pixel_buffer_[idx + 0] = static_cast<uint8_t>(r * coverage + bg_r * (1.0f - coverage));
+      pixel_buffer_[idx + 1] = static_cast<uint8_t>(g * coverage + bg_g * (1.0f - coverage));
+      pixel_buffer_[idx + 2] = static_cast<uint8_t>(b * coverage + bg_b * (1.0f - coverage));
+      pixel_buffer_[idx + 3] = 255; 
+  };
+  
+  auto ipart = [](float x) { return std::floor(x); };
+  auto round = [](float x) { return std::floor(x + 0.5f); };
+  auto fpart = [](float x) { return x - std::floor(x); };
+  auto rfpart = [&](float x) { return 1.0f - fpart(x); };
+
   for (const auto& line : lines) {
-    // Transform coordinates
-    int x0 = static_cast<int>(line.x1 * scale_x);
-    int y0 = static_cast<int>(line.y1 * scale_y);
-    int x1 = static_cast<int>(line.x2 * scale_x);
-    int y1 = static_cast<int>(line.y2 * scale_y);
+    float x0 = line.x1 * scale_x;
+    float y0 = line.y1 * scale_y;
+    float x1 = line.x2 * scale_x;
+    float y1 = line.y2 * scale_y;
     
     uint8_t r = static_cast<uint8_t>(line.r * 255);
     uint8_t g = static_cast<uint8_t>(line.g * 255);
     uint8_t b = static_cast<uint8_t>(line.b * 255);
-    uint8_t a = static_cast<uint8_t>(line.a * 255);
+
+    bool steep = std::abs(y1 - y0) > std::abs(x1 - x0);
     
-    // Bresenham's line algorithm
-    int dx = std::abs(x1 - x0);
-    int dy = std::abs(y1 - y0);
-    int sx = x0 < x1 ? 1 : -1;
-    int sy = y0 < y1 ? 1 : -1;
-    int err = dx - dy;
+    if (steep) {
+        std::swap(x0, y0);
+        std::swap(x1, y1);
+    }
+    if (x0 > x1) {
+        std::swap(x0, x1);
+        std::swap(y0, y1);
+    }
     
-    int x = x0, y = y0;
-    while (true) {
-      // Draw pixel
-      if (x >= 0 && x < static_cast<int>(width_) && 
-          y >= 0 && y < static_cast<int>(height_)) {
-        size_t idx = (y * width_ + x) * 4;
-        pixel_buffer_[idx + 0] = r;
-        pixel_buffer_[idx + 1] = g;
-        pixel_buffer_[idx + 2] = b;
-        pixel_buffer_[idx + 3] = a;
-      }
-      
-      if (x == x1 && y == y1) break;
-      
-      int e2 = 2 * err;
-      if (e2 > -dy) {
-        err -= dy;
-        x += sx;
-      }
-      if (e2 < dx) {
-        err += dx;
-        y += sy;
-      }
+    float dx = x1 - x0;
+    float dy = y1 - y0;
+    float gradient = (dx == 0.0f) ? 1.0f : dy / dx;
+
+    // Handle first endpoint
+    float xend = round(x0);
+    float yend = y0 + gradient * (xend - x0);
+    float xgap = rfpart(x0 + 0.5f);
+    int xpxl1 = static_cast<int>(xend);
+    int ypxl1 = static_cast<int>(ipart(yend));
+    
+    if (steep) {
+        draw_pixel_aa(ypxl1, xpxl1, r, g, b, rfpart(yend) * xgap);
+        draw_pixel_aa(ypxl1 + 1, xpxl1, r, g, b, fpart(yend) * xgap);
+    } else {
+        draw_pixel_aa(xpxl1, ypxl1, r, g, b, rfpart(yend) * xgap);
+        draw_pixel_aa(xpxl1, ypxl1 + 1, r, g, b, fpart(yend) * xgap);
+    }
+    
+    float intery = yend + gradient;
+    
+    // Handle second endpoint
+    xend = round(x1);
+    yend = y1 + gradient * (xend - x1);
+    xgap = fpart(x1 + 0.5f);
+    int xpxl2 = static_cast<int>(xend);
+    int ypxl2 = static_cast<int>(ipart(yend));
+    
+    if (steep) {
+        draw_pixel_aa(ypxl2, xpxl2, r, g, b, rfpart(yend) * xgap);
+        draw_pixel_aa(ypxl2 + 1, xpxl2, r, g, b, fpart(yend) * xgap);
+    } else {
+        draw_pixel_aa(xpxl2, ypxl2, r, g, b, rfpart(yend) * xgap);
+        draw_pixel_aa(xpxl2, ypxl2 + 1, r, g, b, fpart(yend) * xgap);
+    }
+    
+    // Main loop
+    if (steep) {
+        for (int x = xpxl1 + 1; x < xpxl2; x++) {
+            draw_pixel_aa(static_cast<int>(ipart(intery)), x, r, g, b, rfpart(intery));
+            draw_pixel_aa(static_cast<int>(ipart(intery)) + 1, x, r, g, b, fpart(intery));
+            intery += gradient;
+        }
+    } else {
+        for (int x = xpxl1 + 1; x < xpxl2; x++) {
+            draw_pixel_aa(x, static_cast<int>(ipart(intery)), r, g, b, rfpart(intery));
+            draw_pixel_aa(x, static_cast<int>(ipart(intery)) + 1, r, g, b, fpart(intery));
+            intery += gradient;
+        }
     }
   }
 }

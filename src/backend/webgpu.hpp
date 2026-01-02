@@ -10,6 +10,8 @@
 #include <webgpu.h>
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
+#include <vector>
 
 namespace wgpu {
 
@@ -25,11 +27,25 @@ class BindGroup;
 class BindGroupLayout;
 class PipelineLayout;
 class RenderPassEncoder;
+class CommandEncoder;
+class CommandBuffer;
+class Instance;
+class Adapter;
+class Surface;
+struct ImageCopyTextureWgpu;
+struct TextureDataLayoutWgpu;
 
-// Enums
+// Enums (keep as is)
 enum class TextureFormat : uint32_t {
   BGRA8Unorm = WGPUTextureFormat_BGRA8Unorm,
   RGBA8Unorm = WGPUTextureFormat_RGBA8Unorm,
+  R8Unorm = WGPUTextureFormat_R8Unorm,
+};
+
+enum class TextureDimension : uint32_t {
+  e1D = WGPUTextureDimension_1D,
+  e2D = WGPUTextureDimension_2D,
+  e3D = WGPUTextureDimension_3D,
 };
 
 enum class BufferUsage : uint32_t {
@@ -87,7 +103,38 @@ enum class BufferBindingType : uint32_t {
   Uniform = WGPUBufferBindingType_Uniform,
 };
 
-// Descriptors (simplified)
+enum class SamplerBindingType : uint32_t {
+  Filtering = WGPUSamplerBindingType_Filtering,
+};
+
+enum class TextureSampleType : uint32_t {
+  Float = WGPUTextureSampleType_Float,
+};
+
+enum class TextureViewDimension : uint32_t {
+  e2D = WGPUTextureViewDimension_2D,
+};
+
+enum class TextureUsage : uint32_t {
+  CopyDst = WGPUTextureUsage_CopyDst,
+  TextureBinding = WGPUTextureUsage_TextureBinding,
+  RenderAttachment = WGPUTextureUsage_RenderAttachment,
+};
+
+inline TextureUsage operator|(TextureUsage a, TextureUsage b) {
+  return static_cast<TextureUsage>(
+      static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+}
+
+enum class AddressMode : uint32_t {
+  ClampToEdge = WGPUAddressMode_ClampToEdge,
+};
+
+enum class FilterMode : uint32_t {
+  Linear = WGPUFilterMode_Linear,
+};
+
+// Descriptors
 struct ShaderModuleWGSLDescriptor {
   const char* code;
 };
@@ -102,12 +149,44 @@ struct BufferDescriptor {
   uint32_t usage;
 };
 
+struct TextureDescriptor {
+  const char* label;
+  uint32_t usage; 
+  struct {
+     uint32_t width;
+     uint32_t height;
+     uint32_t depthOrArrayLayers;
+  } size;
+  TextureFormat format;
+  uint32_t mipLevelCount;
+  uint32_t sampleCount;
+  uint32_t dimension;
+};
+
+struct SamplerDescriptor {
+  const char* label;
+  AddressMode addressModeU;
+  AddressMode addressModeV;
+  AddressMode addressModeW;
+  FilterMode magFilter;
+  FilterMode minFilter;
+  FilterMode mipmapFilter;
+  uint16_t maxAnisotropy;
+};
+
 struct BindGroupLayoutEntry {
   uint32_t binding;
   uint32_t visibility;
   struct {
     BufferBindingType type;
   } buffer;
+  struct {
+    TextureSampleType sampleType;
+    TextureViewDimension viewDimension;
+  } texture;
+  struct {
+     SamplerBindingType type;
+  } sampler;
 };
 
 struct BindGroupLayoutDescriptor {
@@ -119,6 +198,8 @@ struct BindGroupEntry {
   uint32_t binding;
   WGPUBuffer buffer;
   uint64_t size;
+  WGPUTextureView textureView;
+  WGPUSampler sampler;
 };
 
 struct BindGroupDescriptor {
@@ -141,7 +222,7 @@ struct VertexAttribute {
 struct VertexBufferLayout {
   uint64_t arrayStride;
   VertexStepMode stepMode;
-  uint32_t attributeCount;
+  size_t attributeCount;  // Must be size_t to match WGPUVertexBufferLayout
   const VertexAttribute* attributes;
 };
 
@@ -185,6 +266,7 @@ struct MultisampleState {
   uint32_t count;
 };
 
+
 struct RenderPipelineDescriptor {
   WGPUPipelineLayout layout;
   VertexState vertex;
@@ -193,67 +275,47 @@ struct RenderPipelineDescriptor {
   MultisampleState multisample;
 };
 
-// Buffer class
+// --- CLASS DECLARATIONS ---
+
 class Buffer {
  public:
   Buffer() : handle_(nullptr) {}
   explicit Buffer(WGPUBuffer h) : handle_(h) {}
-  
   WGPUBuffer Get() const { return handle_; }
-  uint64_t GetSize() const { 
-    return 0; // TODO: track size
-  }
-  
+  uint64_t GetSize() const { return 0; } // TODO
  private:
   WGPUBuffer handle_;
 };
 
-// Device class  
-class Device {
+class Texture {
  public:
-  Device() : handle_(nullptr) {}
-  explicit Device(WGPUDevice h) : handle_(h) {}
-  
-  WGPUDevice Get() const { return handle_; }
-  
-  ShaderModule CreateShaderModule(
-      const ShaderModuleDescriptor* desc) const;
-  Buffer CreateBuffer(const BufferDescriptor* desc) const;
-  BindGroupLayout CreateBindGroupLayout(
-      const BindGroupLayoutDescriptor* desc) const;
-  BindGroup CreateBindGroup(
-      const BindGroupDescriptor* desc) const;
-  PipelineLayout CreatePipelineLayout(
-      const PipelineLayoutDescriptor* desc) const;
-  RenderPipeline CreateRenderPipeline(
-      const RenderPipelineDescriptor* desc) const;
-      
-  Queue GetQueue() const;
-  
+  Texture() : handle_(nullptr) {}
+  explicit Texture(WGPUTexture h) : handle_(h) {}
+  WGPUTexture Get() const { return handle_; }
+  WGPUTextureView CreateView() const { return wgpuTextureCreateView(handle_, nullptr); }
  private:
-  WGPUDevice handle_;
+  WGPUTexture handle_;
 };
 
-// Queue class
-class Queue {
+class Sampler {
  public:
-  Queue() : handle_(nullptr) {}
-  explicit Queue(WGPUQueue h) : handle_(h) {}
-  
-  void WriteBuffer(Buffer buffer, uint64_t offset,
-                   const void* data, size_t size) const {
-    wgpuQueueWriteBuffer(handle_, buffer.Get(), offset, data, size);
-  }
-  
+  Sampler() : handle_(nullptr) {}
+  explicit Sampler(WGPUSampler h) : handle_(h) {}
+  WGPUSampler Get() const { return handle_; }
  private:
-  WGPUQueue handle_;
+  WGPUSampler handle_;
 };
 
-inline Queue Device::GetQueue() const {
-  return Queue(wgpuDeviceGetQueue(handle_));
-}
 
-// Placeholder classes
+class TextureView {
+ public:
+  TextureView() : handle_(nullptr) {}
+  explicit TextureView(WGPUTextureView h) : handle_(h) {}
+  WGPUTextureView Get() const { return handle_; }
+ private:
+  WGPUTextureView handle_;
+};
+
 class ShaderModule {
  public:
   ShaderModule() : handle_(nullptr) {}
@@ -299,44 +361,210 @@ class RenderPipeline {
   WGPURenderPipeline handle_;
 };
 
+class CommandBuffer {
+ public:
+  CommandBuffer() : handle_(nullptr) {}
+  explicit CommandBuffer(WGPUCommandBuffer h) : handle_(h) {}
+  WGPUCommandBuffer Get() const { return handle_; }
+ private:
+  WGPUCommandBuffer handle_;
+};
+
+class Surface {
+ public:
+  Surface() : handle_(nullptr) {}
+  explicit Surface(WGPUSurface h) : handle_(h) {}
+  operator bool() const { return handle_ != nullptr; }
+  
+  WGPUSurface Get() const { return handle_; }
+  
+  void Configure(const WGPUSurfaceConfiguration* config) const;
+  void GetCurrentTexture(WGPUSurfaceTexture* texture) const;
+  void Present() const;
+  
+ private:
+  WGPUSurface handle_;
+};
+
 class RenderPassEncoder {
  public:
   RenderPassEncoder() : handle_(nullptr) {}
   explicit RenderPassEncoder(WGPURenderPassEncoder h) : handle_(h) {}
   
-  void SetBindGroup(uint32_t index, BindGroup group, 
-                    const uint32_t* offsets) const {
-    wgpuRenderPassEncoderSetBindGroup(handle_, index, group.Get(), 
-                                      0, offsets);
-  }
-
-  void SetBindGroup(uint32_t index, BindGroup group) const {
-    wgpuRenderPassEncoderSetBindGroup(handle_, index, group.Get(), 
-                                      0, nullptr);
-  }
+  void SetBindGroup(uint32_t index, BindGroup group, const uint32_t* offsets) const;
+  void SetBindGroup(uint32_t index, BindGroup group) const;
+  void SetVertexBuffer(uint32_t slot, Buffer buffer) const;
+  void SetPipeline(RenderPipeline pipeline) const;
+  void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) const;
   
-  void SetVertexBuffer(uint32_t slot, Buffer buffer) const {
-    wgpuRenderPassEncoderSetVertexBuffer(handle_, slot, buffer.Get(),
-                                         0, buffer.GetSize());
-  }
-  
-  void SetPipeline(RenderPipeline pipeline) const {
-    wgpuRenderPassEncoderSetPipeline(handle_, pipeline.Get());
-  }
-  
-  void Draw(uint32_t vertexCount, uint32_t instanceCount,
-            uint32_t firstVertex, uint32_t firstInstance) const {
-    wgpuRenderPassEncoderDraw(handle_, vertexCount, instanceCount,
-                              firstVertex, firstInstance);
-  }
+  void End() const { wgpuRenderPassEncoderEnd(handle_); }
   
  private:
   WGPURenderPassEncoder handle_;
 };
 
-// Inline implementations
-inline ShaderModule Device::CreateShaderModule(
-    const ShaderModuleDescriptor* desc) const {
+class CommandEncoder {
+ public:
+  CommandEncoder() : handle_(nullptr) {}
+  explicit CommandEncoder(WGPUCommandEncoder h) : handle_(h) {}
+  
+  RenderPassEncoder BeginRenderPass(const WGPURenderPassDescriptor* desc) const;
+  CommandBuffer Finish(const WGPUCommandBufferDescriptor* desc = nullptr) const;
+  
+ private:
+  WGPUCommandEncoder handle_;
+};
+
+class Queue {
+ public:
+  Queue() : handle_(nullptr) {}
+  explicit Queue(WGPUQueue h) : handle_(h) {}
+  
+  void WriteBuffer(Buffer buffer, uint64_t offset, const void* data, size_t size) const;
+  void WriteTexture(const ImageCopyTextureWgpu* destination, const void* data, size_t dataSize, const TextureDataLayoutWgpu* dataLayout, const void* writeSize) const; // writeSize is Extent3D
+  void Submit(uint32_t commandCount, const CommandBuffer* commands) const;
+  
+ private:
+  WGPUQueue handle_;
+};
+
+class Device {
+ public:
+  Device() : handle_(nullptr) {}
+  explicit Device(WGPUDevice h) : handle_(h) {}
+  operator bool() const { return handle_ != nullptr; }
+  
+  WGPUDevice Get() const { return handle_; }
+  
+  ShaderModule CreateShaderModule(const ShaderModuleDescriptor* desc) const;
+  Buffer CreateBuffer(const BufferDescriptor* desc) const;
+  Texture CreateTexture(const TextureDescriptor* desc) const;
+  Sampler CreateSampler(const SamplerDescriptor* desc) const;
+  BindGroupLayout CreateBindGroupLayout(const BindGroupLayoutDescriptor* desc) const;
+  BindGroup CreateBindGroup(const BindGroupDescriptor* desc) const;
+  PipelineLayout CreatePipelineLayout(const PipelineLayoutDescriptor* desc) const;
+  RenderPipeline CreateRenderPipeline(const RenderPipelineDescriptor* desc) const;
+  CommandEncoder CreateCommandEncoder(const WGPUCommandEncoderDescriptor* desc = nullptr) const;
+  Queue GetQueue() const;
+  
+ private:
+  WGPUDevice handle_;
+};
+
+class Adapter {
+ public:
+  Adapter() : handle_(nullptr) {}
+  explicit Adapter(WGPUAdapter h) : handle_(h) {}
+  operator bool() const { return handle_ != nullptr; }
+  
+  WGPUAdapter Get() const { return handle_; }
+  
+  Device RequestDevice(const WGPUDeviceDescriptor* desc) const;
+  
+ private:
+  WGPUAdapter handle_;
+};
+
+class Instance {
+ public:
+  Instance() : handle_(nullptr) {}
+  explicit Instance(WGPUInstance h) : handle_(h) {}
+  operator bool() const { return handle_ != nullptr; }
+  
+  WGPUInstance Get() const { return handle_; }
+  
+  Surface CreateSurface(const WGPUSurfaceDescriptor* desc) const;
+  Adapter RequestAdapter(const WGPURequestAdapterOptions* options) const;
+  
+ private:
+  WGPUInstance handle_;
+};
+
+struct ImageCopyTextureWgpu {
+  Texture texture;
+  uint32_t mipLevel;
+  struct { uint32_t x; uint32_t y; uint32_t z; } origin;
+  // aspect default
+};
+
+struct TextureDataLayoutWgpu {
+  uint64_t offset;
+  uint32_t bytesPerRow;
+  uint32_t rowsPerImage;
+};
+
+// --- IMPLEMENTATIONS ---
+
+// Global
+inline Instance CreateInstance(const WGPUInstanceDescriptor* desc) {
+    return Instance(wgpuCreateInstance(desc));
+}
+
+// Surface
+inline void Surface::Configure(const WGPUSurfaceConfiguration* config) const {
+    wgpuSurfaceConfigure(handle_, config);
+}
+inline void Surface::GetCurrentTexture(WGPUSurfaceTexture* texture) const {
+    wgpuSurfaceGetCurrentTexture(handle_, texture);
+}
+inline void Surface::Present() const {
+    wgpuSurfacePresent(handle_);
+}
+
+// RenderPassEncoder
+inline void RenderPassEncoder::SetBindGroup(uint32_t index, BindGroup group, const uint32_t* offsets) const {
+    wgpuRenderPassEncoderSetBindGroup(handle_, index, group.Get(), 0, offsets);
+}
+inline void RenderPassEncoder::SetBindGroup(uint32_t index, BindGroup group) const {
+    wgpuRenderPassEncoderSetBindGroup(handle_, index, group.Get(), 0, nullptr);
+}
+inline void RenderPassEncoder::SetVertexBuffer(uint32_t slot, Buffer buffer) const {
+    // Use WGPU_WHOLE_SIZE to bind the entire buffer
+    wgpuRenderPassEncoderSetVertexBuffer(handle_, slot, buffer.Get(), 0, WGPU_WHOLE_SIZE);
+}
+inline void RenderPassEncoder::SetPipeline(RenderPipeline pipeline) const {
+    wgpuRenderPassEncoderSetPipeline(handle_, pipeline.Get());
+}
+inline void RenderPassEncoder::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) const {
+    wgpuRenderPassEncoderDraw(handle_, vertexCount, instanceCount, firstVertex, firstInstance);
+}
+
+// CommandEncoder
+inline RenderPassEncoder CommandEncoder::BeginRenderPass(const WGPURenderPassDescriptor* desc) const {
+    return RenderPassEncoder(wgpuCommandEncoderBeginRenderPass(handle_, desc));
+}
+inline CommandBuffer CommandEncoder::Finish(const WGPUCommandBufferDescriptor* desc) const {
+    return CommandBuffer(wgpuCommandEncoderFinish(handle_, desc));
+}
+
+// Queue
+inline void Queue::WriteBuffer(Buffer buffer, uint64_t offset, const void* data, size_t size) const {
+    wgpuQueueWriteBuffer(handle_, buffer.Get(), offset, data, size);
+}
+inline void Queue::WriteTexture(const ImageCopyTextureWgpu* destination, const void* data, size_t dataSize, const TextureDataLayoutWgpu* dataLayout, const void* writeSize) const {
+    WGPUImageCopyTexture dest = {};
+    dest.texture = destination->texture.Get();
+    dest.mipLevel = destination->mipLevel;
+    dest.origin = {destination->origin.x, destination->origin.y, destination->origin.z};
+    dest.aspect = WGPUTextureAspect_All;
+
+    WGPUTextureDataLayout layout = {};
+    layout.offset = dataLayout->offset;
+    layout.bytesPerRow = dataLayout->bytesPerRow;
+    layout.rowsPerImage = dataLayout->rowsPerImage;
+    
+    const WGPUExtent3D* extent = static_cast<const WGPUExtent3D*>(writeSize);
+    wgpuQueueWriteTexture(handle_, &dest, data, dataSize, &layout, extent);
+}
+
+inline void Queue::Submit(uint32_t commandCount, const CommandBuffer* commands) const {
+    std::vector<WGPUCommandBuffer> raw_cmds(commandCount);
+    for(uint32_t i=0; i<commandCount; ++i) raw_cmds[i] = commands[i].Get();
+    wgpuQueueSubmit(handle_, commandCount, raw_cmds.data());
+}
+
+// Device
+inline ShaderModule Device::CreateShaderModule(const ShaderModuleDescriptor* desc) const {
   WGPUShaderModuleWGSLDescriptor wgsl = {};
   wgsl.chain.sType = WGPUSType_ShaderModuleWGSLDescriptor;
   wgsl.code = desc->nextInChain->code;
@@ -347,8 +575,7 @@ inline ShaderModule Device::CreateShaderModule(
   return ShaderModule(wgpuDeviceCreateShaderModule(handle_, &wgpu_desc));
 }
 
-inline Buffer Device::CreateBuffer(
-    const BufferDescriptor* desc) const {
+inline Buffer Device::CreateBuffer(const BufferDescriptor* desc) const {
   WGPUBufferDescriptor wgpu_desc = {};
   wgpu_desc.label = desc->label;
   wgpu_desc.size = desc->size;
@@ -356,38 +583,63 @@ inline Buffer Device::CreateBuffer(
   return Buffer(wgpuDeviceCreateBuffer(handle_, &wgpu_desc));
 }
 
-inline BindGroupLayout Device::CreateBindGroupLayout(
-    const BindGroupLayoutDescriptor* desc) const {
-  // Convert entries
-  WGPUBindGroupLayoutEntry* entries = 
-      new WGPUBindGroupLayoutEntry[desc->entryCount];
+inline Texture Device::CreateTexture(const TextureDescriptor* desc) const {
+    WGPUTextureDescriptor d{};
+    d.label = desc->label;
+    d.usage = desc->usage;
+    d.size.width = desc->size.width;
+    d.size.height = desc->size.height;
+    d.size.depthOrArrayLayers = desc->size.depthOrArrayLayers;
+    d.format = static_cast<WGPUTextureFormat>(desc->format);
+    d.mipLevelCount = desc->mipLevelCount;
+    d.sampleCount = desc->sampleCount;
+    d.dimension = static_cast<WGPUTextureDimension>(desc->dimension);
+    return Texture(wgpuDeviceCreateTexture(handle_, &d));
+}
+
+inline Sampler Device::CreateSampler(const SamplerDescriptor* desc) const {
+    WGPUSamplerDescriptor d{};
+    d.label = desc->label;
+    d.addressModeU = static_cast<WGPUAddressMode>(desc->addressModeU);
+    d.addressModeV = static_cast<WGPUAddressMode>(desc->addressModeV);
+    d.addressModeW = static_cast<WGPUAddressMode>(desc->addressModeW);
+    d.magFilter = static_cast<WGPUFilterMode>(desc->magFilter);
+    d.minFilter = static_cast<WGPUFilterMode>(desc->minFilter);
+    d.mipmapFilter = static_cast<WGPUMipmapFilterMode>(desc->mipmapFilter);
+    d.maxAnisotropy = desc->maxAnisotropy;
+    return Sampler(wgpuDeviceCreateSampler(handle_, &d));
+}
+
+inline BindGroupLayout Device::CreateBindGroupLayout(const BindGroupLayoutDescriptor* desc) const {
+  WGPUBindGroupLayoutEntry* entries = new WGPUBindGroupLayoutEntry[desc->entryCount];
   for (uint32_t i = 0; i < desc->entryCount; ++i) {
     entries[i] = {};
     entries[i].binding = desc->entries[i].binding;
     entries[i].visibility = desc->entries[i].visibility;
-    entries[i].buffer.type = static_cast<WGPUBufferBindingType>(
-        desc->entries[i].buffer.type);
+    entries[i].buffer.type = static_cast<WGPUBufferBindingType>(desc->entries[i].buffer.type);
+    entries[i].texture.sampleType = static_cast<WGPUTextureSampleType>(desc->entries[i].texture.sampleType);
+    entries[i].texture.viewDimension = static_cast<WGPUTextureViewDimension>(desc->entries[i].texture.viewDimension);
+    entries[i].sampler.type = static_cast<WGPUSamplerBindingType>(desc->entries[i].sampler.type);
   }
   
   WGPUBindGroupLayoutDescriptor wgpu_desc = {};
   wgpu_desc.entryCount = desc->entryCount;
   wgpu_desc.entries = entries;
   
-  auto result = BindGroupLayout(
-      wgpuDeviceCreateBindGroupLayout(handle_, &wgpu_desc));
+  auto result = BindGroupLayout(wgpuDeviceCreateBindGroupLayout(handle_, &wgpu_desc));
   delete[] entries;
   return result;
 }
 
-inline BindGroup Device::CreateBindGroup(
-    const BindGroupDescriptor* desc) const {
-  WGPUBindGroupEntry* entries = 
-      new WGPUBindGroupEntry[desc->entryCount];
+inline BindGroup Device::CreateBindGroup(const BindGroupDescriptor* desc) const {
+  WGPUBindGroupEntry* entries = new WGPUBindGroupEntry[desc->entryCount];
   for (uint32_t i = 0; i < desc->entryCount; ++i) {
     entries[i] = {};
     entries[i].binding = desc->entries[i].binding;
     entries[i].buffer = desc->entries[i].buffer;
     entries[i].size = desc->entries[i].size;
+    entries[i].textureView = desc->entries[i].textureView;
+    entries[i].sampler = desc->entries[i].sampler;
   }
   
   WGPUBindGroupDescriptor wgpu_desc = {};
@@ -400,86 +652,121 @@ inline BindGroup Device::CreateBindGroup(
   return result;
 }
 
-inline PipelineLayout Device::CreatePipelineLayout(
-    const PipelineLayoutDescriptor* desc) const {
+inline PipelineLayout Device::CreatePipelineLayout(const PipelineLayoutDescriptor* desc) const {
   WGPUPipelineLayoutDescriptor wgpu_desc = {};
   wgpu_desc.bindGroupLayoutCount = desc->bindGroupLayoutCount;
   wgpu_desc.bindGroupLayouts = desc->bindGroupLayouts;
-  
-  return PipelineLayout(
-      wgpuDeviceCreatePipelineLayout(handle_, &wgpu_desc));
+  return PipelineLayout(wgpuDeviceCreatePipelineLayout(handle_, &wgpu_desc));
 }
 
-inline RenderPipeline Device::CreateRenderPipeline(
-    const RenderPipelineDescriptor* desc) const {
+inline RenderPipeline Device::CreateRenderPipeline(const RenderPipelineDescriptor* desc) const {
   WGPURenderPipelineDescriptor wgpu_desc = {};
   wgpu_desc.layout = desc->layout;
   
-  // Convert vertex state
   WGPUVertexState vertex = {};
   vertex.module = desc->vertex.module;
   vertex.entryPoint = desc->vertex.entryPoint;
   vertex.bufferCount = desc->vertex.bufferCount;
-  // TODO: Convert vertex buffers properly (alloc array)
-  // For now using raw pointer directly as we simplified PrimitiveRenderer to pass raw
-  WGPUVertexBufferLayout vb_layout = {};
-  if (desc->vertex.bufferCount > 0) {
-      vb_layout.arrayStride = desc->vertex.buffers[0].arrayStride;
-      vb_layout.stepMode = static_cast<WGPUVertexStepMode>(desc->vertex.buffers[0].stepMode);
-      vb_layout.attributeCount = desc->vertex.buffers[0].attributeCount;
-      // Attributes need conversion too... 
-      // This wrapper is becoming complex.
-      // But we know PrimitiveRenderer uses WGPUVertexBufferLayout-compatible struct
-      // Actually we are using wgpu::VertexBufferLayout in primitive_renderer definition
-      // which has same layout as WGPUVertexBufferLayout?
-      // No, wgpu:: has helper enums.
-  }
-  // Pragmatic fix: just assume reinterpret_cast works for simple pods or use C API directly
-  // Actually, let's fix PrimitiveRenderer to create the pipeline properly.
-  // Or just implement CreateRenderPipeline minimally for what we need.
-  
-  // Since we are running out of time/patience with the wrapper,
-  // let's simplify: primitive_renderer passed raw WGPU types where possible?
-  // No, it uses wgpu:: types.
-  
-  // Let's implement minimal CreateRenderPipeline that works for our specific case
-  // Vertex
-  vertex.buffers = (const WGPUVertexBufferLayout*)desc->vertex.buffers; // Danger
-  
+  vertex.buffers = (const WGPUVertexBufferLayout*)desc->vertex.buffers;
   wgpu_desc.vertex = vertex;
   
-  // Fragment
   WGPUFragmentState fragment = {};
   fragment.module = desc->fragment->module;
   fragment.entryPoint = desc->fragment->entryPoint;
   fragment.targetCount = desc->fragment->targetCount;
-  // Targets need conversion
-  WGPUColorTargetState target = {};
-  target.format = static_cast<WGPUTextureFormat>(desc->fragment->targets[0].format);
-  target.writeMask = static_cast<WGPUColorWriteMask>(desc->fragment->targets[0].writeMask);
   
-  WGPUBlendState blend = {};
-  blend.color.operation = static_cast<WGPUBlendOperation>(desc->fragment->targets[0].blend->color.operation);
-  blend.color.srcFactor = static_cast<WGPUBlendFactor>(desc->fragment->targets[0].blend->color.srcFactor);
-  blend.color.dstFactor = static_cast<WGPUBlendFactor>(desc->fragment->targets[0].blend->color.dstFactor);
-  blend.alpha.operation = static_cast<WGPUBlendOperation>(desc->fragment->targets[0].blend->alpha.operation);
-  blend.alpha.srcFactor = static_cast<WGPUBlendFactor>(desc->fragment->targets[0].blend->alpha.srcFactor);
-  blend.alpha.dstFactor = static_cast<WGPUBlendFactor>(desc->fragment->targets[0].blend->alpha.dstFactor);
+  // NOTE: This simplified binding supports only 1 target for now properly in this minimal wrapper
+  // unless we copy arrays. For MPW-WGPU we use 1 target.
+  std::vector<WGPUColorTargetState> targets(desc->fragment->targetCount);
+  std::vector<WGPUBlendState> blends(desc->fragment->targetCount);
+
+  for(uint32_t i=0; i<desc->fragment->targetCount; ++i) {
+      targets[i] = {};
+      targets[i].format = static_cast<WGPUTextureFormat>(desc->fragment->targets[i].format);
+      targets[i].writeMask = static_cast<WGPUColorWriteMask>(desc->fragment->targets[i].writeMask);
+      
+      if (desc->fragment->targets[i].blend) {
+          blends[i].color.operation = static_cast<WGPUBlendOperation>(
+              desc->fragment->targets[i].blend->color.operation);
+          blends[i].color.srcFactor = static_cast<WGPUBlendFactor>(
+              desc->fragment->targets[i].blend->color.srcFactor);
+          blends[i].color.dstFactor = static_cast<WGPUBlendFactor>(
+              desc->fragment->targets[i].blend->color.dstFactor);
+              
+          blends[i].alpha.operation = static_cast<WGPUBlendOperation>(
+              desc->fragment->targets[i].blend->alpha.operation);
+          blends[i].alpha.srcFactor = static_cast<WGPUBlendFactor>(
+              desc->fragment->targets[i].blend->alpha.srcFactor);
+          blends[i].alpha.dstFactor = static_cast<WGPUBlendFactor>(
+              desc->fragment->targets[i].blend->alpha.dstFactor);
+              
+          targets[i].blend = &blends[i];
+      }
+  }
   
-  target.blend = &blend;
-  fragment.targets = &target;
-  
+  fragment.targets = targets.data();
   wgpu_desc.fragment = &fragment;
   
-  // Primitive
   wgpu_desc.primitive.topology = static_cast<WGPUPrimitiveTopology>(desc->primitive.topology);
   wgpu_desc.primitive.cullMode = static_cast<WGPUCullMode>(desc->primitive.cullMode);
-  
-  // Multisample
   wgpu_desc.multisample.count = desc->multisample.count;
+  wgpu_desc.multisample.mask = ~0u; // Enable all samples!
+  wgpu_desc.multisample.alphaToCoverageEnabled = false;
   
-  return RenderPipeline(
-      wgpuDeviceCreateRenderPipeline(handle_, &wgpu_desc));
+  return RenderPipeline(wgpuDeviceCreateRenderPipeline(handle_, &wgpu_desc));
+}
+
+inline CommandEncoder Device::CreateCommandEncoder(const WGPUCommandEncoderDescriptor* desc) const {
+    return CommandEncoder(wgpuDeviceCreateCommandEncoder(handle_, desc));
+}
+
+inline Queue Device::GetQueue() const {
+  return Queue(wgpuDeviceGetQueue(handle_));
+}
+
+// Adapter
+inline Device Adapter::RequestDevice(const WGPUDeviceDescriptor* desc) const {
+    struct UserData {
+        WGPUDevice device = nullptr;
+        bool done = false; 
+    };
+    UserData data;
+    
+    auto callback = [](WGPURequestDeviceStatus status, WGPUDevice device, const char* message, void* userdata) {
+        UserData* d = static_cast<UserData*>(userdata);
+        if (status == WGPURequestDeviceStatus_Success) {
+            d->device = device;
+        } else if (message) {
+            printf("Device Request Failed: %s\n", message);
+        }
+    };
+    
+    wgpuAdapterRequestDevice(handle_, desc, callback, &data);
+    return Device(data.device);
+}
+
+// Instance
+inline Surface Instance::CreateSurface(const WGPUSurfaceDescriptor* desc) const {
+    return Surface(wgpuInstanceCreateSurface(handle_, desc));
+}
+
+inline Adapter Instance::RequestAdapter(const WGPURequestAdapterOptions* options) const {
+   struct UserData {
+        WGPUAdapter adapter = nullptr;
+    };
+    UserData data;
+    
+    auto callback = [](WGPURequestAdapterStatus status, WGPUAdapter adapter, const char* message, void* userdata) {
+        UserData* d = static_cast<UserData*>(userdata);
+        if (status == WGPURequestAdapterStatus_Success) {
+            d->adapter = adapter;
+        } else if (message) {
+            printf("Adapter Request Failed: %s\n", message);
+        }
+    };
+    
+    wgpuInstanceRequestAdapter(handle_, options, callback, &data);
+    return Adapter(data.adapter);
 }
 
 }  // namespace wgpu
