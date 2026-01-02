@@ -167,34 +167,17 @@ void WgpuBackend::draw_path(const std::vector<double>& x,
   float gap_len = 0.0f;
 
   for (size_t i = 0; i < n - 1; ++i) {
-    // matplot++ passes coordinates in pixel space (based on width/height)
-    // Use them directly, no scaling needed
+    // matplot++ uses bottom-origin, flip Y for top-origin rendering
     float x1 = static_cast<float>(x[i]);
-    float y1 = static_cast<float>(y[i]);
+    float y1 = rh - static_cast<float>(y[i]);
     float x2 = static_cast<float>(x[i + 1]);
-    float y2 = static_cast<float>(y[i + 1]);
+    float y2 = rh - static_cast<float>(y[i + 1]);
 
     lines_.push_back({x1, y1, 0.0f, x2, y2, 0.0f,
                       c[0], c[1], c[2], c[3],
                       lw, dash_len, gap_len, 0.0f, 0.0f});
 
-    // Add join circles for smooth connections
-    float r_join = lw * 0.5f;
-    if (dash_len == 0.0f) {
-      circles_.push_back({x1, y1, 0.0f, r_join, 
-                          c[0], c[1], c[2], c[3], 0.0f, 0.0f, 0.0f, 0.0f});
-    }
-  }
-
-  // Final point circle
-  if (n > 0) {
-    float lx = static_cast<float>(x[n - 1]);
-    float ly = static_cast<float>(y[n - 1]);
-    float r_join = lw * 0.5f;
-    if (dash_len == 0.0f) {
-      circles_.push_back({lx, ly, 0.0f, r_join, 
-                          c[0], c[1], c[2], c[3], 0.0f, 0.0f, 0.0f, 0.0f});
-    }
+    // Join circles removed - created visible dots on tick marks
   }
 }
 
