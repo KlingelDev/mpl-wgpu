@@ -36,6 +36,7 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);  // Hide title bar
+  glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);  // Hide title bar
   
   const int width = 800;
   const int height = 600;
@@ -119,8 +120,12 @@ int main() {
       glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
 
-    // Set viewport to full window
-    glViewport(0, 0, width, height);
+    // Handle HiDPI displays properly:
+    // Window size (logical) != Framebuffer size (pixels)
+    int fb_width, fb_height;
+    glfwGetFramebufferSize(window, &fb_width, &fb_height);
+    glViewport(0, 0, fb_width, fb_height);
+    
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Upload pixel buffer to texture
@@ -128,14 +133,15 @@ int main() {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
                  GL_RGBA, GL_UNSIGNED_BYTE, renderer->GetPixels());
 
-    // Set up orthographic projection (pixel coordinates)
+    // Set up orthographic projection matching LOGICAL coordinates
+    // This maps (0,0)-(width,height) to NDC (-1,1)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0, width, height, 0, -1, 1);  // Top-left origin
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
-    // Draw textured quad filling entire window
+    // Draw textured quad filling entire LOGICAL window space
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texture);
     
