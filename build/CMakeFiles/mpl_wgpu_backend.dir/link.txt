@@ -1,2 +1,0 @@
-/usr/bin/ar qc libmpl_wgpu_backend.a CMakeFiles/mpl_wgpu_backend.dir/src/backend/wgpu_backend.cc.o CMakeFiles/mpl_wgpu_backend.dir/src/backend/primitive_renderer.cc.o
-/usr/bin/ranlib libmpl_wgpu_backend.a
