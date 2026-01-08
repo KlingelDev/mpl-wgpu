@@ -296,7 +296,7 @@ Priority areas:
 
 **Low Priority (Specialized):**
 1. Geography plots
-2. Word clouds  
+2. Word clouds
 3. Graphs/networks
 4. Pareto charts
 5. Feather plots

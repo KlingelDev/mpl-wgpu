@@ -105,6 +105,9 @@ extern "C" {
     pub fn mpl_axes_bar(ax: *mut MplAxes, values: *const c_double, count: usize);
     pub fn mpl_axes_hist(ax: *mut MplAxes, values: *const c_double, count: usize, bins: usize);
     pub fn mpl_axes_surface(ax: *mut MplAxes, x: *const c_double, y: *const c_double, z: *const c_double, rows: usize, cols: usize, wireframe: bool);
+    pub fn mpl_axes_pie(ax: *mut MplAxes, values: *const c_double, count: usize);
+    pub fn mpl_axes_boxplot(ax: *mut MplAxes, values: *const c_double, count: usize);
+    pub fn mpl_axes_heatmap(ax: *mut MplAxes, z: *const c_double, rows: usize, cols: usize);
     
     pub fn mpl_axes_set_title(ax: *mut MplAxes, title: *const c_char);
     pub fn mpl_axes_set_xlabel(ax: *mut MplAxes, label: *const c_char);

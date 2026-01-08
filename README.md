@@ -129,4 +129,3 @@ MIT License - see [LICENSE](LICENSE) for details
 - [matplotplusplus](https://github.com/alandefreitas/matplotplusplus) - 
   Plotting library
 - [wgpu](https://wgpu.rs/) - GPU API implementation
-- Based on work from OTC.SDK.Visualization

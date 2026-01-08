@@ -70,6 +70,18 @@ impl Axes {
         }
     }
 
+    pub fn pie(&self, values: &[f64]) {
+        unsafe { ffi::mpl_axes_pie(self.ptr, values.as_ptr(), values.len()); }
+    }
+
+    pub fn boxplot(&self, values: &[f64]) {
+        unsafe { ffi::mpl_axes_boxplot(self.ptr, values.as_ptr(), values.len()); }
+    }
+
+    pub fn heatmap(&self, z: &[f64], rows: usize, cols: usize) {
+        unsafe { ffi::mpl_axes_heatmap(self.ptr, z.as_ptr(), rows, cols); }
+    }
+
     pub fn set_title(&self, text: &str) {
         let c_text = CString::new(text).unwrap_or_default();
         unsafe { ffi::mpl_axes_set_title(self.ptr, c_text.as_ptr()); }
@@ -130,6 +142,7 @@ impl Figure {
 struct BackendContext {
     prim: *mut PrimitiveRenderer,
     text: *mut TextRenderer,
+    transform: Mat4,
 }
 
 extern "C" fn draw_rects_cb(user_data: *mut c_void, rects: *const ffi::MplWgpuRect, count: usize) {
@@ -138,8 +151,13 @@ extern "C" fn draw_rects_cb(user_data: *mut c_void, rects: *const ffi::MplWgpuRe
     let prim = unsafe { &mut *ctx.prim };
     let rects_slice = unsafe { std::slice::from_raw_parts(rects, count) };
     for r in rects_slice {
+        let pos = ctx.transform.transform_point3(Vec3::new(r.x, r.y, 0.0));
+        // Size handles scaling? Matplot++ backend usually handles sizing. 
+        // We assume transform is translation only for now, or unified scale.
+        // If scale is involved, width/height need scaling. 
+        // For simple UI positioning, it's just translation.
         prim.draw_rect(
-            Vec2::new(r.x, r.y), 
+            Vec2::new(pos.x, pos.y), 
             Vec2::new(r.width, r.height), 
             Vec4::new(r.r, r.g, r.b, r.a),
             r.corner_radius, 
@@ -154,9 +172,11 @@ extern "C" fn draw_lines_cb(user_data: *mut c_void, lines: *const ffi::MplWgpuLi
     let prim = unsafe { &mut *ctx.prim };
     let lines_slice = unsafe { std::slice::from_raw_parts(lines, count) };
     for l in lines_slice {
+        let p1 = ctx.transform.transform_point3(Vec3::new(l.x1, l.y1, l.z1));
+        let p2 = ctx.transform.transform_point3(Vec3::new(l.x2, l.y2, l.z2));
         prim.draw_line(
-            Vec3::new(l.x1, l.y1, l.z1),
-            Vec3::new(l.x2, l.y2, l.z2),
+            p1,
+            p2,
             l.width,
             Vec4::new(l.r, l.g, l.b, l.a),
             l.dash_len,
@@ -172,8 +192,9 @@ extern "C" fn draw_circles_cb(user_data: *mut c_void, circles: *const ffi::MplWg
     let prim = unsafe { &mut *ctx.prim };
     let slice = unsafe { std::slice::from_raw_parts(circles, count) };
     for c in slice {
+        let center = ctx.transform.transform_point3(Vec3::new(c.cx, c.cy, c.cz));
         prim.draw_circle(
-            Vec3::new(c.cx, c.cy, c.cz),
+            center,
             c.radius,
             Vec4::new(c.r, c.g, c.b, c.a),
             0.0, c.type_ as u32
@@ -187,10 +208,11 @@ extern "C" fn draw_triangles_cb(user_data: *mut c_void, tris: *const ffi::MplWgp
     let prim = unsafe { &mut *ctx.prim };
     let slice = unsafe { std::slice::from_raw_parts(tris, count) };
     for t in slice {
+        let p1 = ctx.transform.transform_point3(Vec3::new(t.x1, t.y1, t.z1));
+        let p2 = ctx.transform.transform_point3(Vec3::new(t.x2, t.y2, t.z2));
+        let p3 = ctx.transform.transform_point3(Vec3::new(t.x3, t.y3, t.z3));
         prim.draw_triangle(
-            Vec3::new(t.x1, t.y1, t.z1),
-            Vec3::new(t.x2, t.y2, t.z2),
-            Vec3::new(t.x3, t.y3, t.z3),
+            p1, p2, p3,
             Vec4::new(t.r, t.g, t.b, t.a)
         );
     }
@@ -202,8 +224,11 @@ extern "C" fn draw_text_cb(user_data: *mut c_void, text: *const c_char, x: f32, 
     let text_renderer = unsafe { &mut *ctx.text };
     if text.is_null() { return; }
     let c_str = unsafe { CStr::from_ptr(text) };
+    
+    let pos = ctx.transform.transform_point3(Vec3::new(x, y, 0.0));
+    
     if let Ok(s) = c_str.to_str() {
-       text_renderer.draw_text(s, Vec2::new(x, y), size, Vec4::new(r, g, b, a));
+       text_renderer.draw_text(s, Vec2::new(pos.x, pos.y), size, Vec4::new(r, g, b, a));
     }
 }
 
@@ -249,6 +274,7 @@ impl PlotBackend {
         let ctx = Box::new(BackendContext {
             prim: std::ptr::null_mut(),
             text: std::ptr::null_mut(),
+            transform: Mat4::IDENTITY,
         });
         
         let ctx_ptr = Box::into_raw(ctx);
@@ -289,10 +315,11 @@ impl PlotBackend {
 
     pub fn set_scale_factor(&mut self, _scale: f32) {}
 
-    pub fn render(&mut self, prim: &mut PrimitiveRenderer, text: &mut TextRenderer, _target: Option<Mat4>) {
+    pub fn render(&mut self, prim: &mut PrimitiveRenderer, text: &mut TextRenderer, target: Option<Mat4>) {
         unsafe {
             (*self.ctx_ptr).prim = prim as *mut _;
             (*self.ctx_ptr).text = text as *mut _;
+            (*self.ctx_ptr).transform = target.unwrap_or(Mat4::IDENTITY);
             ffi::mpl_wgpu_backend_render_data(self.backend_ptr);
             (*self.ctx_ptr).prim = std::ptr::null_mut();
             (*self.ctx_ptr).text = std::ptr::null_mut();

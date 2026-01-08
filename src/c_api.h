@@ -22,6 +22,7 @@ typedef struct MplAxes MplAxes;
 MplFigure* mpl_figure_create(MplWgpuBackend* backend);
 void mpl_figure_destroy(MplFigure* fig);
 MplAxes* mpl_figure_current_axes(MplFigure* fig);
+void mpl_axes_destroy(MplAxes* ax);
 
 // Plotting commands (on Axes)
 void mpl_axes_plot(MplAxes* ax, const double* x, const double* y, size_t count, const char* style);
@@ -29,6 +30,9 @@ void mpl_axes_scatter(MplAxes* ax, const double* x, const double* y, size_t coun
 void mpl_axes_bar(MplAxes* ax, const double* values, size_t count); // Simplified for now
 void mpl_axes_hist(MplAxes* ax, const double* values, size_t count, size_t bins);
 void mpl_axes_surface(MplAxes* ax, const double* x, const double* y, const double* z, size_t rows, size_t cols, bool wireframe);
+void mpl_axes_pie(MplAxes* ax, const double* values, size_t count);
+void mpl_axes_boxplot(MplAxes* ax, const double* values, size_t count); // Simplified 1D
+void mpl_axes_heatmap(MplAxes* ax, const double* z, size_t rows, size_t cols);
 
 void mpl_axes_set_title(MplAxes* ax, const char* title);
 void mpl_axes_set_xlabel(MplAxes* ax, const char* label);

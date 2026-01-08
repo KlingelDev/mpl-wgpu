@@ -46,7 +46,7 @@ example types render correctly with the WgpuBackend.
 ---
 
 ## Test Categories (from matplotplusplus/examples/)
-
+ 
 ### 1. Line Plot (`line_plot/`)
 - [x] `plot/` - Basic 2D line plots
 - [x] `plot3/` - 3D line plots (helix tested)

@@ -128,6 +128,23 @@ void mpl_wgpu_backend_set_size(MplWgpuBackend* backend, unsigned int width, unsi
 
 // ---------------------------------------------------------------------------
 
+MplFigure* mpl_figure_create(MplWgpuBackend* backend) {
+    auto fig = new MplFigure();
+    // Create new figure in quiet mode
+    fig->figure = std::make_unique<matplot::figure_type>(true);
+    if (backend && backend->backend) {
+        fig->figure->backend(backend->backend);
+    }
+    fig->backend_ref = backend;
+    return fig;
+}
+
+void mpl_figure_destroy(MplFigure* fig) {
+    if (fig) {
+        delete fig;
+    }
+}
+
 struct MplAxes {
     // We don't own the axes pointer, the figure does. 
     // Usually matplot++ returns shared_ptr<axes_type>
@@ -224,6 +241,29 @@ void mpl_axes_surface(MplAxes* ax, const double* x, const double* y, const doubl
     } else {
         ax->axes->surf(X, Y, Z);
     }
+}
+
+void mpl_axes_pie(MplAxes* ax, const double* values, size_t count) {
+    if (!ax || !ax->axes) return;
+    std::vector<double> v(values, values + count);
+    ax->axes->pie(v);
+}
+
+void mpl_axes_boxplot(MplAxes* ax, const double* values, size_t count) {
+    if (!ax || !ax->axes) return;
+    std::vector<double> v(values, values + count);
+    ax->axes->boxplot(v);
+}
+
+void mpl_axes_heatmap(MplAxes* ax, const double* z, size_t rows, size_t cols) {
+    if (!ax || !ax->axes) return;
+    std::vector<std::vector<double>> Z(rows, std::vector<double>(cols));
+    for (size_t r=0; r<rows; ++r) {
+        for (size_t c=0; c<cols; ++c) {
+            Z[r][c] = z[r * cols + c];
+        }
+    }
+    ax->axes->heatmap(Z);
 }
 
 void mpl_axes_set_title(MplAxes* ax, const char* title) {
