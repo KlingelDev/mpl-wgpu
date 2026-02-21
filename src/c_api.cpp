@@ -139,6 +139,19 @@ MplFigure* mpl_figure_create(MplWgpuBackend* backend) {
     return fig;
 }
 
+MplFigure* mpl_figure_create_gnuplot() {
+    auto fig = new MplFigure();
+    fig->figure = std::make_unique<matplot::figure_type>(true);
+    // Default backend is gnuplot — no wgpu backend set.
+    fig->backend_ref = nullptr;
+    return fig;
+}
+
+bool mpl_figure_save(MplFigure* fig, const char* path) {
+    if (!fig || !fig->figure || !path) return false;
+    return fig->figure->save(path);
+}
+
 void mpl_figure_destroy(MplFigure* fig) {
     if (fig) {
         delete fig;

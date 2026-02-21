@@ -5,6 +5,7 @@
 
 use mpl_wgpu::capture::PlotCapture;
 use mpl_wgpu::compare;
+use mpl_wgpu::plotting;
 use std::path::PathBuf;
 
 /// Returns the path to a golden reference PNG.
@@ -30,15 +31,17 @@ const DEFAULT_MAX_DIFF_PCT: f64 = 2.0;
 /// Orchestrates a visual regression test.
 ///
 /// Creates a [`PlotCapture`] at 800x600, calls `setup_fn` to
-/// configure the plot, captures the result, and either blesses
-/// (when `BLESS=1`) or compares against the golden reference.
-/// On failure, saves actual + diff images to `tests/output/`.
+/// configure the plot via a [`plotting::Figure`], captures the
+/// result, and either blesses (when `BLESS=1`) or compares
+/// against the golden reference.  On failure, saves actual + diff
+/// images to `tests/output/`.
 pub fn run_visual_test<F>(name: &str, setup_fn: F)
 where
-  F: FnOnce(&PlotCapture),
+  F: FnOnce(&plotting::Figure),
 {
   let cap = PlotCapture::new(800, 600);
-  setup_fn(&cap);
+  let fig = cap.figure();
+  setup_fn(&fig);
   run_visual_test_with_capture(name, cap);
 }
 

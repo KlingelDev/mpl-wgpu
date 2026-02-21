@@ -17,15 +17,17 @@
 //!
 //! - Left/Right: navigate test cases
 //! - 1–8: jump to test case by number
-//! - Tab: cycle display mode (Live / Golden / Diff)
+//! - Tab: cycle display mode (Live/Golden/Ref/RefDiff/Diff)
 //! - B: bless current test (save render as golden)
 //! - A: bless ALL tests
+//! - G: generate gnuplot references for all tests
 //! - R: re-render current test
 //! - S: save current render to tests/output/
 //! - Q/Esc: quit
 
 use mpl_wgpu::capture::PlotCapture;
 use mpl_wgpu::compare;
+use mpl_wgpu::plotting::GnuplotFigure;
 use mpl_wgpu::test_cases;
 use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
 use sdl2::event::Event;
@@ -299,6 +301,8 @@ fn draw_string(
 enum DisplayMode {
   Live,
   Golden,
+  Reference,
+  RefDiff,
   Diff,
 }
 
@@ -306,7 +310,9 @@ impl DisplayMode {
   fn next(self) -> Self {
     match self {
       Self::Live => Self::Golden,
-      Self::Golden => Self::Diff,
+      Self::Golden => Self::Reference,
+      Self::Reference => Self::RefDiff,
+      Self::RefDiff => Self::Diff,
       Self::Diff => Self::Live,
     }
   }
@@ -315,6 +321,8 @@ impl DisplayMode {
     match self {
       Self::Live => "Live",
       Self::Golden => "Golden",
+      Self::Reference => "Ref",
+      Self::RefDiff => "RefDiff",
       Self::Diff => "Diff",
     }
   }
@@ -356,8 +364,10 @@ impl TestStatus {
 struct CachedTest {
   pixels: Vec<u8>,
   golden: Option<Vec<u8>>,
+  reference: Option<Vec<u8>>,
   status: TestStatus,
   rmse: f64,
+  ref_rmse: f64,
 }
 
 // -----------------------------------------------------------------
@@ -368,6 +378,12 @@ fn golden_dir() -> PathBuf {
   PathBuf::from(env!("CARGO_MANIFEST_DIR"))
     .join("tests")
     .join("golden")
+}
+
+fn reference_dir() -> PathBuf {
+  PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+    .join("tests")
+    .join("reference")
 }
 
 fn output_dir() -> PathBuf {
@@ -388,6 +404,15 @@ fn load_golden(name: &str) -> Option<Vec<u8>> {
   Some(img.into_raw())
 }
 
+fn load_reference(name: &str) -> Option<Vec<u8>> {
+  let path = reference_dir().join(format!("{}.png", name));
+  if !path.exists() {
+    return None;
+  }
+  let img = image::open(&path).ok()?.to_rgba8();
+  Some(img.into_raw())
+}
+
 // -----------------------------------------------------------------
 // Default thresholds (same as tests/common)
 // -----------------------------------------------------------------
@@ -400,7 +425,8 @@ fn render_test(
   tc: &test_cases::TestCase,
 ) -> CachedTest {
   let mut cap = PlotCapture::new(WIDTH, HEIGHT);
-  (tc.setup)(&cap);
+  let fig = cap.figure();
+  (tc.setup)(&fig);
   let pixels = cap.render_and_capture();
   let golden = load_golden(tc.name);
 
@@ -420,7 +446,22 @@ fn render_test(
     None => (TestStatus::New, 0.0),
   };
 
-  CachedTest { pixels, golden, status, rmse }
+  let reference = load_reference(tc.name);
+  let ref_rmse = match &reference {
+    Some(r) => {
+      // Reference may differ in size; only compare if match.
+      let ref_pixels = r.len() as u32 / 4;
+      if ref_pixels == WIDTH * HEIGHT {
+        compare::compare_images(&pixels, r, WIDTH, HEIGHT)
+          .rmse
+      } else {
+        0.0
+      }
+    }
+    None => 0.0,
+  };
+
+  CachedTest { pixels, golden, reference, status, rmse, ref_rmse }
 }
 
 /// Refreshes cached state after bless.
@@ -444,6 +485,38 @@ fn refresh_after_bless(
   cached.rmse = 0.0;
 }
 
+/// Generates a gnuplot reference PNG for one test case and
+/// updates the cached reference + ref_rmse.
+fn generate_reference(
+  tc: &test_cases::TestCase,
+  cached: &mut CachedTest,
+) {
+  let gnuplot_fig = GnuplotFigure::new();
+  let fig = gnuplot_fig.figure();
+  (tc.setup)(&fig);
+  let ref_dir = reference_dir();
+  std::fs::create_dir_all(&ref_dir).ok();
+  let path = ref_dir.join(format!("{}.png", tc.name));
+  gnuplot_fig.save(path.to_str().unwrap_or(""));
+  // Reload the saved PNG to get pixel data at any size,
+  // then resize to WIDTH x HEIGHT for comparison.
+  cached.reference = load_reference(tc.name);
+  cached.ref_rmse = match &cached.reference {
+    Some(r) => {
+      let ref_pixels = r.len() as u32 / 4;
+      if ref_pixels == WIDTH * HEIGHT {
+        compare::compare_images(
+          &cached.pixels, r, WIDTH, HEIGHT,
+        )
+        .rmse
+      } else {
+        0.0
+      }
+    }
+    None => 0.0,
+  };
+}
+
 /// Builds the composite frame buffer (800x660) with status bar.
 fn build_frame(
   cached: &CachedTest,
@@ -456,6 +529,16 @@ fn build_frame(
   let total_pixels = (WIDTH * WIN_H) as usize * 4;
   let mut buf = vec![0u8; total_pixels];
 
+  // Helper: blit a diff image, draw status bar, return.
+  let blit_diff = |buf: &mut Vec<u8>, diff: &[u8]| {
+    for row in 0..HEIGHT as usize {
+      let src_off = row * stride;
+      let dst_off = row * stride;
+      buf[dst_off..dst_off + stride]
+        .copy_from_slice(&diff[src_off..src_off + stride]);
+    }
+  };
+
   // Content area (top 800x600).
   let content = match mode {
     DisplayMode::Live => &cached.pixels,
@@ -466,23 +549,39 @@ fn build_frame(
         &cached.pixels
       }
     }
+    DisplayMode::Reference => {
+      if let Some(ref r) = cached.reference {
+        r
+      } else {
+        // Gray placeholder when no reference exists.
+        let gray =
+          vec![128; (WIDTH * HEIGHT * 4) as usize];
+        blit_diff(&mut buf, &gray);
+        draw_status_bar(
+          &mut buf, idx, total, name, cached, mode,
+        );
+        return buf;
+      }
+    }
+    DisplayMode::RefDiff => {
+      let diff = if let Some(ref r) = cached.reference {
+        compare::diff_pixels(&cached.pixels, r)
+      } else {
+        vec![128; (WIDTH * HEIGHT * 4) as usize]
+      };
+      blit_diff(&mut buf, &diff);
+      draw_status_bar(
+        &mut buf, idx, total, name, cached, mode,
+      );
+      return buf;
+    }
     DisplayMode::Diff => {
-      // Computed inline to avoid extra allocation in struct.
-      // Return early with a temporary.
       let diff = if let Some(ref g) = cached.golden {
         compare::diff_pixels(&cached.pixels, g)
       } else {
-        // No golden: gray placeholder.
         vec![128; (WIDTH * HEIGHT * 4) as usize]
       };
-      // Copy diff into buf and fall through to status bar.
-      for row in 0..HEIGHT as usize {
-        let src_off = row * stride;
-        let dst_off = row * stride;
-        buf[dst_off..dst_off + stride]
-          .copy_from_slice(&diff[src_off..src_off + stride]);
-      }
-      // Draw status bar and return.
+      blit_diff(&mut buf, &diff);
       draw_status_bar(
         &mut buf, idx, total, name, cached, mode,
       );
@@ -545,7 +644,13 @@ fn draw_status_bar(
   x += (cached.status.label().len() as u32 + 2)
     * FONT_W as u32;
 
-  let rmse_str = format!("RMSE={:.2}", cached.rmse);
+  let shown_rmse = match mode {
+    DisplayMode::Reference | DisplayMode::RefDiff => {
+      cached.ref_rmse
+    }
+    _ => cached.rmse,
+  };
+  let rmse_str = format!("RMSE={:.2}", shown_rmse);
   draw_string(buf, WIDTH, x, y1, &rmse_str, white);
   x += (rmse_str.len() as u32 + 2) * FONT_W as u32;
 
@@ -555,8 +660,8 @@ fn draw_status_bar(
   // Line 2: key hints.
   draw_string(
     buf, WIDTH, 10, y2,
-    "<-/-> nav  1-8 jump  Tab mode  B bless  \
-     A all  R rerender  S save  Q quit",
+    "<-/-> nav  Tab mode  B bless  A all  \
+     G gnuplot  R rerender  S save  Q quit",
     gray,
   );
 }
@@ -595,10 +700,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     cached.iter().filter(|c| c.status == TestStatus::Fail).count();
   let n_new =
     cached.iter().filter(|c| c.status == TestStatus::New).count();
+  let n_ref =
+    cached.iter().filter(|c| c.reference.is_some()).count();
   eprintln!(
-    "Summary: {} pass, {} fail, {} new",
-    n_pass, n_fail, n_new,
+    "Summary: {} pass, {} fail, {} new, {} refs",
+    n_pass, n_fail, n_new, n_ref,
   );
+  if n_ref == 0 {
+    eprintln!(
+      "Hint: Press G to generate gnuplot references."
+    );
+  }
 
   // Start on the first failing test, or the first test.
   let start_idx = cached
@@ -941,6 +1053,25 @@ fn fs_main(in: VsOut) -> @location(0) vec4<f32> {
             );
             eprintln!("Blessed: {}", tc.name);
           }
+          needs_present = true;
+        }
+
+        // G: generate gnuplot references for all tests.
+        Event::KeyDown {
+          keycode: Some(Keycode::G),
+          ..
+        } => {
+          eprintln!(
+            "Generating gnuplot references..."
+          );
+          for (i, tc) in cases.iter().enumerate() {
+            eprintln!(
+              "  [{}/{}] {}...",
+              i + 1, cases.len(), tc.name,
+            );
+            generate_reference(tc, &mut cached[i]);
+          }
+          eprintln!("Done generating references.");
           needs_present = true;
         }
 

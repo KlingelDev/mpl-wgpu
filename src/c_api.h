@@ -20,9 +20,11 @@ typedef struct MplAxes MplAxes;
 
 // Axis / Figure management
 MplFigure* mpl_figure_create(MplWgpuBackend* backend);
+MplFigure* mpl_figure_create_gnuplot(void);
 void mpl_figure_destroy(MplFigure* fig);
 MplAxes* mpl_figure_current_axes(MplFigure* fig);
 void mpl_axes_destroy(MplAxes* ax);
+bool mpl_figure_save(MplFigure* fig, const char* path);
 
 // Plotting commands (on Axes)
 void mpl_axes_plot(MplAxes* ax, const double* x, const double* y, size_t count, const char* style);

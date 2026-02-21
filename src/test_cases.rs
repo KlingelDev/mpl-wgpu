@@ -4,19 +4,18 @@
 //! Canonical registry of visual test cases.
 //!
 //! Each test case pairs a name (used as the golden file stem) with a
-//! setup function that configures a [`PlotCapture`].  Both the
-//! automated regression tests and the interactive review GUI import
-//! from here so the definitions stay in sync.
+//! setup function that configures a [`Figure`].  Both the automated
+//! regression tests and the interactive review GUI import from here
+//! so the definitions stay in sync.
 
-use crate::capture::PlotCapture;
-use crate::plotting::linspace;
+use crate::plotting::{self, linspace};
 
 /// A named visual test case.
 pub struct TestCase {
   /// Display name and golden-file stem.
   pub name: &'static str,
-  /// Configures the plot on a [`PlotCapture`].
-  pub setup: fn(&PlotCapture),
+  /// Configures the plot on a [`plotting::Figure`].
+  pub setup: fn(&plotting::Figure),
 }
 
 /// Returns the full list of visual test cases.
@@ -37,8 +36,7 @@ pub fn all() -> Vec<TestCase> {
 }
 
 /// Sine wave with title and axis labels.
-fn setup_line_plot(cap: &PlotCapture) {
-  let fig = cap.figure();
+fn setup_line_plot(fig: &plotting::Figure) {
   let ax = fig.current_axes();
   let x = linspace(0.0, 6.283, 100);
   let y: Vec<f64> = x.iter().map(|v| v.sin()).collect();
@@ -49,8 +47,7 @@ fn setup_line_plot(cap: &PlotCapture) {
 }
 
 /// Scatter plot with deterministic pseudo-random points.
-fn setup_scatter_plot(cap: &PlotCapture) {
-  let fig = cap.figure();
+fn setup_scatter_plot(fig: &plotting::Figure) {
   let ax = fig.current_axes();
   let x = crate::plotting::randn(80);
   let y = {
@@ -65,16 +62,14 @@ fn setup_scatter_plot(cap: &PlotCapture) {
 }
 
 /// Bar chart with 5 categories.
-fn setup_bar_chart(cap: &PlotCapture) {
-  let fig = cap.figure();
+fn setup_bar_chart(fig: &plotting::Figure) {
   let ax = fig.current_axes();
   ax.bar(&[3.0, 7.0, 5.0, 9.0, 2.0]);
   ax.set_title("Bar Chart");
 }
 
 /// Three overlaid curves with different styles.
-fn setup_multi_line(cap: &PlotCapture) {
-  let fig = cap.figure();
+fn setup_multi_line(fig: &plotting::Figure) {
   let ax = fig.current_axes();
   let x = linspace(0.0, 6.283, 100);
   let y1: Vec<f64> = x.iter().map(|v| v.sin()).collect();
@@ -88,8 +83,7 @@ fn setup_multi_line(cap: &PlotCapture) {
 }
 
 /// Histogram with deterministic pseudo-random data.
-fn setup_histogram(cap: &PlotCapture) {
-  let fig = cap.figure();
+fn setup_histogram(fig: &plotting::Figure) {
   let ax = fig.current_axes();
   let data = crate::plotting::randn(200);
   ax.hist(&data, 20);
@@ -97,8 +91,7 @@ fn setup_histogram(cap: &PlotCapture) {
 }
 
 /// Grid lines and axis labels.
-fn setup_grid_and_labels(cap: &PlotCapture) {
-  let fig = cap.figure();
+fn setup_grid_and_labels(fig: &plotting::Figure) {
   let ax = fig.current_axes();
   let x = linspace(-5.0, 5.0, 50);
   let y: Vec<f64> = x.iter().map(|v| v * v).collect();
@@ -110,8 +103,7 @@ fn setup_grid_and_labels(cap: &PlotCapture) {
 }
 
 /// 10x10 heatmap.
-fn setup_heatmap(cap: &PlotCapture) {
-  let fig = cap.figure();
+fn setup_heatmap(fig: &plotting::Figure) {
   let ax = fig.current_axes();
   let rows = 10usize;
   let cols = 10usize;
@@ -129,8 +121,7 @@ fn setup_heatmap(cap: &PlotCapture) {
 }
 
 /// 3D surface plot (sinc-like function).
-fn setup_surface_3d(cap: &PlotCapture) {
-  let fig = cap.figure();
+fn setup_surface_3d(fig: &plotting::Figure) {
   let ax = fig.current_axes();
   let n = 20usize;
   let vals = linspace(-3.0, 3.0, n);

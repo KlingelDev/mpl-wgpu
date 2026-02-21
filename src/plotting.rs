@@ -136,6 +136,47 @@ impl Figure {
 }
 
 // ----------------------------------------------------------------------------
+// GnuplotFigure
+// ----------------------------------------------------------------------------
+
+/// Owning wrapper for a gnuplot-backed matplot++ figure.
+///
+/// Uses the default gnuplot backend (no wgpu renderer). Call
+/// [`save`] to render the plot to a PNG via gnuplot.
+pub struct GnuplotFigure {
+  ptr: *mut ffi::MplFigure,
+}
+
+impl GnuplotFigure {
+  /// Creates a new gnuplot-backed figure.
+  pub fn new() -> Self {
+    let ptr = unsafe { ffi::mpl_figure_create_gnuplot() };
+    assert!(!ptr.is_null(), "Failed to create gnuplot figure");
+    Self { ptr }
+  }
+
+  /// Returns a non-owning [`Figure`] handle for plot setup.
+  pub fn figure(&self) -> Figure {
+    Figure { ptr: self.ptr }
+  }
+
+  /// Saves the figure to a file via gnuplot.
+  ///
+  /// The output format is inferred from the file extension
+  /// (e.g. `.png`, `.svg`).
+  pub fn save(&self, path: &str) -> bool {
+    let c_path = CString::new(path).unwrap_or_default();
+    unsafe { ffi::mpl_figure_save(self.ptr, c_path.as_ptr()) }
+  }
+}
+
+impl Drop for GnuplotFigure {
+  fn drop(&mut self) {
+    unsafe { ffi::mpl_figure_destroy(self.ptr); }
+  }
+}
+
+// ----------------------------------------------------------------------------
 // PlotBackend
 // ----------------------------------------------------------------------------
 
