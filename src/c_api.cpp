@@ -4,6 +4,7 @@
 #include "c_api.h"
 #include "matplot/backend/wgpu_backend.h"
 #include <matplot/matplot.h>
+#include <matplot/backend/backend_registry.h>
 #include <vector>
 #include <string>
 
@@ -142,7 +143,8 @@ MplFigure* mpl_figure_create(MplWgpuBackend* backend) {
 MplFigure* mpl_figure_create_gnuplot() {
     auto fig = new MplFigure();
     fig->figure = std::make_unique<matplot::figure_type>(true);
-    // Default backend is gnuplot — no wgpu backend set.
+    // Set gnuplot as the backend explicitly so save() works.
+    fig->figure->backend(matplot::create_default_backend());
     fig->backend_ref = nullptr;
     return fig;
 }

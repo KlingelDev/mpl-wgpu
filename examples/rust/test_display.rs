@@ -410,6 +410,14 @@ fn load_reference(name: &str) -> Option<Vec<u8>> {
     return None;
   }
   let img = image::open(&path).ok()?.to_rgba8();
+  // Resize to match our capture dimensions if needed.
+  if img.width() != WIDTH || img.height() != HEIGHT {
+    let resized = image::imageops::resize(
+      &img, WIDTH, HEIGHT,
+      image::imageops::FilterType::Lanczos3,
+    );
+    return Some(resized.into_raw());
+  }
   Some(img.into_raw())
 }
 
