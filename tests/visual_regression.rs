@@ -85,3 +85,15 @@ fn test_heatmap() {
 fn test_surface_3d() {
   run("surface_3d");
 }
+
+#[test]
+#[serial]
+fn test_pie_chart() {
+  run("pie_chart");
+}
+
+#[test]
+#[serial]
+fn test_box_chart() {
+  run("box_chart");
+}

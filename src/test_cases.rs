@@ -32,6 +32,8 @@ pub fn all() -> Vec<TestCase> {
     },
     TestCase { name: "heatmap", setup: setup_heatmap },
     TestCase { name: "surface_3d", setup: setup_surface_3d },
+    TestCase { name: "pie_chart", setup: setup_pie_chart },
+    TestCase { name: "box_chart", setup: setup_box_chart },
   ]
 }
 
@@ -118,6 +120,21 @@ fn setup_heatmap(fig: &plotting::Figure) {
   }
   ax.heatmap(&z, rows, cols);
   ax.set_title("Heatmap");
+}
+
+/// Pie chart with 5 slices.
+fn setup_pie_chart(fig: &plotting::Figure) {
+  let ax = fig.current_axes();
+  ax.pie(&[30.0, 20.0, 25.0, 15.0, 10.0]);
+  ax.set_title("Pie Chart");
+}
+
+/// Box chart (box-and-whisker) with 20 data points.
+fn setup_box_chart(fig: &plotting::Figure) {
+  let ax = fig.current_axes();
+  let data = linspace(-3.0, 3.0, 20);
+  ax.boxplot(&data);
+  ax.set_title("Box Chart");
 }
 
 /// 3D surface plot (sinc-like function).
