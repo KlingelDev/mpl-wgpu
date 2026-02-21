@@ -211,7 +211,7 @@ class WgpuBackend : public backend_interface {
 
   /// @brief Fills a polygon.
   void fill(const std::vector<double>& x, const std::vector<double>& y,
-            const std::array<float, 4>& color);
+            const std::array<float, 4>& color) override;
 
   /// @brief Draws point markers at the given coordinates.
   void draw_markers(const std::vector<double>& x,
@@ -225,6 +225,11 @@ class WgpuBackend : public backend_interface {
   /// @brief Draws text at the given coordinates.
   void draw_text(const std::vector<double>& x, const std::vector<double>& y,
                  const std::vector<double>& z = {}) override;
+
+  /// @brief Draws a text label at a given position.
+  void draw_label(const std::string& text, double x, double y,
+                  float font_size,
+                  const std::array<float, 4>& color) override;
 
   /// \brief Get text width (not virtual in base class).
   double text_width(const std::string &text) {
@@ -272,7 +277,8 @@ class WgpuBackend : public backend_interface {
   void set_marker_radius(float radius) { marker_radius_ = radius; }
 
   /// @brief Sets the default marker color.
-  void set_marker_color(const std::array<float, 4>& color) {
+  void set_marker_color(
+      const std::array<float, 4>& color) override {
     marker_color_ = color;
   }
 
