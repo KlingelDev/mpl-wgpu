@@ -42,6 +42,7 @@ void mpl_axes_set_xlim(MplAxes* ax, double min, double max);
 void mpl_axes_set_ylim(MplAxes* ax, double min, double max);
 
 // Figure level
+void mpl_figure_draw(MplFigure* fig);
 void mpl_figure_clear(MplFigure* fig);
 // ===========================================================================
 

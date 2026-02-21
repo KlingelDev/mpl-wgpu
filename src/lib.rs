@@ -27,9 +27,12 @@
 #![warn(rust_2018_idioms)]
 
 pub mod backend;
+pub mod capture;
+pub mod compare;
 pub mod ffi;
 pub mod primitives;
 pub mod plotting;
+pub mod test_cases;
 pub mod text;
 
 pub use backend::{Figure, WgpuBackend};

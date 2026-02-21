@@ -152,15 +152,11 @@ extern "C" fn draw_rects_cb(user_data: *mut c_void, rects: *const ffi::MplWgpuRe
     let rects_slice = unsafe { std::slice::from_raw_parts(rects, count) };
     for r in rects_slice {
         let pos = ctx.transform.transform_point3(Vec3::new(r.x, r.y, 0.0));
-        // Size handles scaling? Matplot++ backend usually handles sizing. 
-        // We assume transform is translation only for now, or unified scale.
-        // If scale is involved, width/height need scaling. 
-        // For simple UI positioning, it's just translation.
         prim.draw_rect(
-            Vec2::new(pos.x, pos.y), 
-            Vec2::new(r.width, r.height), 
+            Vec2::new(pos.x, pos.y),
+            Vec2::new(r.width, r.height),
             Vec4::new(r.r, r.g, r.b, r.a),
-            r.corner_radius, 
+            r.corner_radius,
             r.stroke_width
         );
     }
@@ -320,7 +316,10 @@ impl PlotBackend {
             (*self.ctx_ptr).prim = prim as *mut _;
             (*self.ctx_ptr).text = text as *mut _;
             (*self.ctx_ptr).transform = target.unwrap_or(Mat4::IDENTITY);
-            ffi::mpl_wgpu_backend_render_data(self.backend_ptr);
+            // draw() triggers the full matplotplusplus pipeline:
+            //   new_frame() -> send_draw_commands() -> render_data()
+            // which populates primitives and flushes them via callbacks.
+            ffi::mpl_figure_draw(self.figure_ptr);
             (*self.ctx_ptr).prim = std::ptr::null_mut();
             (*self.ctx_ptr).text = std::ptr::null_mut();
         }

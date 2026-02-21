@@ -96,6 +96,7 @@ extern "C" {
 
     pub fn mpl_figure_create(backend: *mut MplWgpuBackend) -> *mut MplFigure;
     pub fn mpl_figure_destroy(fig: *mut MplFigure);
+    pub fn mpl_figure_draw(fig: *mut MplFigure);
     pub fn mpl_figure_current_axes(fig: *mut MplFigure) -> *mut MplAxes;
     pub fn mpl_figure_clear(fig: *mut MplFigure);
 

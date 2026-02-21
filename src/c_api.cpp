@@ -290,6 +290,12 @@ void mpl_axes_set_ylim(MplAxes* ax, double min, double max) {
     if (ax && ax->axes) ax->axes->ylim({min, max});
 }
 
+void mpl_figure_draw(MplFigure* fig) {
+    if (fig && fig->figure) {
+        fig->figure->draw();
+    }
+}
+
 void mpl_figure_clear(MplFigure* fig) {
     if (fig && fig->figure) {
         // Clear all axes?

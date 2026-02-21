@@ -60,7 +60,7 @@ bool WgpuBackend::render_data() {
   float h = static_cast<float>(render_height_);
 
   ReconstructRectangles();
-  
+
   if (!rects_.empty()) renderer_->DrawRects(rects_, w, h);
   if (!lines_.empty()) renderer_->DrawLines(lines_, w, h);
   if (!circles_.empty()) renderer_->DrawCircles(circles_, w, h);
@@ -116,9 +116,6 @@ void WgpuBackend::position_y(unsigned int y) { pos_y_ = y; }
 
 void WgpuBackend::draw_background(const std::array<float, 4>& color) {
   std::array<float, 4> c = FixFillColor(color);
-  // Debug size mismatch
-  // std::cout << "draw_background: RenderSize=" << render_width_ << "x" << render_height_ 
-  //          << " LogicalSize=" << width_ << "x" << height_ << std::endl;
 
   WgpuRenderer::Rect r;
   r.x = 0.0f; r.y = 0.0f; 
@@ -167,9 +164,8 @@ void WgpuBackend::draw_rectangle(double x1, double x2, double y1, double y2, con
 
 void WgpuBackend::draw_triangle(const std::vector<double>& x,
                                 const std::vector<double>& y,
-                                const std::vector<double>& z,
-                                const std::array<float, 4>& color) {
-  if (x.size() < 3 || y.size() < 3 || z.size() < 3) return;
+                                const std::vector<double>& z) {
+  if (x.size() < 3 || y.size() < 3) return;
 
   float rw = static_cast<float>(render_width_);
   float rh = static_cast<float>(render_height_);
@@ -180,7 +176,7 @@ void WgpuBackend::draw_triangle(const std::vector<double>& x,
   float offset_x = (rw - lw * scale) * 0.5f;
   float offset_y = (rh - lh * scale) * 0.5f;
 
-  std::array<float, 4> c = FixFillColor(color);
+  std::array<float, 4> c = marker_color_;
 
   // Transform vertices
   // Note: draw_triangle expects pre-transformed (logic->screen) coordinates usually if coming from axes_type?
@@ -196,15 +192,15 @@ void WgpuBackend::draw_triangle(const std::vector<double>& x,
   
   float tx1 = static_cast<float>(x[0]) * scale + offset_x;
   float ty1 = (rh - offset_y) - static_cast<float>(y[0]) * scale;
-  float tz1 = static_cast<float>(z[0]);
-  
+  float tz1 = z.size() > 0 ? static_cast<float>(z[0]) : 0.0f;
+
   float tx2 = static_cast<float>(x[1]) * scale + offset_x;
   float ty2 = (rh - offset_y) - static_cast<float>(y[1]) * scale;
-  float tz2 = static_cast<float>(z[1]);
+  float tz2 = z.size() > 1 ? static_cast<float>(z[1]) : 0.0f;
 
   float tx3 = static_cast<float>(x[2]) * scale + offset_x;
   float ty3 = (rh - offset_y) - static_cast<float>(y[2]) * scale;
-  float tz3 = static_cast<float>(z[2]);
+  float tz3 = z.size() > 2 ? static_cast<float>(z[2]) : 0.0f;
 
   triangles_.push_back({
       tx1, ty1, tz1, 0,
@@ -322,10 +318,9 @@ void WgpuBackend::fill(const std::vector<double>& x, const std::vector<double>& 
 
 void WgpuBackend::draw_markers(const std::vector<double>& x,
                                  const std::vector<double>& y,
-                                 const std::vector<double>& z,
-                                 const std::array<float, 4>& color) {
+                                 const std::vector<double>& z) {
   size_t count = std::min(x.size(), y.size());
-  (void)z; // Unused for 2D
+  (void)z;
 
   float rw = static_cast<float>(render_width_);
   float rh = static_cast<float>(render_height_);
@@ -350,7 +345,7 @@ void WgpuBackend::draw_markers(const std::vector<double>& x,
   else if (marker_style_ == "p") marker_type = 16.0f; // Star (alt)
 
   for (size_t i = 0; i < count; ++i) {
-    std::array<float, 4> c = FixColor(color);
+    std::array<float, 4> c = marker_color_;
     // Apply same centering transform as draw_path
     float mx = static_cast<float>(x[i]) * scale + offset_x;
     float my = (rh - offset_y) - static_cast<float>(y[i]) * scale;

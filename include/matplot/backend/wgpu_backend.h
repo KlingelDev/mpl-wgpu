@@ -211,33 +211,29 @@ class WgpuBackend : public backend_interface {
 
   /// @brief Fills a polygon.
   void fill(const std::vector<double>& x, const std::vector<double>& y,
-            const std::array<float, 4>& color) override;
+            const std::array<float, 4>& color);
 
-  /// @brief Draws point markers at the given coordinates.
   /// @brief Draws point markers at the given coordinates.
   void draw_markers(const std::vector<double>& x,
                     const std::vector<double>& y,
-                    const std::vector<double>& z,
-                    const std::array<float, 4>& color) override;
+                    const std::vector<double>& z = {}) override;
 
-  // Configuration overrides
-  void marker_size(float size) override { set_marker_radius(size); }
-  void marker_style(const std::string& style) override { marker_style_ = style; }
+  // Configuration methods (not virtual in base class).
+  void marker_size(float size) { set_marker_radius(size); }
+  void marker_style(const std::string& style) { marker_style_ = style; }
 
   /// @brief Draws text at the given coordinates.
   void draw_text(const std::vector<double>& x, const std::vector<double>& y,
                  const std::vector<double>& z = {}) override;
 
-  /// \brief Get text width
-  double text_width(const std::string &text) override {
+  /// \brief Get text width (not virtual in base class).
+  double text_width(const std::string &text) {
       if (!renderer_) return 0.0;
-      // Use standard font size of 24.0 or whatever draw_text uses
-      // Ideally we should track current font settings
       return static_cast<double>(renderer_->MeasureText(text, 24.0f));
   }
 
-  /// \brief Set text color
-  void text_color(const std::array<float, 4> &color) override {
+  /// \brief Set text color (not virtual in base class).
+  void text_color(const std::array<float, 4> &color) {
       current_text_color_ = color;
   }
 
@@ -249,8 +245,7 @@ class WgpuBackend : public backend_interface {
   /// @brief Draws triangles.
   void draw_triangle(const std::vector<double>& x,
                      const std::vector<double>& y,
-                     const std::vector<double>& z,
-                     const std::array<float, 4>& color) override;
+                     const std::vector<double>& z = {}) override;
 
   // Overload for 3D with normals
   void draw_triangle_3d(const std::vector<double>& x,
