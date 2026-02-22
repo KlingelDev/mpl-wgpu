@@ -23,15 +23,17 @@ inline std::array<float, 4> FixColor(const std::array<float, 4>& c) {
   return {c[1], c[2], c[3], 1.0f};
 }
 
-// Matplot++ passes colors as {Alpha, R, G, B} not {R, G, B, A}
+// Matplot++ passes colors as {Transparency, R, G, B}.
+// c[0] is transparency: 0 = fully opaque, 1 = fully transparent.
+// Gnuplot uses `fillstyle solid (1 - c[0])`, so GPU alpha = 1 - c[0].
 inline std::array<float, 4> FixFillColor(const std::array<float, 4>& c) {
   if (std::isnan(c[1]) || std::isnan(c[2]) || std::isnan(c[3])) {
     return {0.0f, 0.0f, 0.0f, 0.0f};
   }
-  // Matplot format is {Alpha/Unused, R, G, B}. 
-  // We assume alpha is 1.0f unless implicit.
-  // c[0] is often 0 or garbage for solid colors.
-  return {c[1], c[2], c[3], 1.0f};
+  float alpha = 1.0f - c[0];
+  if (std::isnan(alpha) || alpha < 0.0f) alpha = 0.0f;
+  if (alpha > 1.0f) alpha = 1.0f;
+  return {c[1], c[2], c[3], alpha};
 }
 }
 
@@ -69,7 +71,8 @@ bool WgpuBackend::render_data() {
   if (!texts_.empty()) {
       for (const auto& t : texts_) {
           std::array<float, 4> c = {t.r, t.g, t.b, t.a};
-          renderer_->DrawText(t.text, t.x, t.y, t.font_size, c, t.rotation);
+          renderer_->DrawText(t.text, t.x, t.y,
+                              t.font_size, c, t.rotation);
       }
   }
 
@@ -255,7 +258,7 @@ void WgpuBackend::draw_path(const std::vector<double>& x,
   float offset_y = (rh - lh * scale) * 0.5f;
 
   std::array<float, 4> c = FixColor(color);
-  float lw_scaled = line_width_ * scale; 
+  float lw_scaled = line_width_ * scale;
   
   // Default style parameters
   float dash_len = 0.0f;  
@@ -344,19 +347,24 @@ void WgpuBackend::draw_markers(const std::vector<double>& x,
   else if (marker_style_ == ".") marker_type = 17.0f; // Point
   else if (marker_style_ == "p") marker_type = 16.0f; // Star (alt)
 
+  // Hollow markers use a stroke width proportional to radius.
+  float stroke = 0.0f;
+  if (!marker_face_) {
+    stroke = std::max(1.0f, marker_radius_ * scale * 0.2f);
+  }
+
   for (size_t i = 0; i < count; ++i) {
     std::array<float, 4> c = marker_color_;
-    // Apply same centering transform as draw_path
     float mx = static_cast<float>(x[i]) * scale + offset_x;
     float my = (rh - offset_y) - static_cast<float>(y[i]) * scale;
-    float mz = 0.0f;
-    
+
     WgpuRenderer::Circle circle;
-    circle.cx = mx; circle.cy = my; circle.cz = mz;
+    circle.cx = mx; circle.cy = my; circle.cz = 0.0f;
     circle.radius = marker_radius_ * scale;
     circle.r = c[0]; circle.g = c[1]; circle.b = c[2]; circle.a = c[3];
     circle.type = static_cast<float>(marker_type);
-    circle._p1 = 0.0f; circle._p2 = 0.0f; circle._p3 = 0.0f;
+    circle.stroke_width = stroke;
+    circle._p2 = 0.0f; circle._p3 = 0.0f;
     circles_.push_back(circle);
   }
 }
@@ -393,6 +401,50 @@ void WgpuBackend::draw_text(const std::vector<double>& x, const std::vector<doub
   std::array<float, 4> color = current_text_color_;
 
   texts_.push_back({text_content, px, py, color[0], color[1], color[2], color[3], font_size, 0.0f});
+}
+
+void WgpuBackend::draw_label(
+    const std::string& text, double x, double y,
+    float font_size,
+    const std::array<float, 4>& color) {
+  draw_label(text, x, y, font_size, color, 0.0f);
+}
+
+void WgpuBackend::draw_label(
+    const std::string& text, double x, double y,
+    float font_size,
+    const std::array<float, 4>& color,
+    float rotation) {
+  if (text.empty() || !renderer_) return;
+  float rw = static_cast<float>(render_width_);
+  float rh = static_cast<float>(render_height_);
+  float lw = static_cast<float>(width_);
+  float lh = static_cast<float>(height_);
+  float scale = std::min(rw / lw, rh / lh);
+  float offset_x = (rw - lw * scale) * 0.5f;
+  float offset_y = (rh - lh * scale) * 0.5f;
+  float px = static_cast<float>(x) * scale + offset_x;
+  float py = (rh - offset_y)
+             - static_cast<float>(y) * scale;
+  float fs = font_size * scale;
+  auto c = FixColor(color);
+  texts_.push_back(
+      {text, px, py, c[0], c[1], c[2], c[3],
+       fs, rotation});
+}
+
+double WgpuBackend::text_width(const std::string& text,
+                               float font_size) {
+  if (!renderer_ || text.empty()) return 0.0;
+  float rw = static_cast<float>(render_width_);
+  float lw = static_cast<float>(width_);
+  float rh = static_cast<float>(render_height_);
+  float lh = static_cast<float>(height_);
+  float scale = std::min(rw / lw, rh / lh);
+  // Measure in pixel space, then convert back to logical.
+  float fs_px = font_size * scale;
+  float px_width = renderer_->MeasureText(text, fs_px);
+  return static_cast<double>(px_width / scale);
 }
 
 void WgpuBackend::draw_image(const std::vector<std::vector<double>>& x, const std::vector<std::vector<double>>& y, const std::vector<std::vector<double>>& z) {

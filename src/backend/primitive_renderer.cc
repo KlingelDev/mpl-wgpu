@@ -248,18 +248,19 @@ void PrimitiveRenderer::DrawLines(const std::vector<Line>& lines,
 void PrimitiveRenderer::DrawCircles(const std::vector<Circle>& circles,
                                     float screen_width, float screen_height) {
   for (const auto& c : circles) {
-     // TODO: Handle marker types properly. For now assuming circles.
-     float stroke = 0.0f; // Filled by default? Or line?
-     // Check primitives.wgsl logic for circle
-     DrawCircle(c.cx, c.cy, c.cz, c.radius, {c.r, c.g, c.b, c.a}, stroke);
+    DrawCircle(c.cx, c.cy, c.cz, c.radius,
+               {c.r, c.g, c.b, c.a}, c.stroke_width);
   }
 }
 
 void PrimitiveRenderer::DrawTriangles(const std::vector<Triangle>& triangles,
                                       float screen_width, float screen_height) {
   for (const auto& t : triangles) {
-      DrawTriangle(t.x1, t.y1, t.z1, t.x2, t.y2, t.z2, t.x3, t.y3, t.z3, 
-                   {t.r, t.g, t.b, t.a}, true);
+      // Use unlit for 2D fills (all z equal), lit for 3D.
+      bool is_3d = (t.z1 != t.z2) || (t.z1 != t.z3);
+      DrawTriangle(t.x1, t.y1, t.z1, t.x2, t.y2, t.z2,
+                   t.x3, t.y3, t.z3,
+                   {t.r, t.g, t.b, t.a}, is_3d);
   }
 }
 
@@ -494,64 +495,70 @@ void PrimitiveRenderer::DrawText(const std::string& text, float x, float y,
     return;
   }
 
-  float cur_x = x;
-  float cur_y = y;
-
   // Assume baked at 32px. Scale accordingly.
   float scale = font_size / 32.0f;
-  
+
+  // Rotation support: advance along rotated direction.
+  float rad = rotation * 3.14159265f / 180.0f;
+  float cos_r = std::cos(rad);
+  float sin_r = std::sin(rad);
+  // Advance cursor along the rotated baseline.
+  float cursor = 0.0f;
+
   for (char c : text) {
       if (c < 32 || c > 126) continue;
-      
+
       StbBakedChar* b = &cdata_[c - 32];
-      
-      float xpos = cur_x + b->xoff * scale;
-      float ypos = cur_y + b->yoff * scale;
+
+      // Local glyph position (before rotation).
+      float lx = cursor + b->xoff * scale;
+      float ly = b->yoff * scale;
       float w = (b->x1 - b->x0) * scale;
       float h = (b->y1 - b->y0) * scale;
-      
+
+      // Center of glyph in local coords.
+      float lcx = lx + w * 0.5f;
+      float lcy = ly + h * 0.5f;
+
+      // Rotate around the text origin (x, y).
+      float center_x = x + lcx * cos_r - lcy * sin_r;
+      float center_y = y + lcx * sin_r + lcy * cos_r;
+
       // UVs
       float u0 = b->x0 / 512.0f;
       float v0 = b->y0 / 512.0f;
       float u1 = b->x1 / 512.0f;
       float v1 = b->y1 / 512.0f;
 
-      // Draw Textured Rect
-      // We start at Top-Left. 
-      // PrimitiveRenderer::DrawRect takes center.
-      // But we can re-use the generic Instance struct if we add UV support.
-      // Instance has pos_c_pad (location 4).
-      
-      float center_x = xpos + w * 0.5f;
-      float center_y = ypos + h * 0.5f;
-
       Instance inst{};
       inst.pos_a_radius[0] = center_x;
       inst.pos_a_radius[1] = center_y;
-      inst.pos_a_radius[2] = 0.95f; // Text Front?
-      inst.pos_a_radius[3] = 0.0f; // Radius 0
-      
+      inst.pos_a_radius[2] = 0.95f;
+      inst.pos_a_radius[3] = 0.0f;
+
+      // For rotated text, width/height are in local
+      // space. We pass rotation in params for the shader.
       inst.pos_b_width[0] = w;
       inst.pos_b_width[1] = h;
       inst.pos_b_width[2] = 0.0f;
-      inst.pos_b_width[3] = 0.0f; // Stroke 0
-      
-      std::memcpy(inst.color, color.data(), sizeof(inst.color));
-      
-      inst.params[0] = static_cast<float>(PrimitiveType::kText); // Type 100
+      inst.pos_b_width[3] = 0.0f;
+
+      std::memcpy(inst.color, color.data(),
+                  sizeof(inst.color));
+
+      inst.params[0] =
+          static_cast<float>(PrimitiveType::kText);
       inst.params[1] = 0;
       inst.params[2] = 0;
-      inst.params[3] = 0;
+      inst.params[3] = rad;
 
-      // Pass UVs in pos_c_pad (Location 4)
       inst.pos_c_pad[0] = u0;
       inst.pos_c_pad[1] = v0;
       inst.pos_c_pad[2] = u1;
       inst.pos_c_pad[3] = v1;
 
       instances_.push_back(inst);
-
-      cur_x += b->xadvance * scale;
+      cursor += b->xadvance * scale;
   }
 }
 

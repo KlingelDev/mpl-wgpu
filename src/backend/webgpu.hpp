@@ -8,6 +8,7 @@
 #define MPL_WGPU_WEBGPU_HPP_
 
 #include <webgpu.h>
+#include <wgpu.h>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -52,6 +53,8 @@ enum class BufferUsage : uint32_t {
   Uniform = WGPUBufferUsage_Uniform,
   Vertex = WGPUBufferUsage_Vertex,
   CopyDst = WGPUBufferUsage_CopyDst,
+  MapRead = WGPUBufferUsage_MapRead,
+  CopySrc = WGPUBufferUsage_CopySrc,
 };
 
 inline BufferUsage operator|(BufferUsage a, BufferUsage b) {
@@ -117,6 +120,7 @@ enum class TextureViewDimension : uint32_t {
 
 enum class TextureUsage : uint32_t {
   CopyDst = WGPUTextureUsage_CopyDst,
+  CopySrc = WGPUTextureUsage_CopySrc,
   TextureBinding = WGPUTextureUsage_TextureBinding,
   RenderAttachment = WGPUTextureUsage_RenderAttachment,
 };
@@ -282,7 +286,24 @@ class Buffer {
   Buffer() : handle_(nullptr) {}
   explicit Buffer(WGPUBuffer h) : handle_(h) {}
   WGPUBuffer Get() const { return handle_; }
-  uint64_t GetSize() const { return 0; } // TODO
+  uint64_t GetSize() const { return 0; }  // TODO
+
+  void MapAsync(WGPUMapModeFlags mode, size_t offset,
+                size_t size,
+                WGPUBufferMapCallback callback,
+                void* userdata) const {
+    wgpuBufferMapAsync(handle_, mode, offset, size,
+                       callback, userdata);
+  }
+
+  const void* GetConstMappedRange(size_t offset,
+                                  size_t size) const {
+    return wgpuBufferGetConstMappedRange(
+        handle_, offset, size);
+  }
+
+  void Unmap() const { wgpuBufferUnmap(handle_); }
+
  private:
   WGPUBuffer handle_;
 };
@@ -406,11 +427,23 @@ class RenderPassEncoder {
 class CommandEncoder {
  public:
   CommandEncoder() : handle_(nullptr) {}
-  explicit CommandEncoder(WGPUCommandEncoder h) : handle_(h) {}
-  
-  RenderPassEncoder BeginRenderPass(const WGPURenderPassDescriptor* desc) const;
-  CommandBuffer Finish(const WGPUCommandBufferDescriptor* desc = nullptr) const;
-  
+  explicit CommandEncoder(WGPUCommandEncoder h)
+      : handle_(h) {}
+
+  RenderPassEncoder BeginRenderPass(
+      const WGPURenderPassDescriptor* desc) const;
+  CommandBuffer Finish(
+      const WGPUCommandBufferDescriptor* desc = nullptr)
+      const;
+
+  void CopyTextureToBuffer(
+      const WGPUImageCopyTexture* source,
+      const WGPUImageCopyBuffer* destination,
+      const WGPUExtent3D* copy_size) const {
+    wgpuCommandEncoderCopyTextureToBuffer(
+        handle_, source, destination, copy_size);
+  }
+
  private:
   WGPUCommandEncoder handle_;
 };
@@ -444,9 +477,15 @@ class Device {
   BindGroup CreateBindGroup(const BindGroupDescriptor* desc) const;
   PipelineLayout CreatePipelineLayout(const PipelineLayoutDescriptor* desc) const;
   RenderPipeline CreateRenderPipeline(const RenderPipelineDescriptor* desc) const;
-  CommandEncoder CreateCommandEncoder(const WGPUCommandEncoderDescriptor* desc = nullptr) const;
+  CommandEncoder CreateCommandEncoder(
+      const WGPUCommandEncoderDescriptor* desc = nullptr)
+      const;
   Queue GetQueue() const;
-  
+
+  void Poll(bool wait) const {
+    wgpuDevicePoll(handle_, wait, nullptr);
+  }
+
  private:
   WGPUDevice handle_;
 };
