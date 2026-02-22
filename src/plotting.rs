@@ -136,6 +136,47 @@ impl Figure {
 }
 
 // ----------------------------------------------------------------------------
+// GnuplotFigure
+// ----------------------------------------------------------------------------
+
+/// Owning wrapper for a gnuplot-backed matplot++ figure.
+///
+/// Uses the default gnuplot backend (no wgpu renderer). Call
+/// [`save`] to render the plot to a PNG via gnuplot.
+pub struct GnuplotFigure {
+  ptr: *mut ffi::MplFigure,
+}
+
+impl GnuplotFigure {
+  /// Creates a new gnuplot-backed figure.
+  pub fn new() -> Self {
+    let ptr = unsafe { ffi::mpl_figure_create_gnuplot() };
+    assert!(!ptr.is_null(), "Failed to create gnuplot figure");
+    Self { ptr }
+  }
+
+  /// Returns a non-owning [`Figure`] handle for plot setup.
+  pub fn figure(&self) -> Figure {
+    Figure { ptr: self.ptr }
+  }
+
+  /// Saves the figure to a file via gnuplot.
+  ///
+  /// The output format is inferred from the file extension
+  /// (e.g. `.png`, `.svg`).
+  pub fn save(&self, path: &str) -> bool {
+    let c_path = CString::new(path).unwrap_or_default();
+    unsafe { ffi::mpl_figure_save(self.ptr, c_path.as_ptr()) }
+  }
+}
+
+impl Drop for GnuplotFigure {
+  fn drop(&mut self) {
+    unsafe { ffi::mpl_figure_destroy(self.ptr); }
+  }
+}
+
+// ----------------------------------------------------------------------------
 // PlotBackend
 // ----------------------------------------------------------------------------
 
@@ -152,15 +193,11 @@ extern "C" fn draw_rects_cb(user_data: *mut c_void, rects: *const ffi::MplWgpuRe
     let rects_slice = unsafe { std::slice::from_raw_parts(rects, count) };
     for r in rects_slice {
         let pos = ctx.transform.transform_point3(Vec3::new(r.x, r.y, 0.0));
-        // Size handles scaling? Matplot++ backend usually handles sizing. 
-        // We assume transform is translation only for now, or unified scale.
-        // If scale is involved, width/height need scaling. 
-        // For simple UI positioning, it's just translation.
         prim.draw_rect(
-            Vec2::new(pos.x, pos.y), 
-            Vec2::new(r.width, r.height), 
+            Vec2::new(pos.x, pos.y),
+            Vec2::new(r.width, r.height),
             Vec4::new(r.r, r.g, r.b, r.a),
-            r.corner_radius, 
+            r.corner_radius,
             r.stroke_width
         );
     }
@@ -320,7 +357,10 @@ impl PlotBackend {
             (*self.ctx_ptr).prim = prim as *mut _;
             (*self.ctx_ptr).text = text as *mut _;
             (*self.ctx_ptr).transform = target.unwrap_or(Mat4::IDENTITY);
-            ffi::mpl_wgpu_backend_render_data(self.backend_ptr);
+            // draw() triggers the full matplotplusplus pipeline:
+            //   new_frame() -> send_draw_commands() -> render_data()
+            // which populates primitives and flushes them via callbacks.
+            ffi::mpl_figure_draw(self.figure_ptr);
             (*self.ctx_ptr).prim = std::ptr::null_mut();
             (*self.ctx_ptr).text = std::ptr::null_mut();
         }

@@ -43,11 +43,11 @@ fn vs_main(
 
     let idx = vertex_index % 6u;
     
-    // Check if prim_type is Triangle (30)
-    if (prim_type == 30u) {
-        // Fix: Only draw ONE triangle (indices 0,1,2).
+    // Check if prim_type is Triangle (30 = lit, 31 = unlit)
+    if (prim_type == 30u || prim_type == 31u) {
+        // Only draw ONE triangle (indices 0,1,2).
         if (idx > 2u) {
-            out.position = vec4<f32>(-3.0, -3.0, 0.0, 1.0); // Degenerate
+            out.position = vec4<f32>(-3.0, -3.0, 0.0, 1.0);
             return out;
         }
 
@@ -60,7 +60,7 @@ fn vs_main(
         out.dim = vec2<f32>(0.0, 0.0);
         out.color = color;
         out.params = vec4<f32>(0.0, f32(prim_type), 0.0, 0.0);
-        out.dash_params = p; // World Pos for normals
+        out.dash_params = p;
         return out;
     }
 
@@ -116,9 +116,18 @@ fn vs_main(
         center = pos_a;
         size = pos_b.xy;
     } else if (prim_type == 100u) { // Text Glyph
-        // Text uses center + width/height in pos_b.xy
         center = pos_a;
-        size = pos_b.xy;  // Width and height are passed in pos_b
+        size = pos_b.xy;
+        // Apply glyph rotation from params.w (radians).
+        let text_rad = params.w;
+        if (abs(text_rad) > 0.001) {
+            let cr = cos(text_rad);
+            let sr = sin(text_rad);
+            rotation = mat3x3<f32>(
+                vec3<f32>(cr, sr, 0.0),
+                vec3<f32>(-sr, cr, 0.0),
+                vec3<f32>(0.0, 0.0, 1.0));
+        }
     } else { // Circles/Markers
         center = pos_a;
         size = vec2<f32>(radius * 2.0, radius * 2.0);

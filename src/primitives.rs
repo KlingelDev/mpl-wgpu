@@ -310,6 +310,8 @@ impl PrimitiveRenderer {
     }
 
     pub fn prepare(&mut self, device: &wgpu::Device, queue: &wgpu::Queue) {
+        self.update_uniforms(queue);
+
         if self.instances.is_empty() {
             return;
         }

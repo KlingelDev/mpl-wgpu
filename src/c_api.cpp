@@ -4,6 +4,7 @@
 #include "c_api.h"
 #include "matplot/backend/wgpu_backend.h"
 #include <matplot/matplot.h>
+#include <matplot/backend/backend_registry.h>
 #include <vector>
 #include <string>
 
@@ -137,6 +138,20 @@ MplFigure* mpl_figure_create(MplWgpuBackend* backend) {
     }
     fig->backend_ref = backend;
     return fig;
+}
+
+MplFigure* mpl_figure_create_gnuplot() {
+    auto fig = new MplFigure();
+    fig->figure = std::make_unique<matplot::figure_type>(true);
+    // Set gnuplot as the backend explicitly so save() works.
+    fig->figure->backend(matplot::create_default_backend());
+    fig->backend_ref = nullptr;
+    return fig;
+}
+
+bool mpl_figure_save(MplFigure* fig, const char* path) {
+    if (!fig || !fig->figure || !path) return false;
+    return fig->figure->save(path);
 }
 
 void mpl_figure_destroy(MplFigure* fig) {
@@ -288,6 +303,12 @@ void mpl_axes_set_xlim(MplAxes* ax, double min, double max) {
 
 void mpl_axes_set_ylim(MplAxes* ax, double min, double max) {
     if (ax && ax->axes) ax->axes->ylim({min, max});
+}
+
+void mpl_figure_draw(MplFigure* fig) {
+    if (fig && fig->figure) {
+        fig->figure->draw();
+    }
 }
 
 void mpl_figure_clear(MplFigure* fig) {

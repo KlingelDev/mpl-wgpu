@@ -22,6 +22,13 @@ bytemuck = { version = "1.14", features = ["derive"] }
 anyhow = "1.0"
 winit = "0.29"
 pollster = "0.3"
+image = "0.25"
+raw-window-handle = { version = "0.6", optional = true }
+sdl2 = { version = "0.37", optional = true, features = ["raw-window-handle"] }
+
+[features]
+default = []
+test-display = ["sdl2", "raw-window-handle"]
 
 [build-dependencies]
 cc = "1.0"
@@ -30,7 +37,13 @@ cmake = "0.1"
 
 [dev-dependencies]
 env_logger = "0.11"
+serial_test = "3"
 
 [[example]]
 name = "simple_plot"
 path = "examples/rust/simple_plot.rs"
+
+[[example]]
+name = "test_display"
+path = "examples/rust/test_display.rs"
+required-features = ["test-display"]

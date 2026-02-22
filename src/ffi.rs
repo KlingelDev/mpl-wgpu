@@ -95,9 +95,14 @@ extern "C" {
     pub fn mpl_wgpu_backend_set_size(backend: *mut MplWgpuBackend, width: c_uint, height: c_uint);
 
     pub fn mpl_figure_create(backend: *mut MplWgpuBackend) -> *mut MplFigure;
+    pub fn mpl_figure_create_gnuplot() -> *mut MplFigure;
     pub fn mpl_figure_destroy(fig: *mut MplFigure);
+    pub fn mpl_figure_draw(fig: *mut MplFigure);
     pub fn mpl_figure_current_axes(fig: *mut MplFigure) -> *mut MplAxes;
     pub fn mpl_figure_clear(fig: *mut MplFigure);
+    pub fn mpl_figure_save(
+      fig: *mut MplFigure, path: *const c_char,
+    ) -> bool;
 
     pub fn mpl_axes_destroy(ax: *mut MplAxes);
     pub fn mpl_axes_plot(ax: *mut MplAxes, x: *const c_double, y: *const c_double, count: usize, style: *const c_char);

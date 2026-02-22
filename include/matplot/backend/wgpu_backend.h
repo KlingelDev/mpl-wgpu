@@ -62,8 +62,9 @@ class WgpuRenderer {
   struct Circle {
     float cx, cy, cz, radius;
     float r, g, b, a;
-    float type;      // Marker type
-    float _p1, _p2, _p3; // Padding
+    float type;
+    float stroke_width;
+    float _p2, _p3;
   };
 
   /// @brief Triangle instance data for batched rendering.
@@ -214,13 +215,11 @@ class WgpuBackend : public backend_interface {
             const std::array<float, 4>& color);
 
   /// @brief Draws point markers at the given coordinates.
-  /// @brief Draws point markers at the given coordinates.
   void draw_markers(const std::vector<double>& x,
                     const std::vector<double>& y,
-                    const std::vector<double>& z,
-                    const std::array<float, 4>& color);
+                    const std::vector<double>& z = {}) override;
 
-  // Configuration (not part of backend_interface, extensions)
+  // Configuration methods (not virtual in base class).
   void marker_size(float size) { set_marker_radius(size); }
   void marker_style(const std::string& style) { marker_style_ = style; }
 
@@ -228,15 +227,21 @@ class WgpuBackend : public backend_interface {
   void draw_text(const std::vector<double>& x, const std::vector<double>& y,
                  const std::vector<double>& z = {}) override;
 
-  /// \brief Get text width
-  double text_width(const std::string &text) {
-      if (!renderer_) return 0.0;
-      // Use standard font size of 24.0 or whatever draw_text uses
-      // Ideally we should track current font settings
-      return static_cast<double>(renderer_->MeasureText(text, 24.0f));
-  }
+  /// @brief Draws a text label at a given position.
+  void draw_label(const std::string& text, double x, double y,
+                  float font_size,
+                  const std::array<float, 4>& color) override;
 
-  /// \brief Set text color
+  void draw_label(const std::string& text, double x, double y,
+                  float font_size,
+                  const std::array<float, 4>& color,
+                  float rotation) override;
+
+  /// @brief Measure text width in viewport units.
+  double text_width(const std::string& text,
+                    float font_size) override;
+
+  /// \brief Set text color (not virtual in base class).
   void text_color(const std::array<float, 4> &color) {
       current_text_color_ = color;
   }
@@ -249,8 +254,7 @@ class WgpuBackend : public backend_interface {
   /// @brief Draws triangles.
   void draw_triangle(const std::vector<double>& x,
                      const std::vector<double>& y,
-                     const std::vector<double>& z,
-                     const std::array<float, 4>& color);
+                     const std::vector<double>& z = {}) override;
 
   // Overload for 3D with normals
   void draw_triangle_3d(const std::vector<double>& x,
@@ -268,16 +272,29 @@ class WgpuBackend : public backend_interface {
   // =========================================================================
 
   /// @brief Sets the line/stroke width for paths.
-  void set_line_width(float width) { line_width_ = width; }
+  void set_line_width(float width) override {
+    line_width_ = width;
+  }
 
   /// @brief Gets the current line width.
   float line_width() const { return line_width_; }
 
   /// @brief Sets the marker radius for draw_markers.
-  void set_marker_radius(float radius) { marker_radius_ = radius; }
+  void set_marker_radius(float radius) override {
+    marker_radius_ = radius;
+  }
+
+  /// @brief Gets the current marker radius.
+  float marker_radius() const override { return marker_radius_; }
+
+  /// @brief Sets whether markers are filled or hollow.
+  void set_marker_face(bool face) override {
+    marker_face_ = face;
+  }
 
   /// @brief Sets the default marker color.
-  void set_marker_color(const std::array<float, 4>& color) {
+  void set_marker_color(
+      const std::array<float, 4>& color) override {
     marker_color_ = color;
   }
 
@@ -316,10 +333,11 @@ class WgpuBackend : public backend_interface {
 
   std::array<float, 4> current_text_color_ = {0.0f, 0.0f, 0.0f, 1.0f}; // Default Black
   
-  float line_width_ = 2.0f;    // Default line width (pixels)
+  float line_width_ = 1.0f;    // Default line width (pixels)
   float marker_radius_ = 6.0f; // Default marker radius (pixels)
   std::array<float, 4> marker_color_ = {1.0f, 0.0f, 0.0f, 1.0f};
   std::string marker_style_ = "o"; // Default marker style (circle)
+  bool marker_face_ = true;    // Filled (true) or hollow (false)
 
   // Batched draw data collected during frame
   std::vector<WgpuRenderer::Rect> rects_;
