@@ -212,7 +212,7 @@ class WgpuBackend : public backend_interface {
 
   /// @brief Fills a polygon.
   void fill(const std::vector<double>& x, const std::vector<double>& y,
-            const std::array<float, 4>& color) override;
+            const std::array<float, 4>& color);
 
   /// @brief Draws point markers at the given coordinates.
   void draw_markers(const std::vector<double>& x,
